@@ -1,0 +1,590 @@
+﻿@model WorkHub_Admin.Models.AdminCompanyRequestViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Company Registration Review";
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Company Registration Review</title>
+
+
+    <style>
+
+        :root {
+            --orange: #FD5000;
+            --orange-dark: #D94300;
+            --orange-soft: #FFF3EC;
+
+            --dark: #0F172A;
+            --text: #64748B;
+            --border: #E2E8F0;
+            --bg: #F8FAFC;
+
+            --green: #16A34A;
+            --green-soft: #F0FDF4;
+
+            --red: #DC2626;
+            --red-soft: #FEF2F2;
+
+            --yellow: #D97706;
+            --yellow-soft: #FFF7ED;
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+        }
+
+
+        .review-page {
+            min-height: 100vh;
+            padding: 42px 22px 80px;
+        }
+
+
+        .review-container {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+
+        .back-link {
+            margin-bottom: 20px;
+            display: inline-flex;
+            color: #64748B;
+            font-size: 10px;
+            font-weight: 850;
+            text-decoration: none;
+        }
+
+
+        .back-link:hover {
+            color: var(--orange-dark);
+        }
+
+
+        .review-header {
+            margin-bottom: 23px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+
+        .review-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--orange);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+        }
+
+
+        .review-header h1 {
+            margin: 0 0 7px;
+            color: var(--dark);
+            font-size: 31px;
+            font-weight: 950;
+        }
+
+
+        .review-header p {
+            margin: 0;
+            color: var(--text);
+            font-size: 10px;
+        }
+
+
+        .status-badge {
+            padding: 8px 12px;
+            border-radius: 30px;
+            background: var(--yellow-soft);
+            color: var(--yellow);
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+
+        .company-card {
+            margin-bottom: 22px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: #FFFFFF;
+            box-shadow:
+                0 7px 24px
+                rgba(15,23,42,.04);
+        }
+
+
+        .company-title {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+
+        .company-logo {
+            width: 58px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
+            background: var(--orange);
+            color: #FFFFFF;
+            font-size: 21px;
+            font-weight: 950;
+        }
+
+
+        .company-title h2 {
+            margin: 0 0 4px;
+            font-size: 21px;
+            font-weight: 950;
+        }
+
+
+        .company-title span {
+            color: var(--text);
+            font-size: 9px;
+        }
+
+
+        .details-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+
+        .detail-item {
+            padding: 15px;
+            border-radius: 9px;
+            background: #F8FAFC;
+        }
+
+
+        .detail-item.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .detail-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #94A3B8;
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+
+        .detail-value {
+            color: #334155;
+            font-size: 10px;
+            font-weight: 750;
+            word-break: break-word;
+        }
+
+
+        .approval-card {
+            padding: 25px;
+            border: 1px solid #FED7C2;
+            border-radius: 14px;
+            background: #FFF9F5;
+        }
+
+
+        .approval-card h3 {
+            margin: 0 0 7px;
+            font-size: 17px;
+            font-weight: 950;
+        }
+
+
+        .approval-card p {
+            margin: 0;
+            color: var(--text);
+            font-size: 9px;
+            line-height: 1.6;
+        }
+
+
+        .approval-actions {
+            margin-top: 21px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+
+        .reject-button,
+        .approve-button {
+            min-width: 130px;
+            padding: 11px 15px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+
+        .reject-button {
+            border: 1px solid #FCA5A5;
+            background: #FFFFFF;
+            color: var(--red);
+        }
+
+
+        .reject-button:hover {
+            background: var(--red-soft);
+        }
+
+
+        .approve-button {
+            border: 1px solid var(--green);
+            background: var(--green);
+            color: #FFFFFF;
+        }
+
+
+        .approve-button:hover {
+            background: #15803D;
+        }
+
+
+        @@media (max-width: 650px) {
+
+            .review-header {
+                flex-direction: column;
+            }
+
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .detail-item.full {
+                grid-column: auto;
+            }
+
+
+            .approval-actions {
+                justify-content: stretch;
+            }
+
+
+            .reject-button,
+            .approve-button {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<section class="review-page">
+
+    <div class="review-container">
+
+
+        <a asp-controller="AdminDashboard"
+           asp-action="Index"
+           class="back-link">
+
+            ← Back to Admin Dashboard
+
+        </a>
+
+
+        <div class="review-header">
+
+            <div>
+
+                <span class="review-label">
+                    Company Registration
+                </span>
+
+                <h1>
+                    Review Company Request
+                </h1>
+
+                <p>
+                    Review the submitted information
+                    before approving or rejecting
+                    this WorkHub company account.
+                </p>
+
+            </div>
+
+
+            <span class="status-badge">
+                @Model.VerificationStatus
+            </span>
+
+        </div>
+
+
+        <div class="company-card">
+
+
+            <div class="company-title">
+
+
+                <div class="company-logo">
+
+                    @(string.IsNullOrWhiteSpace(
+                        Model.CompanyName)
+                        ? "C"
+                        : Model.CompanyName
+                            .Substring(0, 1)
+                            .ToUpperInvariant())
+
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        @Model.CompanyName
+                    </h2>
+
+                    <span>
+                        Submitted:
+                        @Model.SubmittedDateText
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="details-grid">
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Contact Person
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.ContactPerson
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Email
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.Email
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Phone
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(string.IsNullOrWhiteSpace(Model.Phone)
+                            ? "Not provided"
+                            : Model.Phone)
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Location
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(string.IsNullOrWhiteSpace(Model.Location)
+                            ? "Not provided"
+                            : Model.Location)
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Account Status
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.AccountStatus
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Verification Status
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.VerificationStatus
+                    </div>
+
+                </div>
+
+
+                <div class="detail-item full">
+
+                    <span class="detail-label">
+                        Address
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(string.IsNullOrWhiteSpace(Model.Address)
+                            ? "Not provided"
+                            : Model.Address)
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        @if (Model.VerificationStatus.Equals(
+            "Pending",
+            StringComparison.OrdinalIgnoreCase))
+        {
+
+            <div class="approval-card">
+
+                <h3>
+                    Admin Decision
+                </h3>
+
+                <p>
+                    Approving this request will activate
+                    the company account and allow the
+                    company to sign in to its WorkHub
+                    dashboard.
+                </p>
+
+
+                <div class="approval-actions">
+
+
+                    <form asp-controller="AdminCompanyRequests"
+                          asp-action="Reject"
+                          method="post"
+                          onsubmit="return confirm('Reject this company registration request?');">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.CompanyProfileId" />
+
+                        <button type="submit"
+                                class="reject-button">
+
+                            Reject Request
+
+                        </button>
+
+                    </form>
+
+
+                    <form asp-controller="AdminCompanyRequests"
+                          asp-action="Approve"
+                          method="post"
+                          onsubmit="return confirm('Approve this company registration?');">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.CompanyProfileId" />
+
+                        <button type="submit"
+                                class="approve-button">
+
+                            ✓ Approve Company
+
+                        </button>
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+        }
+
+
+    </div>
+
+</section>
+
+
+</body>
+
+</html>

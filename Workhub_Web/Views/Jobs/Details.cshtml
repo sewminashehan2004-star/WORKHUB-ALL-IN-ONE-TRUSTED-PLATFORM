@@ -1,0 +1,251 @@
+@model Workhub_Web.Models.JobDetailsViewModel
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = Model.Title;
+
+    var token = Context.Session.GetString("JwtToken");
+    var role = Context.Session.GetString("Role");
+    var isRegisteredUser = !string.IsNullOrWhiteSpace(token) &&
+                           string.Equals(role, "RegisteredUser", StringComparison.OrdinalIgnoreCase);
+
+    var apiBaseUrl = Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7015/";
+    if (!apiBaseUrl.EndsWith("/"))
+    {
+        apiBaseUrl += "/";
+    }
+
+    string ResolveJobImage(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return string.Empty;
+        }
+
+        var clean = path.Trim().Replace("\\", "/");
+
+        if (clean.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            clean.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return clean;
+        }
+
+        if (clean.StartsWith("~/"))
+        {
+            clean = clean[1..];
+        }
+
+        if (clean.StartsWith("wwwroot/", StringComparison.OrdinalIgnoreCase))
+        {
+            clean = clean["wwwroot/".Length..];
+        }
+
+        if (clean.StartsWith("/wwwroot/", StringComparison.OrdinalIgnoreCase))
+        {
+            clean = clean["/wwwroot".Length..];
+        }
+
+        if (!clean.StartsWith("/"))
+        {
+            clean = "/" + clean;
+        }
+
+        return clean.StartsWith("/uploads/jobs/", StringComparison.OrdinalIgnoreCase)
+            ? clean
+            : apiBaseUrl.TrimEnd('/') + clean;
+    }
+
+    var imageUrl = ResolveJobImage(Model.ImagePath);
+    var companyName = string.IsNullOrWhiteSpace(Model.Company?.CompanyName)
+        ? "WorkHub Employer"
+        : Model.Company.CompanyName;
+    var companyInitial = companyName[..1].ToUpperInvariant();
+
+    var salaryText = "Salary not disclosed";
+    if (Model.SalaryMin.HasValue && Model.SalaryMax.HasValue)
+    {
+        salaryText = $"${Model.SalaryMin.Value:N0} - ${Model.SalaryMax.Value:N0}";
+    }
+    else if (Model.SalaryMin.HasValue)
+    {
+        salaryText = $"From ${Model.SalaryMin.Value:N0}";
+    }
+    else if (Model.SalaryMax.HasValue)
+    {
+        salaryText = $"Up to ${Model.SalaryMax.Value:N0}";
+    }
+}
+
+<section class="job-detail-page">
+    <div class="job-detail-shell">
+        <a asp-controller="Jobs" asp-action="Index" class="job-detail-back">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
+            Back to Jobs
+        </a>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="product-alert danger">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v5" /><path d="M12 17h.01" /></svg>
+                <span>@Model.ErrorMessage</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+        {
+            <div class="product-alert success">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="m8 12 3 3 5-6" /></svg>
+                <span>@Model.SuccessMessage</span>
+            </div>
+        }
+
+        <div class="job-detail-layout">
+            <article class="job-detail-card job-detail-main">
+                <div class="job-detail-cover">
+                    <div class="job-detail-cover-placeholder">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                        <span>WorkHub Opportunity</span>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(imageUrl))
+                    {
+                        <img src="@imageUrl"
+                             alt="@Model.Title"
+                             class="job-detail-cover-image"
+                             loading="eager"
+                             onerror="this.style.display='none';" />
+                    }
+
+                    @if (Model.CreatedAt >= DateTime.UtcNow.AddDays(-7))
+                    {
+                        <span class="job-detail-new">New</span>
+                    }
+                </div>
+
+                <div class="job-detail-body">
+                    <div class="job-detail-company">
+                        <div class="job-detail-company-avatar">@companyInitial</div>
+                        <div>
+                            <span class="job-detail-kicker">@(Model.CareerCategoryName ?? Model.Category ?? "Career Opportunity")</span>
+                            <strong>@companyName</strong>
+                            @if (!string.IsNullOrWhiteSpace(Model.Company?.Industry))
+                            {
+                                <small>@Model.Company.Industry</small>
+                            }
+                        </div>
+                    </div>
+
+                    <h1>@Model.Title</h1>
+
+                    <div class="job-detail-meta-grid">
+                        <div class="job-detail-meta-item">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z" /><circle cx="12" cy="10" r="2" /></svg>
+                            <span>Location</span>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.Location) ? "Flexible" : Model.Location)</strong>
+                        </div>
+                        <div class="job-detail-meta-item">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5h8v2" /></svg>
+                            <span>Job Type</span>
+                            <strong>@(string.IsNullOrWhiteSpace(Model.JobType) ? "Not specified" : Model.JobType)</strong>
+                        </div>
+                        <div class="job-detail-meta-item">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19v-6M10 19V9M16 19V5M22 19H2" /></svg>
+                            <span>Experience</span>
+                            <strong>@(Model.MinimumExperienceYears.HasValue ? $"{Model.MinimumExperienceYears.Value:0.#}+ years" : "Not specified")</strong>
+                        </div>
+                        <div class="job-detail-meta-item">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" /></svg>
+                            <span>Closing</span>
+                            <strong>@(Model.ClosingDate.HasValue ? Model.ClosingDate.Value.ToString("dd MMM yyyy") : "Open until filled")</strong>
+                        </div>
+                    </div>
+
+                    <section class="job-detail-section">
+                        <div class="job-detail-section-title">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5z" /><path d="M15 3v5h5M8 12h8M8 16h6" /></svg>
+                            <h2>About the Role</h2>
+                        </div>
+                        <p>@Model.Description</p>
+                    </section>
+
+                    @if (Model.Skills.Any())
+                    {
+                        <section class="job-detail-section">
+                            <div class="job-detail-section-title">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 7 7 14" /><path d="m5 12-2 2 7 7 2-2" /><path d="M17 3l4 4-9 9-4-4z" /></svg>
+                                <h2>Skills</h2>
+                            </div>
+                            <div class="job-detail-skills">
+                                @foreach (var skill in Model.Skills)
+                                {
+                                    <span class="job-detail-skill @(string.Equals(skill.Importance, "Required", StringComparison.OrdinalIgnoreCase) ? "required" : "preferred")">
+                                        @skill.SkillName
+                                        <small>@skill.Importance</small>
+                                    </span>
+                                }
+                            </div>
+                        </section>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.EducationRequirement))
+                    {
+                        <section class="job-detail-section">
+                            <div class="job-detail-section-title">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-5 9 5-9 5z" /><path d="M7 12v5c3 2 7 2 10 0v-5" /></svg>
+                                <h2>Education</h2>
+                            </div>
+                            <p>@Model.EducationRequirement</p>
+                        </section>
+                    }
+                </div>
+            </article>
+
+            <aside class="job-detail-card job-detail-action-card">
+                <span class="job-detail-action-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                </span>
+
+                <span class="job-detail-kicker">Ready to apply?</span>
+                <h2>Take the next step.</h2>
+                <p>
+                    Review your saved personal details, primary CV and any employer screening questions before submitting.
+                </p>
+
+                <div class="job-detail-side-summary">
+                    <div><span>Salary</span><strong>@salaryText</strong></div>
+                    <div><span>Posted</span><strong>@Model.CreatedAt.ToString("dd MMM yyyy")</strong></div>
+                </div>
+
+                @if (isRegisteredUser)
+                {
+                    <a asp-controller="Jobs"
+                       asp-action="Apply"
+                       asp-route-id="@Model.JobId"
+                       class="job-detail-apply-button">
+                        Apply for this Job
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account"
+                       asp-action="Login"
+                       asp-route-returnUrl="@Url.Action("Apply", "Jobs", new { id = Model.JobId })"
+                       class="job-detail-apply-button dark">
+                        Sign in to Apply
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
+                    </a>
+                }
+
+                <div class="job-detail-intel-teaser">
+                    <div class="job-detail-intel-title">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.2L20 10l-5.8 1.8L12 17l-2.2-5.2L4 10l5.8-1.8z" /></svg>
+                        CV Intelligence is available when you apply
+                    </div>
+                    <p>Explore your job fit only if you want to. Pricing is shown after you choose to view the available intelligence options.</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>

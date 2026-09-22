@@ -1,0 +1,338 @@
+@model Workhub_Web.Models.JobDetailsViewModel
+
+@{
+    ViewData["Title"] = "Apply - " + Model.Title;
+
+    var companyName = string.IsNullOrWhiteSpace(Model.Company?.CompanyName)
+        ? "WorkHub Employer"
+        : Model.Company.CompanyName;
+
+    var canSubmit = Model.HasJobSeekerProfile && Model.HasPrimaryCv;
+}
+
+<section class="job-apply-page">
+    <div class="job-apply-shell">
+        <a asp-controller="Jobs" asp-action="Details" asp-route-id="@Model.JobId" class="job-apply-back">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
+            Back to Job Details
+        </a>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="product-alert danger">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v5" /><path d="M12 17h.01" /></svg>
+                <span>@Model.ErrorMessage</span>
+            </div>
+        }
+
+        <div class="job-apply-hero">
+            <span class="job-apply-hero-kicker">WorkHub Application</span>
+            <h1>@Model.Title</h1>
+            <div class="job-apply-hero-meta">
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18" /><path d="M6 21V7l6-4 6 4v14" /></svg>@companyName</span>
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z" /><circle cx="12" cy="10" r="2" /></svg>@(string.IsNullOrWhiteSpace(Model.Location) ? "Flexible" : Model.Location)</span>
+            </div>
+        </div>
+
+        <div class="job-apply-layout">
+            <form asp-controller="Jobs"
+                  asp-action="Apply"
+                  asp-route-id="@Model.JobId"
+                  method="post"
+                  class="job-apply-card"
+                  id="jobApplicationForm">
+                @Html.AntiForgeryToken()
+
+                <div class="job-apply-card-heading">
+                    <span class="job-apply-heading-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+                    </span>
+                    <div>
+                        <h2>Your Application</h2>
+                        <p>Review your details before sending them to the employer.</p>
+                    </div>
+                </div>
+
+                <div asp-validation-summary="ModelOnly" class="job-apply-validation"></div>
+
+                @if (!Model.HasJobSeekerProfile)
+                {
+                    <div class="job-apply-readiness warning">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20z" /><path d="M12 9v5M12 18h.01" /></svg>
+                        <div>
+                            <strong>Job Seeker profile required</strong>
+                            <span>Create your Job Seeker profile before submitting this application.</span>
+                            <a asp-controller="JobSeeker" asp-action="Application">Open Job Seeker Profile</a>
+                        </div>
+                    </div>
+                }
+
+                @if (!Model.HasPrimaryCv)
+                {
+                    <div class="job-apply-readiness warning">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5z" /><path d="M15 3v5h5M12 17V9M8 13l4-4 4 4" /></svg>
+                        <div>
+                            <strong>Primary CV required</strong>
+                            <span>Upload a CV from your Job Seeker profile, then return here to apply.</span>
+                            <a asp-controller="JobSeeker" asp-action="Application" asp-fragment="cv-section">Manage CV</a>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.HasPrimaryCv)
+                {
+                    <div class="job-apply-cv-ready">
+                        <span class="job-apply-cv-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5z" /><path d="M15 3v5h5M8 12h8M8 16h6" /></svg></span>
+                        <div><small>Primary CV attached</small><strong>@(Model.PrimaryCvFileName ?? "WorkHub Primary CV")</strong></div>
+                        <span class="job-apply-ready-badge">Ready</span>
+                    </div>
+                }
+
+                <div class="job-apply-section-heading">
+                    <h3>Personal Details</h3>
+                    <p>Existing profile details are filled automatically. Changes are saved back to your WorkHub profile when you apply.</p>
+                </div>
+
+                <div class="job-apply-form-grid">
+                    <div class="job-apply-field">
+                        <label asp-for="ApplicantFirstName">First Name</label>
+                        <input asp-for="ApplicantFirstName" autocomplete="given-name" placeholder="First name" />
+                        <span asp-validation-for="ApplicantFirstName"></span>
+                    </div>
+
+                    <div class="job-apply-field">
+                        <label asp-for="ApplicantLastName">Last Name</label>
+                        <input asp-for="ApplicantLastName" autocomplete="family-name" placeholder="Last name" />
+                        <span asp-validation-for="ApplicantLastName"></span>
+                    </div>
+
+                    <div class="job-apply-field">
+                        <label asp-for="ApplicantEmail">Email Address</label>
+                        <input asp-for="ApplicantEmail" type="email" readonly />
+                        <span asp-validation-for="ApplicantEmail"></span>
+                        <small>Email is linked to your WorkHub account.</small>
+                    </div>
+
+                    <div class="job-apply-field">
+                        <label asp-for="ApplicantPhone">Phone Number</label>
+                        <input asp-for="ApplicantPhone" type="tel" autocomplete="tel" placeholder="Phone number" />
+                        <span asp-validation-for="ApplicantPhone"></span>
+                    </div>
+
+                    <div class="job-apply-field">
+                        <label asp-for="ApplicantLocation">Current Location</label>
+                        <input asp-for="ApplicantLocation" autocomplete="address-level2" placeholder="Suburb, city or region" />
+                        <span asp-validation-for="ApplicantLocation"></span>
+                    </div>
+
+                    <div class="job-apply-field">
+                        <label asp-for="ApplicantNationalIdNumber">National ID / NIC <em>Optional</em></label>
+                        <input asp-for="ApplicantNationalIdNumber" autocomplete="off" placeholder="Only add if you want it saved to your profile" />
+                        <span asp-validation-for="ApplicantNationalIdNumber"></span>
+                    </div>
+                </div>
+
+                <div class="job-apply-section-heading top-border">
+                    <h3>Cover Letter</h3>
+                    <p>Optional — add a short note specific to this vacancy.</p>
+                </div>
+
+                <div class="job-apply-field full">
+                    <textarea asp-for="CoverLetter" rows="6" maxlength="2000" placeholder="Tell the employer why you are a strong fit for this role..."></textarea>
+                    <span asp-validation-for="CoverLetter"></span>
+                </div>
+
+                @if (Model.ScreeningQuestions.Any())
+                {
+                    <div class="job-apply-section-heading top-border">
+                        <h3>Employer Screening Questions</h3>
+                        <p>These questions were added by the employer for this vacancy. Required questions are marked with *.</p>
+                    </div>
+
+                    @for (var i = 0; i < Model.ScreeningQuestions.Count; i++)
+                    {
+                        var question = Model.ScreeningQuestions[i];
+                        var answer = Model.ScreeningAnswers.FirstOrDefault(x => x.QuestionId == question.JobScreeningQuestionId)?.Answer;
+
+                        <input type="hidden"
+                               name="ScreeningAnswers[@i].QuestionId"
+                               value="@question.JobScreeningQuestionId" />
+
+                        <div class="job-apply-screening-question">
+                            <div class="job-apply-screening-title">
+                                <span>@(i + 1)</span>
+                                <label>
+                                    @question.QuestionText
+                                    @if (question.IsRequired)
+                                    {
+                                        <b>*</b>
+                                    }
+                                </label>
+                            </div>
+
+                            @if (string.Equals(question.QuestionType, "YesNo", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (question.IsRequired)
+                                {
+                                    <select name="ScreeningAnswers[@i].Answer" required>
+                                        <option value="">Select an answer</option>
+                                        <option value="Yes" selected="@(string.Equals(answer, "Yes", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Yes</option>
+                                        <option value="No" selected="@(string.Equals(answer, "No", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">No</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select name="ScreeningAnswers[@i].Answer">
+                                        <option value="">Select an answer</option>
+                                        <option value="Yes" selected="@(string.Equals(answer, "Yes", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Yes</option>
+                                        <option value="No" selected="@(string.Equals(answer, "No", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">No</option>
+                                    </select>
+                                }
+                            }
+                            else if (string.Equals(question.QuestionType, "MultipleChoice", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (question.IsRequired)
+                                {
+                                    <select name="ScreeningAnswers[@i].Answer" required>
+                                        <option value="">Select an answer</option>
+                                        @foreach (var option in question.Options)
+                                        {
+                                            <option value="@option" selected="@(string.Equals(answer, option, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@option</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select name="ScreeningAnswers[@i].Answer">
+                                        <option value="">Select an answer</option>
+                                        @foreach (var option in question.Options)
+                                        {
+                                            <option value="@option" selected="@(string.Equals(answer, option, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@option</option>
+                                        }
+                                    </select>
+                                }
+                            }
+                            else
+                            {
+                                if (question.IsRequired)
+                                {
+                                    <textarea name="ScreeningAnswers[@i].Answer" rows="3" maxlength="2000" required placeholder="Your answer...">@answer</textarea>
+                                }
+                                else
+                                {
+                                    <textarea name="ScreeningAnswers[@i].Answer" rows="3" maxlength="2000" placeholder="Your answer...">@answer</textarea>
+                                }
+                            }
+                        </div>
+                    }
+                }
+
+                <button type="submit"
+                        class="job-apply-submit"
+                        id="submitApplicationButton"
+                        disabled="@(!canSubmit)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
+                    Submit Application
+                </button>
+
+                @if (!canSubmit)
+                {
+                    <p class="job-apply-submit-note">Complete the missing Job Seeker profile/CV requirement above to enable submission.</p>
+                }
+            </form>
+
+            <aside class="job-apply-card job-intel-ad">
+                <span class="job-intel-kicker">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.2L20 10l-5.8 1.8L12 17l-2.2-5.2L4 10l5.8-1.8z" /></svg>
+                    Optional CV Intelligence
+                </span>
+
+                <h2>Before you apply, see how your CV lines up.</h2>
+                <p>
+                    WorkHub can compare your primary CV with this exact vacancy and help you understand the signals an employer may notice.
+                </p>
+
+                <div class="job-intel-preview">
+                    <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19v-6M10 19V9M16 19V5M22 19H2" /></svg><span><strong>See your fit</strong><small>Understand how closely your CV aligns with the role.</small></span></div>
+                    <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span><strong>Spot strengths</strong><small>Discover which parts of your profile already match.</small></span></div>
+                    <div><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 17h.01" /></svg><span><strong>Notice possible gaps</strong><small>Choose deeper insights only if you want them.</small></span></div>
+                </div>
+
+                <button type="button" class="job-intel-open" id="openCvIntelligence">
+                    Get My CV Intelligence
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
+                </button>
+
+                <p class="job-intel-note">
+                    Optional. Opening the preview does not purchase anything, and you can close it and submit your application normally.
+                </p>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<div class="job-intel-modal"
+     id="cvIntelligenceModal"
+     aria-hidden="true"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="cvIntelligenceTitle">
+    <div class="job-intel-dialog">
+        <button type="button" class="job-intel-close" id="closeCvIntelligence" aria-label="Close CV Intelligence">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12" /><path d="m18 6-12 12" /></svg>
+        </button>
+
+        <div class="job-intel-analysis" id="cvIntelligenceAnalysis">
+            <span class="job-intel-analysis-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19v-6M10 19V9M16 19V5M22 19H2" /></svg>
+            </span>
+            <span class="job-intel-modal-kicker">WorkHub CV Intelligence</span>
+            <h2 id="cvIntelligenceTitle">Preparing your options</h2>
+            <p id="cvIntelligenceStatus">Connecting your primary CV to this vacancy...</p>
+            <div class="job-intel-progress"><span id="cvIntelligenceProgress"></span></div>
+        </div>
+
+        <div class="job-intel-plans" id="cvIntelligencePlans">
+            <div class="job-intel-plan">
+                <span class="job-intel-plan-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19v-6M10 19V9M16 19V5M22 19H2" /></svg></span>
+                <h3>CV Match Score</h3>
+                <div class="job-intel-price">$2 <small>per job</small></div>
+                <p>For a quick answer to “how closely do I match this vacancy?”</p>
+                <ul>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Overall CV-to-job match percentage</li>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Simple compatibility summary</li>
+                </ul>
+                <a asp-controller="CvAnalysis"
+                   asp-action="Checkout"
+                   asp-route-jobId="@Model.JobId"
+                   asp-route-plan="MATCH_ONLY"
+                   class="job-intel-plan-button dark">Unlock Match Score</a>
+            </div>
+
+            <div class="job-intel-plan featured">
+                <span class="job-intel-best">Best Value</span>
+                <span class="job-intel-plan-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.2L20 10l-5.8 1.8L12 17l-2.2-5.2L4 10l5.8-1.8z" /></svg></span>
+                <h3>Full CV Intelligence</h3>
+                <div class="job-intel-price">$5 <small>per job</small></div>
+                <p>For the match score plus a detailed explanation of your fit.</p>
+                <ul>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Match percentage</li>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Matched and missing skills</li>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Experience and education fit</li>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Job relevance and recommendations</li>
+                </ul>
+                <a asp-controller="CvAnalysis"
+                   asp-action="Checkout"
+                   asp-route-jobId="@Model.JobId"
+                   asp-route-plan="MATCH_PLUS"
+                   class="job-intel-plan-button">Unlock Full Intelligence</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/job-apply.js" asp-append-version="true"></script>
+}

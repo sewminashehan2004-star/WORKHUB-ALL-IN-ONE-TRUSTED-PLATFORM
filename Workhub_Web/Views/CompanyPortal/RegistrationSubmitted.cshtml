@@ -1,0 +1,310 @@
+﻿@{
+    ViewData["Title"] =
+        "Registration Submitted";
+
+    var companyName =
+        ViewBag.CompanyName as string;
+
+    var companyEmail =
+        ViewBag.CompanyEmail as string;
+}
+
+<style>
+
+    :root {
+        --company-orange: #FD5000;
+        --company-orange-dark: #D94300;
+        --company-dark: #0F172A;
+        --company-text: #64748B;
+        --company-border: #E2E8F0;
+    }
+
+
+    .submitted-page {
+        min-height: calc(100vh - 70px);
+        padding: 80px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient( circle at 85% 15%, rgba(253, 80, 0, .10), transparent 30% ), #F8FAFC;
+    }
+
+
+    .submitted-card {
+        width: 100%;
+        max-width: 650px;
+        padding: 50px 45px;
+        border: 1px solid var(--company-border);
+        border-radius: 20px;
+        background: #FFFFFF;
+        text-align: center;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, .08);
+    }
+
+
+    .submitted-icon {
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #DCFCE7;
+        color: #15803D;
+        font-size: 32px;
+        font-weight: 900;
+    }
+
+
+    .submitted-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--company-orange);
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+
+    .submitted-card h1 {
+        margin: 0 0 13px;
+        color: var(--company-dark);
+        font-size: 30px;
+        font-weight: 950;
+    }
+
+
+    .submitted-card > p {
+        margin: 0 auto;
+        max-width: 520px;
+        color: var(--company-text);
+        font-size: 11px;
+        line-height: 1.75;
+    }
+
+
+    .submitted-company {
+        margin-top: 25px;
+        padding: 18px;
+        border: 1px solid #F1F5F9;
+        border-radius: 11px;
+        background: #F8FAFC;
+    }
+
+
+        .submitted-company strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--company-dark);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+
+        .submitted-company span {
+            color: #64748B;
+            font-size: 10px;
+        }
+
+
+    .pending-badge {
+        margin: 25px auto;
+        padding: 8px 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border-radius: 30px;
+        background: #FFF7ED;
+        color: #C2410C;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+
+    .pending-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #F97316;
+    }
+
+
+    .submitted-note {
+        margin-top: 2px;
+        padding: 15px;
+        border-radius: 10px;
+        background: #FFF8F4;
+        color: #7C2D12;
+        font-size: 9px;
+        line-height: 1.65;
+    }
+
+
+    .submitted-actions {
+        margin-top: 27px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+
+    .submitted-home,
+    .submitted-login {
+        padding: 11px 17px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+
+    .submitted-home {
+        background: var(--company-orange);
+        color: #FFFFFF;
+    }
+
+
+        .submitted-home:hover {
+            background: var(--company-orange-dark);
+            color: #FFFFFF;
+        }
+
+
+    .submitted-login {
+        border: 1px solid #CBD5E1;
+        background: #FFFFFF;
+        color: #475569;
+    }
+
+
+        .submitted-login:hover {
+            border-color: var(--company-orange);
+            color: var(--company-orange-dark);
+        }
+
+
+    @@media (max-width: 600px) {
+
+        .submitted-page {
+            padding: 45px 14px;
+        }
+
+
+        .submitted-card {
+            padding: 38px 22px;
+        }
+
+
+            .submitted-card h1 {
+                font-size: 25px;
+            }
+    }
+
+</style>
+
+
+<section class="submitted-page">
+
+    <div class="submitted-card">
+
+
+        <div class="submitted-icon">
+            ✓
+        </div>
+
+
+        <span class="submitted-label">
+            WorkHub Company Portal
+        </span>
+
+
+        <h1>
+            Registration Request Submitted
+        </h1>
+
+
+        <p>
+            Your company registration request has
+            been successfully submitted to WorkHub.
+            A WorkHub administrator will review the
+            request before your company account
+            becomes active.
+        </p>
+
+
+        @if (!string.IsNullOrWhiteSpace(companyName)
+             ||
+             !string.IsNullOrWhiteSpace(companyEmail))
+        {
+            <div class="submitted-company">
+
+                @if (!string.IsNullOrWhiteSpace(companyName))
+                {
+                    <strong>
+                        @companyName
+                    </strong>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(companyEmail))
+                {
+                    <span>
+                        @companyEmail
+                    </span>
+                }
+
+            </div>
+        }
+
+
+        <div class="pending-badge">
+
+            <span class="pending-dot">
+            </span>
+
+            Pending Admin Review
+
+        </div>
+
+
+        <div class="submitted-note">
+
+            You will not be able to sign in to the
+            Company Dashboard until a WorkHub
+            administrator approves the registration.
+            Once approved, your existing email and
+            password can be used to sign in.
+
+        </div>
+
+
+        <div class="submitted-actions">
+
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="submitted-home">
+
+                Back to WorkHub
+
+            </a>
+
+
+            <a asp-controller="CompanyPortal"
+               asp-action="Login"
+               class="submitted-login">
+
+                Company Sign In
+
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+</section>

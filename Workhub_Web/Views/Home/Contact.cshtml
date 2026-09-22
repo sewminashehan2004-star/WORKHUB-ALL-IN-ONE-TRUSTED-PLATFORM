@@ -1,0 +1,947 @@
+@model Workhub_Web.Models.ContactViewModel
+
+@{
+    ViewData["Title"] = "Contact";
+}
+
+<style>
+    :root {
+        --contact-orange: #FD5000;
+        --contact-orange-dark: #D94300;
+        --contact-orange-light: #FF7A00;
+        --contact-orange-soft: #FFF3EC;
+        --contact-dark: #0F172A;
+        --contact-dark-2: #1E293B;
+        --contact-text: #64748B;
+        --contact-text-dark: #334155;
+        --contact-border: #E2E8F0;
+        --contact-bg: #F8FAFC;
+        --contact-white: #FFFFFF;
+        --contact-green: #16A34A;
+        --contact-green-soft: #F0FDF4;
+        --contact-red: #DC2626;
+        --contact-red-soft: #FEF2F2;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .contact-page {
+        min-height: 100vh;
+        padding-bottom: 90px;
+        background: radial-gradient(circle at 10% 40%, rgba(253, 80, 0, .035), transparent 25%), radial-gradient(circle at 90% 70%, rgba(253, 80, 0, .04), transparent 25%), var(--contact-bg);
+    }
+
+    .contact-container {
+        width: calc(100% - 40px);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* ================================
+           HERO
+        ================================= */
+
+    .contact-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 82px 20px 115px;
+        color: #FFFFFF;
+        background: radial-gradient( circle at 82% 20%, rgba(253, 80, 0, .48), transparent 29% ), radial-gradient( circle at 15% 90%, rgba(255, 122, 0, .10), transparent 30% ), linear-gradient( 135deg, #0F172A 0%, #172033 58%, #431407 100% );
+    }
+
+        .contact-hero::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            right: -170px;
+            top: -190px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 50%;
+            box-shadow: 0 0 0 45px rgba(255,255,255,.018), 0 0 0 90px rgba(255,255,255,.012);
+        }
+
+        .contact-hero::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 1px;
+            background: linear-gradient( 90deg, transparent, rgba(253,80,0,.8), transparent );
+        }
+
+    .contact-hero-content {
+        position: relative;
+        z-index: 2;
+        width: calc(100% - 40px);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .contact-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 17px;
+        padding: 8px 13px;
+        border: 1px solid rgba(255,255,255,.13);
+        border-radius: 30px;
+        background: rgba(255,255,255,.07);
+        backdrop-filter: blur(12px);
+        color: #FDBA74;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.3px;
+        text-transform: uppercase;
+    }
+
+    .contact-eyebrow-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: rgba(253,80,0,.18);
+        color: #FF9A66;
+    }
+
+        .contact-eyebrow-icon svg {
+            width: 10px;
+            height: 10px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+    .contact-hero h1 {
+        max-width: 760px;
+        margin: 0 0 16px;
+        font-size: clamp(36px, 5vw, 56px);
+        font-weight: 950;
+        line-height: 1.05;
+        letter-spacing: -2px;
+    }
+
+        .contact-hero h1 span {
+            color: #FDBA74;
+        }
+
+    .contact-hero p {
+        max-width: 640px;
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    /* ================================
+           MAIN
+        ================================= */
+
+    .contact-main {
+        position: relative;
+        z-index: 5;
+        margin-top: -58px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+        gap: 22px;
+    }
+
+    .contact-panel {
+        position: relative;
+        overflow: hidden;
+        padding: 30px;
+        border: 1px solid rgba(226,232,240,.95);
+        border-radius: 20px;
+        background: rgba(255,255,255,.96);
+        box-shadow: 0 20px 55px rgba(15,23,42,.09), 0 2px 8px rgba(15,23,42,.025);
+        transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+        .contact-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 28px;
+            width: 70px;
+            height: 3px;
+            border-radius: 0 0 5px 5px;
+            background: linear-gradient( 90deg, var(--contact-orange), var(--contact-orange-light) );
+        }
+
+        .contact-panel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 65px rgba(15,23,42,.12), 0 0 0 1px rgba(253,80,0,.04);
+        }
+
+    .contact-panel-heading {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 8px;
+    }
+
+    .contact-title-icon {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        border: 1px solid #FED7C3;
+        border-radius: 12px;
+        background: var(--contact-orange-soft);
+        color: var(--contact-orange);
+    }
+
+        .contact-title-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+    .contact-panel h2 {
+        margin: 1px 0 5px;
+        color: var(--contact-dark);
+        font-size: 24px;
+        font-weight: 950;
+        letter-spacing: -.5px;
+    }
+
+    .contact-panel-description {
+        margin: 0 0 25px;
+        color: var(--contact-text);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    /* ================================
+           MESSAGES
+        ================================= */
+
+    .contact-success,
+    .contact-error {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 14px 16px;
+        border-radius: 11px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .contact-success {
+        border: 1px solid #BBF7D0;
+        background: var(--contact-green-soft);
+        color: #15803D;
+    }
+
+    .contact-error {
+        border: 1px solid #FECACA;
+        background: var(--contact-red-soft);
+        color: var(--contact-red);
+    }
+
+    .contact-message-icon {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+    }
+
+    .contact-success .contact-message-icon {
+        background: #DCFCE7;
+    }
+
+    .contact-error .contact-message-icon {
+        background: #FEE2E2;
+    }
+
+    .contact-message-icon svg {
+        width: 14px;
+        height: 14px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ================================
+           FORM
+        ================================= */
+
+    .contact-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 17px;
+    }
+
+    .contact-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+        .contact-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .contact-field label {
+            color: var(--contact-text-dark);
+            font-size: 11px;
+            font-weight: 850;
+        }
+
+    .contact-input,
+    .contact-select,
+    .contact-textarea {
+        width: 100%;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        outline: none;
+        background: #FFFFFF;
+        color: var(--contact-dark);
+        font-family: inherit;
+        font-size: 12px;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .contact-input,
+    .contact-select {
+        height: 48px;
+        padding: 0 14px;
+    }
+
+    .contact-textarea {
+        min-height: 155px;
+        padding: 14px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+        .contact-input::placeholder,
+        .contact-textarea::placeholder {
+            color: #94A3B8;
+        }
+
+        .contact-input:hover,
+        .contact-select:hover,
+        .contact-textarea:hover {
+            border-color: #94A3B8;
+        }
+
+        .contact-input:focus,
+        .contact-select:focus,
+        .contact-textarea:focus {
+            border-color: var(--contact-orange);
+            box-shadow: 0 0 0 3px rgba(253,80,0,.09), 0 4px 14px rgba(253,80,0,.05);
+        }
+
+    .contact-validation {
+        color: var(--contact-red);
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    /* ================================
+           SUBMIT
+        ================================= */
+
+    .contact-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin-top: 19px;
+        min-height: 48px;
+        padding: 0 23px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, var(--contact-orange), var(--contact-orange-light) );
+        color: #FFFFFF;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 10px 22px rgba(253,80,0,.22);
+        transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+        .contact-submit svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .contact-submit:hover {
+            transform: translateY(-2px);
+            background: linear-gradient( 135deg, var(--contact-orange-dark), var(--contact-orange) );
+            box-shadow: 0 14px 28px rgba(253,80,0,.28);
+        }
+
+        .contact-submit:active {
+            transform: translateY(0);
+        }
+
+    /* ================================
+           SUPPORT SIDE
+        ================================= */
+
+    .contact-help-list {
+        display: grid;
+        gap: 11px;
+    }
+
+    .contact-help-card {
+        position: relative;
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid #EEF2F7;
+        border-radius: 13px;
+        background: linear-gradient( 135deg, #FFFFFF, #F8FAFC );
+        transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+        .contact-help-card:hover {
+            transform: translateX(3px);
+            border-color: #FED7C3;
+            box-shadow: 0 8px 20px rgba(15,23,42,.06);
+        }
+
+    .contact-help-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid #FED7C3;
+        border-radius: 11px;
+        background: var(--contact-orange-soft);
+        color: var(--contact-orange);
+    }
+
+        .contact-help-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+    .contact-help-content {
+        min-width: 0;
+    }
+
+    .contact-help-card strong {
+        display: block;
+        margin: 1px 0 4px;
+        color: var(--contact-text-dark);
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .contact-help-card span {
+        display: block;
+        color: var(--contact-text);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    /* ================================
+           RESPONSIVE
+        ================================= */
+
+    @@media (max-width: 850px) {
+        .contact-main {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-help-card {
+            grid-template-columns: 43px 1fr;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .contact-container,
+        .contact-hero-content {
+            width: calc(100% - 28px);
+        }
+
+        .contact-hero {
+            padding: 60px 14px 100px;
+        }
+
+            .contact-hero h1 {
+                font-size: 37px;
+                letter-spacing: -1.3px;
+            }
+
+            .contact-hero p {
+                font-size: 13px;
+            }
+
+        .contact-main {
+            margin-top: -45px;
+            gap: 16px;
+        }
+
+        .contact-panel {
+            padding: 23px 19px;
+            border-radius: 16px;
+        }
+
+        .contact-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-field.full {
+            grid-column: auto;
+        }
+
+        .contact-submit {
+            width: 100%;
+        }
+    }
+</style>
+
+<section class="contact-page">
+
+    ```
+    <!-- =====================================
+     HERO
+====================================== -->
+
+    <div class="contact-hero">
+
+        <div class="contact-hero-content">
+
+            <span class="contact-eyebrow">
+
+                <span class="contact-eyebrow-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-9 8.5 9.9 9.9 0 0 1-4-.8L3 21l1.8-4.4A8.1 8.1 0 0 1 3 11.5a8.5 8.5 0 0 1 18 0Z" />
+                        <path d="M8 11h.01" />
+                        <path d="M12 11h.01" />
+                        <path d="M16 11h.01" />
+                    </svg>
+                </span>
+
+                Contact WorkHub
+
+            </span>
+
+            <h1>
+                How can we
+                <span>help you?</span>
+            </h1>
+
+            <p>
+                Send your question or support request
+                directly to the WorkHub team.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="contact-container">
+
+        <div class="contact-main">
+
+            <!-- =====================================
+             FORM
+        ====================================== -->
+
+            <div class="contact-panel">
+
+                <div class="contact-panel-heading">
+
+                    <div class="contact-title-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+                            <path d="m22 6-10 7L2 6" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Send a Message</h2>
+                        <p class="contact-panel-description">
+                            Complete the form below and your
+                            inquiry will be submitted to WorkHub.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+                {
+                    <div class="contact-success">
+
+                        <span class="contact-message-icon">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" />
+                            </svg>
+
+                        </span>
+
+                        <span>@Model.SuccessMessage</span>
+
+                    </div>
+                }
+
+
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
+                    <div class="contact-error">
+
+                        <span class="contact-message-icon">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 9v4" />
+                                <path d="M12 17h.01" />
+                                <circle cx="12" cy="12" r="9" />
+
+                            </svg>
+
+                        </span>
+
+                        <span>@Model.ErrorMessage</span>
+
+                    </div>
+                }
+
+
+                <form asp-controller="Contact"
+                      asp-action="Index"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="contact-form-grid">
+
+                        <!-- NAME -->
+
+                        <div class="contact-field">
+
+                            <label asp-for="FullName">
+                                Full Name
+                            </label>
+
+                            <input asp-for="FullName"
+                                   class="contact-input"
+                                   placeholder="Enter your full name" />
+
+                            <span asp-validation-for="FullName"
+                                  class="contact-validation">
+                            </span>
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+
+                        <div class="contact-field">
+
+                            <label asp-for="Email">
+                                Email Address
+                            </label>
+
+                            <input asp-for="Email"
+                                   type="email"
+                                   class="contact-input"
+                                   placeholder="Enter your email" />
+
+                            <span asp-validation-for="Email"
+                                  class="contact-validation">
+                            </span>
+
+                        </div>
+
+
+                        <!-- TOPIC -->
+
+                        <div class="contact-field full">
+
+                            <label asp-for="Topic">
+                                What do you need help with?
+                            </label>
+
+                            <select asp-for="Topic"
+                                    class="contact-select">
+
+                                <option value="">
+                                    Select a topic
+                                </option>
+
+                                <option value="Jobs & Applications">
+                                    Jobs & Applications
+                                </option>
+
+                                <option value="Company Account">
+                                    Company / Employer Account
+                                </option>
+
+                                <option value="Services">
+                                    Services
+                                </option>
+
+                                <option value="Marketplace">
+                                    Marketplace
+                                </option>
+
+                                <option value="Account & Profile">
+                                    Account & Profile
+                                </option>
+
+                                <option value="Technical Support">
+                                    Technical Problem
+                                </option>
+
+                                <option value="General Question">
+                                    General Question
+                                </option>
+
+                            </select>
+
+                            <span asp-validation-for="Topic"
+                                  class="contact-validation">
+                            </span>
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+
+                        <div class="contact-field full">
+
+                            <label asp-for="Message">
+                                Message
+                            </label>
+
+                            <textarea asp-for="Message"
+                                      class="contact-textarea"
+                                      placeholder="Describe your question or issue..."></textarea>
+
+                            <span asp-validation-for="Message"
+                                  class="contact-validation">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="contact-submit">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m22 2-7 20-4-9-9-4Z" />
+                            <path d="M22 2 11 13" />
+                        </svg>
+
+                        Send Message
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- =====================================
+             HELP
+        ====================================== -->
+
+            <div class="contact-panel">
+
+                <div class="contact-panel-heading">
+
+                    <div class="contact-title-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 16v-4" />
+                            <path d="M12 8h.01" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Contact Support</h2>
+
+                        <p class="contact-panel-description">
+                            We can help with different areas
+                            of WorkHub.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="contact-help-list">
+
+
+                    <!-- JOBS -->
+
+                    <div class="contact-help-card">
+
+                        <div class="contact-help-icon">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <rect x="3" y="7" width="18" height="13" rx="2" />
+                                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                <path d="M3 12h18" />
+                                <path d="M10 12v2h4v-2" />
+                            </svg>
+
+                        </div>
+
+                        <div class="contact-help-content">
+
+                            <strong>
+                                Jobs & Applications
+                            </strong>
+
+                            <span>
+                                Questions about vacancies,
+                                applications and job seekers.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- COMPANY -->
+
+                    <div class="contact-help-card">
+
+                        <div class="contact-help-icon">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 21h18" />
+                                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
+                                <path d="M9 7h1" />
+                                <path d="M14 7h1" />
+                                <path d="M9 11h1" />
+                                <path d="M14 11h1" />
+                                <path d="M9 15h1" />
+                                <path d="M14 15h1" />
+                                <path d="M10 21v-3h4v3" />
+                            </svg>
+
+                        </div>
+
+                        <div class="contact-help-content">
+
+                            <strong>
+                                Company Accounts
+                            </strong>
+
+                            <span>
+                                Company registration,
+                                verification and recruitment
+                                support.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TECHNICAL -->
+
+                    <div class="contact-help-card">
+
+                        <div class="contact-help-icon">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 2a4 4 0 0 0-4 4v1H6a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-6a3 3 0 0 0-3-3h-2V6a4 4 0 0 0-4-4Z" />
+                                <path d="M8 11h.01" />
+                                <path d="M16 11h.01" />
+                                <path d="M9 15c1.5 1.2 4.5 1.2 6 0" />
+                            </svg>
+
+                        </div>
+
+                        <div class="contact-help-content">
+
+                            <strong>
+                                Technical Support
+                            </strong>
+
+                            <span>
+                                Report problems while using
+                                the WorkHub system.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACCOUNT -->
+
+                    <div class="contact-help-card">
+
+                        <div class="contact-help-icon">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M4 21a8 8 0 0 1 16 0" />
+                                <path d="M19 12v6" />
+                                <path d="M16 15h6" />
+                            </svg>
+
+                        </div>
+
+                        <div class="contact-help-content">
+
+                            <strong>
+                                Account & Profile
+                            </strong>
+
+                            <span>
+                                Help with your WorkHub
+                                account and profile.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+
+</section>

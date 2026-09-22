@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../WorkHub_Admin/WorkHub_Admin.csproj" Id="2e9f802c-7786-498c-956e-6a9d699035e1" />
+  <Project Path="../Workhub_Web/Workhub_Web.csproj" Id="206ab09c-3494-467e-ae9a-a488854454b5" />
+  <Project Path="WorkHub_API.csproj" />
+</Solution>

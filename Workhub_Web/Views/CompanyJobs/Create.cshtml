@@ -1,0 +1,3296 @@
+﻿@model Workhub_Web.Models.CompanyJobFormViewModel
+
+@{
+    Layout = "_CompanyLayout";
+    ViewData["Title"] = "Post New Job";
+}
+
+<style>
+
+    :root {
+        --job-orange: #FD5000;
+        --job-orange-dark: #D94300;
+        --job-orange-light: #FF7A00;
+        --job-orange-soft: #FFF2EB;
+        --job-dark: #0F172A;
+        --job-dark-2: #1E293B;
+        --job-text: #64748B;
+        --job-text-dark: #334155;
+        --job-border: #E2E8F0;
+        --job-bg: #F8FAFC;
+        --job-green: #16A34A;
+        --job-green-soft: #F0FDF4;
+        --job-red: #DC2626;
+        --job-red-soft: #FEF2F2;
+        --job-blue: #2563EB;
+        --job-blue-soft: #EFF6FF;
+        --job-shadow: 0 12px 34px rgba(15,23,42,.07);
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    .job-svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .job-create-page {
+        min-height: calc(100vh - 72px);
+        padding: 48px 24px 90px;
+        background: radial-gradient( circle at top right, rgba(253,80,0,.07), transparent 31% ), radial-gradient( circle at bottom left, rgba(253,80,0,.035), transparent 28% ), var(--job-bg);
+    }
+
+
+    .job-create-container {
+        width: 100%;
+        max-width: 1220px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================
+           HEADER
+        ========================================= */
+
+    .job-create-header {
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+
+    .job-page-label {
+        margin-bottom: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--job-orange);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+    }
+
+
+        .job-page-label svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+    .job-create-header h1 {
+        margin: 0 0 9px;
+        color: var(--job-dark);
+        font-size: 42px;
+        font-weight: 950;
+        letter-spacing: -1px;
+    }
+
+
+    .job-create-header p {
+        margin: 0;
+        color: var(--job-text);
+        font-size: 15px;
+        line-height: 1.65;
+    }
+
+
+    .job-back-link {
+        min-height: 43px;
+        padding: 0 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--job-border);
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 850;
+        text-decoration: none;
+        box-shadow: 0 5px 14px rgba(15,23,42,.04);
+        transition: .2s ease;
+    }
+
+
+        .job-back-link svg {
+            width: 17px;
+            height: 17px;
+        }
+
+
+        .job-back-link:hover {
+            border-color: var(--job-orange);
+            color: var(--job-orange-dark);
+            background: var(--job-orange-soft);
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================
+           MESSAGES
+        ========================================= */
+
+    .job-message {
+        margin-bottom: 21px;
+        padding: 15px 17px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 11px;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+    .job-message-success {
+        border: 1px solid #BBF7D0;
+        background: var(--job-green-soft);
+        color: #15803D;
+    }
+
+
+    .job-message-error {
+        border: 1px solid #FECACA;
+        background: var(--job-red-soft);
+        color: #B91C1C;
+    }
+
+
+    .validation-summary-errors {
+        margin-bottom: 20px;
+        padding: 15px 18px;
+        border: 1px solid #FECACA;
+        border-radius: 10px;
+        background: var(--job-red-soft);
+        color: #B91C1C;
+        font-size: 12px;
+        line-height: 1.65;
+    }
+
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+
+    .field-validation-error {
+        color: var(--job-red);
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+
+    /* =========================================
+           FORM LAYOUT
+        ========================================= */
+
+    .job-form-layout {
+        display: grid;
+        grid-template-columns: minmax(0,1.4fr) minmax(310px,.6fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+
+    .job-form-card {
+        margin-bottom: 23px;
+        padding: 30px;
+        border: 1px solid var(--job-border);
+        border-radius: 18px;
+        background: #FFFFFF;
+        box-shadow: var(--job-shadow);
+    }
+
+
+    /* =========================================
+           CARD HEADER
+        ========================================= */
+
+    .job-card-header {
+        margin-bottom: 25px;
+        padding-bottom: 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+
+    .job-card-header-icon {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--job-orange-soft);
+        color: var(--job-orange-dark);
+    }
+
+
+        .job-card-header-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+
+    .job-card-header h2 {
+        margin: 0 0 6px;
+        color: var(--job-dark);
+        font-size: 21px;
+        font-weight: 900;
+    }
+
+
+    .job-card-header p {
+        margin: 0;
+        color: var(--job-text);
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+
+    /* =========================================
+           FORM FIELDS
+        ========================================= */
+
+    .job-form-grid {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
+        gap: 18px;
+    }
+
+
+    .job-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+
+        .job-field.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .job-field label {
+            color: var(--job-text-dark);
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+
+    .required-star {
+        color: var(--job-orange);
+    }
+
+
+    .job-input,
+    .job-select,
+    .job-textarea {
+        width: 100%;
+        padding: 13px 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: var(--job-dark);
+        font-size: 14px;
+        outline: none;
+        transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+
+    .job-input,
+    .job-select {
+        min-height: 47px;
+    }
+
+
+    .job-textarea {
+        min-height: 190px;
+        resize: vertical;
+        line-height: 1.65;
+    }
+
+
+        .job-input:hover,
+        .job-select:hover,
+        .job-textarea:hover {
+            border-color: #94A3B8;
+        }
+
+
+        .job-input:focus,
+        .job-select:focus,
+        .job-textarea:focus {
+            border-color: var(--job-orange);
+            box-shadow: 0 0 0 4px rgba(253,80,0,.09);
+        }
+
+
+    .job-select:disabled {
+        background: #F8FAFC;
+        color: #94A3B8;
+        cursor: not-allowed;
+    }
+
+
+    /* =========================================
+           JOB COVER IMAGE
+        ========================================= */
+
+    .job-image-input {
+        display: none;
+    }
+
+
+    .job-image-upload {
+        overflow: hidden;
+        border: 2px dashed #CBD5E1;
+        border-radius: 14px;
+        background: #F8FAFC;
+        transition: .2s ease;
+    }
+
+
+        .job-image-upload:hover,
+        .job-image-upload.dragging {
+            border-color: var(--job-orange);
+            background: #FFF9F5;
+            box-shadow: 0 0 0 4px rgba(253,80,0,.05);
+        }
+
+
+    .job-image-upload-label {
+        min-height: 220px;
+        padding: 35px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-align: center;
+    }
+
+
+    .job-image-icon {
+        width: 62px;
+        height: 62px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background: linear-gradient( 135deg, #FFF2EB, #FFE6D8 );
+        color: var(--job-orange-dark);
+        box-shadow: inset 0 0 0 1px #FED7C5;
+    }
+
+
+        .job-image-icon svg {
+            width: 29px;
+            height: 29px;
+        }
+
+
+    .job-image-upload-label strong {
+        margin-bottom: 7px;
+        color: var(--job-dark);
+        font-size: 15px;
+        font-weight: 900;
+    }
+
+
+    .job-image-upload-label span {
+        margin-bottom: 7px;
+        color: var(--job-text);
+        font-size: 12px;
+    }
+
+
+    .job-image-upload-label small {
+        color: #94A3B8;
+        font-size: 10px;
+    }
+
+
+    /* =========================================
+           IMAGE PREVIEW
+        ========================================= */
+
+    .job-image-preview {
+        display: none;
+        margin-top: 15px;
+        overflow: hidden;
+        border: 1px solid var(--job-border);
+        border-radius: 14px;
+        background: #FFFFFF;
+        box-shadow: 0 7px 20px rgba(15,23,42,.05);
+    }
+
+
+        .job-image-preview.visible {
+            display: block;
+        }
+
+
+    .job-image-preview-picture {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1200 / 630;
+        overflow: hidden;
+        background: #E2E8F0;
+    }
+
+
+        .job-image-preview-picture img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+
+    .job-image-preview-footer {
+        padding: 13px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+
+    .job-image-file-details {
+        min-width: 0;
+    }
+
+
+        .job-image-file-details strong {
+            display: block;
+            max-width: 350px;
+            overflow: hidden;
+            color: var(--job-dark);
+            font-size: 12px;
+            font-weight: 850;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+        .job-image-file-details span {
+            display: block;
+            margin-top: 4px;
+            color: #94A3B8;
+            font-size: 10px;
+        }
+
+
+    .remove-job-image {
+        flex-shrink: 0;
+        min-height: 38px;
+        padding: 0 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid #FECACA;
+        border-radius: 8px;
+        background: #FEF2F2;
+        color: #B91C1C;
+        font-size: 10px;
+        font-weight: 850;
+        cursor: pointer;
+    }
+
+
+        .remove-job-image svg {
+            width: 15px;
+            height: 15px;
+        }
+
+
+        .remove-job-image:hover {
+            border-color: #FCA5A5;
+            background: #FEE2E2;
+        }
+
+
+    /* =========================================
+           CAREER ROLE INFO
+        ========================================= */
+
+    .career-role-info {
+        display: none;
+        margin-top: 20px;
+        padding: 19px;
+        border: 1px solid #BFDBFE;
+        border-radius: 12px;
+        background: linear-gradient( 135deg, #EFF6FF, #F8FBFF );
+    }
+
+
+        .career-role-info.visible {
+            display: block;
+        }
+
+
+        .career-role-info h3 {
+            margin: 0 0 7px;
+            color: #1E3A8A;
+            font-size: 15px;
+            font-weight: 900;
+        }
+
+
+        .career-role-info p {
+            margin: 0 0 14px;
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+    .role-baseline-grid {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
+        gap: 10px;
+    }
+
+
+    .role-baseline-box {
+        padding: 13px;
+        border-radius: 9px;
+        background: rgba(255,255,255,.85);
+    }
+
+
+        .role-baseline-box span {
+            display: block;
+            margin-bottom: 5px;
+            color: #64748B;
+            font-size: 9px;
+            font-weight: 850;
+            text-transform: uppercase;
+        }
+
+
+        .role-baseline-box strong {
+            color: #1E293B;
+            font-size: 12px;
+            font-weight: 850;
+        }
+
+
+    /* =========================================
+           SKILLS
+        ========================================= */
+
+    .skill-loading,
+    .skill-empty {
+        padding: 30px 18px;
+        border: 1px dashed #CBD5E1;
+        border-radius: 11px;
+        background: #FAFCFE;
+        color: #94A3B8;
+        font-size: 12px;
+        text-align: center;
+    }
+
+
+    .skill-list {
+        display: grid;
+        gap: 11px;
+    }
+
+
+    .skill-item {
+        padding: 15px;
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 140px 125px;
+        gap: 11px;
+        align-items: center;
+        border: 1px solid #E2E8F0;
+        border-radius: 11px;
+        background: #F8FAFC;
+        transition: .2s ease;
+    }
+
+
+        .skill-item:hover {
+            border-color: #CBD5E1;
+            background: #FFFFFF;
+        }
+
+
+        .skill-item.selected {
+            border-color: #FDBA95;
+            background: #FFF9F5;
+            box-shadow: 0 0 0 3px rgba(253,80,0,.04);
+        }
+
+
+    .skill-main {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+
+    .skill-checkbox {
+        width: 19px;
+        height: 19px;
+        flex-shrink: 0;
+        accent-color: var(--job-orange);
+        cursor: pointer;
+    }
+
+
+    .skill-name {
+        min-width: 0;
+    }
+
+
+        .skill-name strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--job-dark);
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+
+        .skill-name span {
+            color: #94A3B8;
+            font-size: 10px;
+        }
+
+
+    .skill-select,
+    .skill-experience {
+        width: 100%;
+        min-height: 40px;
+        padding: 8px 9px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        background: #FFFFFF;
+        color: #334155;
+        font-size: 11px;
+        outline: none;
+    }
+
+
+        .skill-select:disabled,
+        .skill-experience:disabled {
+            background: #F1F5F9;
+            color: #94A3B8;
+        }
+
+
+    /* =========================================
+           RIGHT SIDEBAR
+        ========================================= */
+
+    .job-side-card {
+        position: sticky;
+        top: 92px;
+    }
+
+
+    .job-guide-list {
+        display: grid;
+        gap: 12px;
+    }
+
+
+    .job-guide-item {
+        padding: 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: #F8FAFC;
+        transition: .2s ease;
+    }
+
+
+        .job-guide-item:hover {
+            border-color: #FED7C5;
+            background: var(--job-orange-soft);
+            transform: translateX(2px);
+        }
+
+
+    .job-guide-number {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        background: var(--job-orange-soft);
+        color: var(--job-orange-dark);
+    }
+
+
+        .job-guide-number svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+    .job-guide-item strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+
+    .job-guide-item p {
+        margin: 0;
+        color: #64748B;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================
+           PUBLISH
+        ========================================= */
+
+    .publish-box {
+        margin-top: 18px;
+        padding: 20px;
+        border: 1px solid #FED7C2;
+        border-radius: 12px;
+        background: linear-gradient( 135deg, #FFF9F5, #FFF2EB );
+    }
+
+
+        .publish-box strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--job-dark);
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+
+        .publish-box p {
+            margin: 0 0 15px;
+            color: var(--job-text);
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+
+    .job-publish-button {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, var(--job-orange), var(--job-orange-light) );
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 9px 20px rgba(253,80,0,.22);
+        transition: .2s ease;
+    }
+
+
+        .job-publish-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+        .job-publish-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 26px rgba(253,80,0,.30);
+        }
+
+
+        .job-publish-button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 950px) {
+
+        .job-form-layout {
+            grid-template-columns: 1fr;
+        }
+
+
+        .job-side-card {
+            position: static;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .job-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .job-field.full {
+            grid-column: auto;
+        }
+
+
+        .skill-item {
+            grid-template-columns: 1fr;
+        }
+
+
+        .role-baseline-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 550px) {
+
+        .job-create-page {
+            padding: 30px 14px 65px;
+        }
+
+
+        .job-create-header {
+            flex-direction: column;
+        }
+
+
+            .job-create-header h1 {
+                font-size: 33px;
+            }
+
+
+            .job-create-header p {
+                font-size: 13px;
+            }
+
+
+        .job-form-card {
+            padding: 21px;
+        }
+
+
+        .job-image-preview-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .job-back-link {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+</style>
+
+
+<section class="job-create-page">
+
+    <div class="job-create-container">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="job-create-header">
+
+
+            <div>
+
+
+                <span class="job-page-label">
+
+                    <svg viewBox="0 0 24 24"
+                         class="job-svg">
+
+                        <rect x="3"
+                              y="7"
+                              width="18"
+                              height="13"
+                              rx="2" />
+
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                    </svg>
+
+                    WorkHub Recruitment
+
+                </span>
+
+
+                <h1>
+                    Post New Job
+                </h1>
+
+
+                <p>
+                    Create a professional vacancy and publish it
+                    directly to WorkHub job seekers.
+                </p>
+
+
+            </div>
+
+
+            <a asp-controller="CompanyHome"
+               asp-action="Index"
+               class="job-back-link">
+
+                <svg viewBox="0 0 24 24"
+                     class="job-svg">
+
+                    <path d="M19 12H5" />
+
+                    <path d="m11 18-6-6 6-6" />
+
+                </svg>
+
+                Company Home
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =====================================
+             MESSAGES
+        ====================================== -->
+        @if (!string.IsNullOrWhiteSpace(
+                    Model.SuccessMessage))
+        {
+            <div class="job-message job-message-success">
+
+                <svg viewBox="0 0 24 24"
+                     class="job-svg">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="9" />
+
+                    <path d="m8 12 3 3 5-6" />
+
+                </svg>
+
+                @Model.SuccessMessage
+
+            </div>
+        }
+
+
+        @if (!string.IsNullOrWhiteSpace(
+            Model.ErrorMessage))
+        {
+            <div class="job-message job-message-error">
+
+                <svg viewBox="0 0 24 24"
+                     class="job-svg">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="9" />
+
+                    <path d="M12 8v5" />
+
+                    <path d="M12 17h.01" />
+
+                </svg>
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        <div asp-validation-summary="ModelOnly">
+        </div>
+
+
+        <!-- =====================================
+             FORM
+        ====================================== -->
+
+        <form asp-controller="CompanyJobs"
+              asp-action="Create"
+              method="post"
+              enctype="multipart/form-data"
+              id="createJobForm">
+
+            @Html.AntiForgeryToken()
+
+
+            <div class="job-form-layout">
+
+
+                <!-- =================================
+                     LEFT
+                ================================== -->
+
+                <div>
+
+
+                    <!-- =================================
+                         JOB INFORMATION
+                    ================================== -->
+
+                    <div class="job-form-card">
+
+
+                        <div class="job-card-header">
+
+
+                            <div class="job-card-header-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <rect x="3"
+                                          y="7"
+                                          width="18"
+                                          height="13"
+                                          rx="2" />
+
+                                    <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                                    <path d="M3 12h18" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Job Information
+                                </h2>
+
+                                <p>
+                                    Enter the main details candidates
+                                    will see on the WorkHub jobs page.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="job-form-grid">
+
+
+                            <div class="job-field full">
+
+                                <label asp-for="Title">
+
+                                    Job Title
+                                    <span class="required-star">*</span>
+
+                                </label>
+
+
+                                <input asp-for="Title"
+                                       class="job-input"
+                                       placeholder="Example: Network Engineer" />
+
+
+                                <span asp-validation-for="Title">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field">
+
+                                <label asp-for="Location">
+                                    Location
+                                </label>
+
+
+                                <input asp-for="Location"
+                                       class="job-input"
+                                       placeholder="Example: Melbourne, VIC" />
+
+
+                                <span asp-validation-for="Location">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field">
+
+                                <label asp-for="JobType">
+                                    Employment Type
+                                </label>
+
+
+                                <select asp-for="JobType"
+                                        class="job-select">
+
+                                    <option value="">
+                                        Select employment type
+                                    </option>
+
+                                    <option value="Full Time">
+                                        Full Time
+                                    </option>
+
+                                    <option value="Part Time">
+                                        Part Time
+                                    </option>
+
+                                    <option value="Casual">
+                                        Casual
+                                    </option>
+
+                                    <option value="Contract">
+                                        Contract
+                                    </option>
+
+                                    <option value="Temporary">
+                                        Temporary
+                                    </option>
+
+                                    <option value="Internship">
+                                        Internship
+                                    </option>
+
+                                </select>
+
+
+                                <span asp-validation-for="JobType">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field full">
+
+                                <label asp-for="Description">
+
+                                    Job Description
+
+                                    <span class="required-star">*</span>
+
+                                </label>
+
+
+                                <textarea asp-for="Description"
+                                          class="job-textarea"
+                                          placeholder="Describe the role, responsibilities, candidate expectations and working environment..."></textarea>
+
+
+                                <span asp-validation-for="Description">
+                                </span>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 JOB IMAGE
+                            ================================== -->
+
+                            <div class="job-field full">
+
+
+                                <label asp-for="JobImage">
+                                    Job Cover Image
+                                </label>
+
+
+                                <div class="job-image-upload"
+                                     id="jobImageUpload">
+
+
+                                    <input asp-for="JobImage"
+                                           type="file"
+                                           id="jobImageInput"
+                                           class="job-image-input"
+                                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+
+                                    <label for="jobImageInput"
+                                           class="job-image-upload-label">
+
+
+                                        <div class="job-image-icon">
+
+                                            <svg viewBox="0 0 24 24"
+                                                 class="job-svg">
+
+                                                <rect x="3"
+                                                      y="5"
+                                                      width="18"
+                                                      height="16"
+                                                      rx="2" />
+
+                                                <circle cx="8.5"
+                                                        cy="10"
+                                                        r="2" />
+
+                                                <path d="m21 15-5-5L5 21" />
+
+                                            </svg>
+
+                                        </div>
+
+
+                                        <strong>
+                                            Upload Job Cover Image
+                                        </strong>
+
+
+                                        <span>
+                                            Click here or drag an image
+                                            into this area.
+                                        </span>
+
+
+                                        <small>
+                                            JPG, JPEG, PNG or WEBP • Max 5 MB • Recommended 1200 × 630 px
+                                        </small>
+
+
+                                    </label>
+
+
+                                </div>
+
+
+                                <div class="job-image-preview"
+                                     id="jobImagePreview">
+
+
+                                    <div class="job-image-preview-picture">
+
+
+                                        <img id="jobImagePreviewImage"
+                                             src=""
+                                             alt="Selected job image preview" />
+
+
+                                    </div>
+
+
+                                    <div class="job-image-preview-footer">
+
+
+                                        <div class="job-image-file-details">
+
+                                            <strong id="jobImageFileName">
+                                                Selected image
+                                            </strong>
+
+                                            <span id="jobImageFileSize">
+                                            </span>
+
+                                        </div>
+
+
+                                        <button type="button"
+                                                id="removeJobImage"
+                                                class="remove-job-image">
+
+                                            <svg viewBox="0 0 24 24"
+                                                 class="job-svg">
+
+                                                <path d="M4 7h16" />
+
+                                                <path d="M9 7V4h6v3" />
+
+                                                <path d="M7 7l1 13h8l1-13" />
+
+                                            </svg>
+
+                                            Remove Image
+
+                                        </button>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <span asp-validation-for="JobImage">
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================
+                         CAREER CLASSIFICATION
+                    ================================== -->
+
+                    <div class="job-form-card">
+
+
+                        <div class="job-card-header">
+
+
+                            <div class="job-card-header-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <path d="M4 5h16v14H4z" />
+
+                                    <path d="M8 9h8" />
+
+                                    <path d="M8 13h5" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Career Classification
+                                </h2>
+
+                                <p>
+                                    Select the WorkHub career category
+                                    and exact role for this vacancy.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="job-form-grid">
+
+
+                            <div class="job-field">
+
+                                <label asp-for="CareerCategoryId">
+
+                                    Career Category
+
+                                    <span class="required-star">*</span>
+
+                                </label>
+
+
+                                <select asp-for="CareerCategoryId"
+                                        class="job-select"
+                                        id="careerCategory">
+
+
+                                    <option value="0">
+                                        Select career category
+                                    </option>
+
+
+                                    @foreach (
+                                        var category
+                                        in Model.Categories)
+                                    {
+                                        <option value="@category.CareerCategoryId">
+
+                                            @category.CategoryName
+
+                                        </option>
+                                    }
+
+
+                                </select>
+
+
+                                <span asp-validation-for="CareerCategoryId">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field">
+
+                                <label asp-for="CareerRoleId">
+
+                                    Career Role
+
+                                    <span class="required-star">*</span>
+
+                                </label>
+
+
+                                <select asp-for="CareerRoleId"
+                                        class="job-select"
+                                        id="careerRole"
+                                        disabled>
+
+
+                                    <option value="0">
+                                        Select category first
+                                    </option>
+
+
+                                    @foreach (
+                                        var role
+                                        in Model.Roles)
+                                    {
+                                        <option value="@role.CareerRoleId">
+
+                                            @role.RoleName
+
+                                        </option>
+                                    }
+
+
+                                </select>
+
+
+                                <span asp-validation-for="CareerRoleId">
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="career-role-info"
+                             id="careerRoleInfo">
+
+
+                            <h3 id="roleInfoTitle">
+                            </h3>
+
+
+                            <p id="roleInfoDescription">
+                            </p>
+
+
+                            <div class="role-baseline-grid">
+
+
+                                <div class="role-baseline-box">
+
+                                    <span>
+                                        WorkHub Baseline Experience
+                                    </span>
+
+                                    <strong id="roleExperience">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="role-baseline-box">
+
+                                    <span>
+                                        WorkHub Baseline Education
+                                    </span>
+
+                                    <strong id="roleEducation">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================
+                         VACANCY REQUIREMENTS
+                    ================================== -->
+
+                    <div class="job-form-card">
+
+
+                        <div class="job-card-header">
+
+
+                            <div class="job-card-header-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <path d="M9 11l3 3L22 4" />
+
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Vacancy Requirements
+                                </h2>
+
+                                <p>
+                                    Add the experience, education
+                                    and closing date for this vacancy.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="job-form-grid">
+
+
+                            <div class="job-field">
+
+                                <label asp-for="MinimumExperienceYears">
+
+                                    Minimum Experience (Years)
+
+                                </label>
+
+
+                                <input asp-for="MinimumExperienceYears"
+                                       type="number"
+                                       min="0"
+                                       step="0.5"
+                                       class="job-input"
+                                       id="minimumExperience"
+                                       placeholder="Example: 2" />
+
+
+                                <span asp-validation-for="MinimumExperienceYears">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field">
+
+                                <label asp-for="ClosingDate">
+
+                                    Application Closing Date
+
+                                </label>
+
+
+                                <input asp-for="ClosingDate"
+                                       type="date"
+                                       class="job-input"
+                                       id="closingDate" />
+
+
+                                <span asp-validation-for="ClosingDate">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field full">
+
+                                <label asp-for="EducationRequirement">
+
+                                    Education Requirement
+
+                                </label>
+
+
+                                <input asp-for="EducationRequirement"
+                                       class="job-input"
+                                       id="educationRequirement"
+                                       placeholder="Example: Bachelor's degree in IT or equivalent experience" />
+
+
+                                <span asp-validation-for="EducationRequirement">
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================
+                         SALARY
+                    ================================== -->
+
+                    <div class="job-form-card">
+
+
+                        <div class="job-card-header">
+
+
+                            <div class="job-card-header-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <circle cx="12"
+                                            cy="12"
+                                            r="9" />
+
+                                    <path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8" />
+
+                                    <path d="M12 6v12" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Salary
+                                </h2>
+
+                                <p>
+                                    Salary is optional. Leave both
+                                    fields empty if it is not disclosed.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="job-form-grid">
+
+
+                            <div class="job-field">
+
+                                <label asp-for="SalaryMin">
+                                    Minimum Salary
+                                </label>
+
+
+                                <input asp-for="SalaryMin"
+                                       type="number"
+                                       min="0"
+                                       step="0.01"
+                                       class="job-input"
+                                       placeholder="Example: 70000" />
+
+
+                                <span asp-validation-for="SalaryMin">
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-field">
+
+                                <label asp-for="SalaryMax">
+                                    Maximum Salary
+                                </label>
+
+
+                                <input asp-for="SalaryMax"
+                                       type="number"
+                                       min="0"
+                                       step="0.01"
+                                       class="job-input"
+                                       placeholder="Example: 90000" />
+
+
+                                <span asp-validation-for="SalaryMax">
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================
+                         SKILLS
+                    ================================== -->
+
+                    <div class="job-form-card">
+
+
+                        <div class="job-card-header">
+
+
+                            <div class="job-card-header-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <path d="M14 7 7 14" />
+
+                                    <path d="m5 12-2 2 7 7 2-2" />
+
+                                    <path d="M17 3l4 4-9 9-4-4z" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Required & Preferred Skills
+                                </h2>
+
+                                <p>
+                                    Select only the skills that are
+                                    relevant to this specific vacancy.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div id="skillsContainer">
+
+
+                            @if (Model.AvailableSkills.Any())
+                            {
+                                <div class="skill-list">
+
+
+                                    @{
+                                        var skillIndex = 0;
+                                    }
+
+
+                                    @foreach (
+                                        var skill
+                                        in Model.AvailableSkills)
+                                    {
+                                        var existingSkill =
+                                            Model.Skills
+                                                .FirstOrDefault(
+                                                    x =>
+                                                        x.SkillId ==
+                                                        skill.SkillId);
+
+
+                                        var selected =
+                                            existingSkill?.Selected
+                                            ?? false;
+
+
+                                        var importance =
+                                            existingSkill?.Importance
+                                            ?? skill.Importance;
+
+
+                                        var years =
+                                            existingSkill?
+                                                .RequiredYearsOfExperience
+                                            ??
+                                            skill.RecommendedYearsOfExperience;
+
+
+                                        <div class="skill-item @(selected ? "selected" : "")">
+
+
+                                            <div class="skill-main">
+
+
+                                                <input type="checkbox"
+                                                       class="skill-checkbox"
+                                                       name="Skills[@skillIndex].Selected"
+                                                       value="true"
+                                                       checked="@selected" />
+
+
+                                                <input type="hidden"
+                                                       name="Skills[@skillIndex].SkillId"
+                                                       value="@skill.SkillId" />
+
+
+                                                <input type="hidden"
+                                                       name="Skills[@skillIndex].SkillName"
+                                                       value="@skill.SkillName" />
+
+
+                                                <div class="skill-name">
+
+                                                    <strong>
+                                                        @skill.SkillName
+                                                    </strong>
+
+                                                    <span>
+
+                                                        @(string.IsNullOrWhiteSpace(
+                                                            skill.Category)
+                                                            ? "WorkHub Skill"
+                                                            : skill.Category)
+
+                                                    </span>
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                            <select name="Skills[@skillIndex].Importance"
+                                                    class="skill-select"
+                                                    disabled="@(!selected)">
+
+
+                                                @if (importance == "Preferred")
+                                                {
+                                                    <option value="Required">
+                                                        Required
+                                                    </option>
+
+                                                    <option value="Preferred"
+                                                            selected>
+                                                        Preferred
+                                                    </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Required"
+                                                            selected>
+                                                        Required
+                                                    </option>
+
+                                                    <option value="Preferred">
+                                                        Preferred
+                                                    </option>
+                                                }
+
+
+                                            </select>
+
+
+                                            <input type="number"
+                                                   name="Skills[@skillIndex].RequiredYearsOfExperience"
+                                                   class="skill-experience"
+                                                   min="0"
+                                                   step="0.5"
+                                                   value="@years"
+                                                   placeholder="Years"
+                                                   disabled="@(!selected)" />
+
+
+                                        </div>
+
+
+                                        skillIndex++;
+                                    }
+
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="skill-empty">
+
+                                    Select a career role to load
+                                    WorkHub recommended skills.
+
+                                </div>
+                            }
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================
+                     RIGHT SIDE
+                ================================== -->
+
+                <div>
+
+
+                    <div class="job-form-card job-side-card">
+
+
+                        <div class="job-card-header">
+
+
+                            <div class="job-card-header-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <path d="M9 11l3 3L22 4" />
+
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Publish Checklist
+                                </h2>
+
+                                <p>
+                                    Complete the vacancy carefully
+                                    before publishing.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="job-guide-list">
+
+
+                            <div class="job-guide-item">
+
+                                <div class="job-guide-number">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="job-svg">
+
+                                        <rect x="3"
+                                              y="5"
+                                              width="18"
+                                              height="16"
+                                              rx="2" />
+
+                                        <circle cx="8.5"
+                                                cy="10"
+                                                r="2" />
+
+                                        <path d="m21 15-5-5L5 21" />
+
+                                    </svg>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Add Job Image
+                                    </strong>
+
+                                    <p>
+                                        Use a clear image that represents
+                                        the vacancy or company.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="job-guide-item">
+
+                                <div class="job-guide-number">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="job-svg">
+
+                                        <path d="M4 5h16v14H4z" />
+
+                                        <path d="M8 9h8" />
+
+                                        <path d="M8 13h5" />
+
+                                    </svg>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Choose Career Role
+                                    </strong>
+
+                                    <p>
+                                        This controls where the job
+                                        appears in WorkHub career filters.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="job-guide-item">
+
+                                <div class="job-guide-number">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="job-svg">
+
+                                        <path d="m8 12 3 3 5-6" />
+
+                                        <circle cx="12"
+                                                cy="12"
+                                                r="9" />
+
+                                    </svg>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Select Vacancy Skills
+                                    </strong>
+
+                                    <p>
+                                        Mark each selected skill as
+                                        Required or Preferred.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="job-guide-item">
+
+                                <div class="job-guide-number">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="job-svg">
+
+                                        <path d="M3 12h18" />
+
+                                        <path d="M12 3v18" />
+
+                                    </svg>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Review Requirements
+                                    </strong>
+
+                                    <p>
+                                        Check salary, experience,
+                                        education and closing date.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="job-guide-item">
+
+                                <div class="job-guide-number">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="job-svg">
+
+                                        <path d="M12 19V5" />
+
+                                        <path d="m6 11 6-6 6 6" />
+
+                                    </svg>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Publish
+                                    </strong>
+
+                                    <p>
+                                        The vacancy becomes available
+                                        through WorkHub Jobs.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="publish-box">
+
+
+                            <strong>
+                                Ready to publish?
+                            </strong>
+
+
+                            <p>
+                                Your approved company will be
+                                automatically attached to this job.
+                            </p>
+
+
+                            <button type="submit"
+                                    class="job-publish-button"
+                                    id="publishButton">
+
+                                <svg viewBox="0 0 24 24"
+                                     class="job-svg">
+
+                                    <path d="M12 19V5" />
+
+                                    <path d="m6 11 6-6 6 6" />
+
+                                </svg>
+
+                                Publish Job
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+
+                const categorySelect =
+                    document.getElementById(
+                        "careerCategory"
+                    );
+
+
+                const roleSelect =
+                    document.getElementById(
+                        "careerRole"
+                    );
+
+
+                const skillsContainer =
+                    document.getElementById(
+                        "skillsContainer"
+                    );
+
+
+                const roleInfo =
+                    document.getElementById(
+                        "careerRoleInfo"
+                    );
+
+
+                const roleInfoTitle =
+                    document.getElementById(
+                        "roleInfoTitle"
+                    );
+
+
+                const roleInfoDescription =
+                    document.getElementById(
+                        "roleInfoDescription"
+                    );
+
+
+                const roleExperience =
+                    document.getElementById(
+                        "roleExperience"
+                    );
+
+
+                const roleEducation =
+                    document.getElementById(
+                        "roleEducation"
+                    );
+
+
+                const minimumExperience =
+                    document.getElementById(
+                        "minimumExperience"
+                    );
+
+
+                const educationRequirement =
+                    document.getElementById(
+                        "educationRequirement"
+                    );
+
+
+                const closingDate =
+                    document.getElementById(
+                        "closingDate"
+                    );
+
+
+                const jobImageInput =
+                    document.getElementById(
+                        "jobImageInput"
+                    );
+
+
+                const jobImageUpload =
+                    document.getElementById(
+                        "jobImageUpload"
+                    );
+
+
+                const jobImagePreview =
+                    document.getElementById(
+                        "jobImagePreview"
+                    );
+
+
+                const jobImagePreviewImage =
+                    document.getElementById(
+                        "jobImagePreviewImage"
+                    );
+
+
+                const jobImageFileName =
+                    document.getElementById(
+                        "jobImageFileName"
+                    );
+
+
+                const jobImageFileSize =
+                    document.getElementById(
+                        "jobImageFileSize"
+                    );
+
+
+                const removeJobImage =
+                    document.getElementById(
+                        "removeJobImage"
+                    );
+
+
+                const createJobForm =
+                    document.getElementById(
+                        "createJobForm"
+                    );
+
+
+                const publishButton =
+                    document.getElementById(
+                        "publishButton"
+                    );
+
+
+                // =================================
+                // CLOSING DATE
+                // =================================
+
+                if (closingDate) {
+                    const tomorrow =
+                        new Date();
+
+
+                    tomorrow.setDate(
+                        tomorrow.getDate() + 1
+                    );
+
+
+                    const year =
+                        tomorrow.getFullYear();
+
+
+                    const month =
+                        String(
+                            tomorrow.getMonth() + 1
+                        )
+                            .padStart(
+                                2,
+                                "0"
+                            );
+
+
+                    const day =
+                        String(
+                            tomorrow.getDate()
+                        )
+                            .padStart(
+                                2,
+                                "0"
+                            );
+
+
+                    closingDate.min =
+                        `${year}-${month}-${day}`;
+                }
+
+
+                // =================================
+                // JOB IMAGE
+                // =================================
+
+                const allowedImageTypes =
+                    [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp"
+                    ];
+
+
+                const maximumImageSize =
+                    5 * 1024 * 1024;
+
+
+                function handleImage(
+                    file) {
+                    if (!file) {
+                        return;
+                    }
+
+
+                    if (
+                        !allowedImageTypes.includes(
+                            file.type
+                        )
+                    ) {
+                        alert(
+                            "Please select a JPG, JPEG, PNG or WEBP image."
+                        );
+
+
+                        clearImage();
+
+
+                        return;
+                    }
+
+
+                    if (
+                        file.size >
+                        maximumImageSize
+                    ) {
+                        alert(
+                            "Job image must be 5 MB or smaller."
+                        );
+
+
+                        clearImage();
+
+
+                        return;
+                    }
+
+
+                    const reader =
+                        new FileReader();
+
+
+                    reader.onload =
+                        function(event) {
+                            jobImagePreviewImage.src =
+                                event.target.result;
+
+
+                            jobImageFileName.textContent =
+                                file.name;
+
+
+                            jobImageFileSize.textContent =
+                                formatFileSize(
+                                    file.size
+                                );
+
+
+                            jobImagePreview
+                                .classList
+                                .add(
+                                    "visible"
+                                );
+                        };
+
+
+                    reader.readAsDataURL(
+                        file
+                    );
+                }
+
+
+                function clearImage() {
+                    if (jobImageInput) {
+                        jobImageInput.value =
+                            "";
+                    }
+
+
+                    if (jobImagePreviewImage) {
+                        jobImagePreviewImage.src =
+                            "";
+                    }
+
+
+                    if (jobImageFileName) {
+                        jobImageFileName.textContent =
+                            "Selected image";
+                    }
+
+
+                    if (jobImageFileSize) {
+                        jobImageFileSize.textContent =
+                            "";
+                    }
+
+
+                    if (jobImagePreview) {
+                        jobImagePreview
+                            .classList
+                            .remove(
+                                "visible"
+                            );
+                    }
+                }
+
+
+                function formatFileSize(
+                    bytes) {
+                    if (bytes < 1024) {
+                        return `${bytes} bytes`;
+                    }
+
+
+                    if (
+                        bytes <
+                        1024 * 1024
+                    ) {
+                        return `${(
+                            bytes / 1024
+                        ).toFixed(1)} KB`;
+                    }
+
+
+                    return `${(
+                        bytes /
+                        1024 /
+                        1024
+                    ).toFixed(2)} MB`;
+                }
+
+
+                if (jobImageInput) {
+                    jobImageInput.addEventListener(
+                        "change",
+                        function() {
+                            const file =
+                                this.files
+                                    &&
+                                    this.files.length > 0
+                                    ? this.files[0]
+                                    : null;
+
+
+                            handleImage(
+                                file
+                            );
+                        }
+                    );
+                }
+
+
+                if (removeJobImage) {
+                    removeJobImage.addEventListener(
+                        "click",
+                        function() {
+                            clearImage();
+                        }
+                    );
+                }
+
+
+                // =================================
+                // DRAG & DROP
+                // =================================
+
+                if (
+                    jobImageUpload
+                    &&
+                    jobImageInput
+                ) {
+                    jobImageUpload.addEventListener(
+                        "dragover",
+                        function(event) {
+                            event.preventDefault();
+
+
+                            this.classList.add(
+                                "dragging"
+                            );
+                        }
+                    );
+
+
+                    jobImageUpload.addEventListener(
+                        "dragleave",
+                        function() {
+                            this.classList.remove(
+                                "dragging"
+                            );
+                        }
+                    );
+
+
+                    jobImageUpload.addEventListener(
+                        "drop",
+                        function(event) {
+                            event.preventDefault();
+
+
+                            this.classList.remove(
+                                "dragging"
+                            );
+
+
+                            const files =
+                                event.dataTransfer.files;
+
+
+                            if (
+                                !files
+                                ||
+                                files.length === 0
+                            ) {
+                                return;
+                            }
+
+
+                            const file =
+                                files[0];
+
+
+                            const dataTransfer =
+                                new DataTransfer();
+
+
+                            dataTransfer.items.add(
+                                file
+                            );
+
+
+                            jobImageInput.files =
+                                dataTransfer.files;
+
+
+                            handleImage(
+                                file
+                            );
+                        }
+                    );
+                }
+
+
+                // =================================
+                // CATEGORY CHANGE
+                // =================================
+
+                if (
+                    categorySelect
+                    &&
+                    roleSelect
+                ) {
+                    categorySelect.addEventListener(
+                        "change",
+                        async function() {
+                            const categoryId =
+                                parseInt(
+                                    this.value
+                                );
+
+
+                            resetRole();
+
+
+                            if (!categoryId) {
+                                return;
+                            }
+
+
+                            roleSelect.disabled =
+                                true;
+
+
+                            roleSelect.innerHTML =
+                                `<option value="0">
+                                            Loading roles...
+                                         </option>`;
+
+
+                            try {
+                                const response =
+                                    await fetch(
+                                        `/Employer/Jobs/Roles?categoryId=${categoryId}`
+                                    );
+
+
+                                if (!response.ok) {
+                                    throw new Error(
+                                        "Unable to load roles."
+                                    );
+                                }
+
+
+                                const roles =
+                                    await response.json();
+
+
+                                roleSelect.innerHTML =
+                                    `<option value="0">
+                                                Select career role
+                                             </option>`;
+
+
+                                roles.forEach(
+                                    function(role) {
+                                        const option =
+                                            document.createElement(
+                                                "option"
+                                            );
+
+
+                                        option.value =
+                                            role.careerRoleId;
+
+
+                                        option.textContent =
+                                            role.roleName;
+
+
+                                        roleSelect.appendChild(
+                                            option
+                                        );
+                                    }
+                                );
+
+
+                                roleSelect.disabled =
+                                    false;
+                            }
+                            catch {
+                                roleSelect.innerHTML =
+                                    `<option value="0">
+                                                Unable to load roles
+                                             </option>`;
+                            }
+                        }
+                    );
+                }
+
+
+                // =================================
+                // ROLE CHANGE
+                // =================================
+
+                if (roleSelect) {
+                    roleSelect.addEventListener(
+                        "change",
+                        async function() {
+                            const roleId =
+                                parseInt(
+                                    this.value
+                                );
+
+
+                            clearRoleDetails();
+
+
+                            if (!roleId) {
+                                skillsContainer.innerHTML =
+                                    `<div class="skill-empty">
+                                                Select a career role to load
+                                                WorkHub recommended skills.
+                                             </div>`;
+
+
+                                return;
+                            }
+
+
+                            skillsContainer.innerHTML =
+                                `<div class="skill-loading">
+                                            Loading WorkHub role skills...
+                                         </div>`;
+
+
+                            try {
+                                const response =
+                                    await fetch(
+                                        `/Employer/Jobs/RoleDetails?roleId=${roleId}`
+                                    );
+
+
+                                if (!response.ok) {
+                                    throw new Error(
+                                        "Unable to load career role."
+                                    );
+                                }
+
+
+                                const role =
+                                    await response.json();
+
+
+                                roleInfoTitle.textContent =
+                                    role.roleName
+                                    ||
+                                    "Career Role";
+
+
+                                roleInfoDescription.textContent =
+                                    role.description
+                                    ||
+                                    "WorkHub career role selected.";
+
+
+                                roleExperience.textContent =
+                                    role.baselineExperienceYears != null
+                                        ? `${role.baselineExperienceYears} year(s)`
+                                        : "Not specified";
+
+
+                                roleEducation.textContent =
+                                    role.baselineEducationRequirement
+                                    ||
+                                    "Not specified";
+
+
+                                roleInfo.classList.add(
+                                    "visible"
+                                );
+
+
+                                if (
+                                    minimumExperience
+                                    &&
+                                    !minimumExperience.value
+                                    &&
+                                    role.baselineExperienceYears != null
+                                ) {
+                                    minimumExperience.value =
+                                        role.baselineExperienceYears;
+                                }
+
+
+                                if (
+                                    educationRequirement
+                                    &&
+                                    !educationRequirement.value
+                                    &&
+                                    role.baselineEducationRequirement
+                                ) {
+                                    educationRequirement.value =
+                                        role.baselineEducationRequirement;
+                                }
+
+
+                                renderSkills(
+                                    role.skills || []
+                                );
+                            }
+                            catch {
+                                skillsContainer.innerHTML =
+                                    `<div class="skill-empty">
+                                                Unable to load skills for
+                                                this career role.
+                                             </div>`;
+                            }
+                        }
+                    );
+                }
+
+
+                // =================================
+                // RENDER SKILLS
+                // =================================
+
+                function renderSkills(
+                    skills) {
+                    if (!skills.length) {
+                        skillsContainer.innerHTML =
+                            `<div class="skill-empty">
+                                        No WorkHub benchmark skills
+                                        are currently defined for
+                                        this career role.
+                                     </div>`;
+
+
+                        return;
+                    }
+
+
+                    const list =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    list.className =
+                        "skill-list";
+
+
+                    skills.forEach(
+                        function(
+                            skill,
+                            index) {
+                            const item =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            item.className =
+                                "skill-item";
+
+
+                            const defaultImportance =
+                                skill.importance ===
+                                    "Preferred"
+                                    ? "Preferred"
+                                    : "Required";
+
+
+                            const recommendedYears =
+                                skill.recommendedYearsOfExperience
+                                    != null
+                                    ? skill.recommendedYearsOfExperience
+                                    : "";
+
+
+                            item.innerHTML = `
+
+                                        <div class="skill-main">
+
+                                            <input
+                                                type="checkbox"
+                                                class="skill-checkbox"
+                                                name="Skills[${index}].Selected"
+                                                value="true" />
+
+                                            <input
+                                                type="hidden"
+                                                name="Skills[${index}].SkillId"
+                                                value="${skill.skillId}" />
+
+                                            <input
+                                                type="hidden"
+                                                name="Skills[${index}].SkillName"
+                                                value="${escapeHtml(
+                                skill.skillName || ""
+                            )}" />
+
+                                            <div class="skill-name">
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                skill.skillName || "Skill"
+                            )}
+                                                </strong>
+
+                                                <span>
+                                                    ${escapeHtml(
+                                skill.category || "WorkHub Skill"
+                            )}
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <select
+                                            name="Skills[${index}].Importance"
+                                            class="skill-select"
+                                            disabled>
+
+                                            <option
+                                                value="Required"
+                                                ${defaultImportance === "Required"
+                                    ? "selected"
+                                    : ""}>
+
+                                                Required
+
+                                            </option>
+
+                                            <option
+                                                value="Preferred"
+                                                ${defaultImportance === "Preferred"
+                                    ? "selected"
+                                    : ""}>
+
+                                                Preferred
+
+                                            </option>
+
+                                        </select>
+
+
+                                        <input
+                                            type="number"
+                                            name="Skills[${index}].RequiredYearsOfExperience"
+                                            class="skill-experience"
+                                            min="0"
+                                            step="0.5"
+                                            value="${recommendedYears}"
+                                            placeholder="Years"
+                                            disabled />
+
+                                    `;
+
+
+                            list.appendChild(
+                                item
+                            );
+                        }
+                    );
+
+
+                    skillsContainer.innerHTML =
+                        "";
+
+
+                    skillsContainer.appendChild(
+                        list
+                    );
+
+
+                    bindSkillCheckboxes();
+                }
+
+
+                // =================================
+                // SKILL CHECKBOXES
+                // =================================
+
+                function bindSkillCheckboxes() {
+                    if (!skillsContainer) {
+                        return;
+                    }
+
+
+                    const checkboxes =
+                        skillsContainer
+                            .querySelectorAll(
+                                ".skill-checkbox"
+                            );
+
+
+                    checkboxes.forEach(
+                        function(checkbox) {
+                            checkbox.addEventListener(
+                                "change",
+                                function() {
+                                    const item =
+                                        this.closest(
+                                            ".skill-item"
+                                        );
+
+
+                                    if (!item) {
+                                        return;
+                                    }
+
+
+                                    const importance =
+                                        item.querySelector(
+                                            ".skill-select"
+                                        );
+
+
+                                    const experience =
+                                        item.querySelector(
+                                            ".skill-experience"
+                                        );
+
+
+                                    if (this.checked) {
+                                        item.classList.add(
+                                            "selected"
+                                        );
+
+
+                                        if (importance) {
+                                            importance.disabled =
+                                                false;
+                                        }
+
+
+                                        if (experience) {
+                                            experience.disabled =
+                                                false;
+                                        }
+                                    }
+                                    else {
+                                        item.classList.remove(
+                                            "selected"
+                                        );
+
+
+                                        if (importance) {
+                                            importance.disabled =
+                                                true;
+                                        }
+
+
+                                        if (experience) {
+                                            experience.disabled =
+                                                true;
+                                        }
+                                    }
+                                }
+                            );
+                        }
+                    );
+                }
+
+
+                // =================================
+                // RESET ROLE
+                // =================================
+
+                function resetRole() {
+                    if (roleSelect) {
+                        roleSelect.disabled =
+                            true;
+
+
+                        roleSelect.innerHTML =
+                            `<option value="0">
+                                        Select category first
+                                     </option>`;
+                    }
+
+
+                    clearRoleDetails();
+
+
+                    if (skillsContainer) {
+                        skillsContainer.innerHTML =
+                            `<div class="skill-empty">
+                                        Select a career role to load
+                                        WorkHub recommended skills.
+                                     </div>`;
+                    }
+                }
+
+
+                // =================================
+                // CLEAR ROLE DETAILS
+                // =================================
+
+                function clearRoleDetails() {
+                    if (roleInfo) {
+                        roleInfo.classList.remove(
+                            "visible"
+                        );
+                    }
+
+
+                    if (roleInfoTitle) {
+                        roleInfoTitle.textContent =
+                            "";
+                    }
+
+
+                    if (roleInfoDescription) {
+                        roleInfoDescription.textContent =
+                            "";
+                    }
+
+
+                    if (roleExperience) {
+                        roleExperience.textContent =
+                            "—";
+                    }
+
+
+                    if (roleEducation) {
+                        roleEducation.textContent =
+                            "—";
+                    }
+                }
+
+
+                // =================================
+                // HTML SAFETY
+                // =================================
+
+                function escapeHtml(
+                    value) {
+                    const element =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    element.textContent =
+                        value;
+
+
+                    return element.innerHTML;
+                }
+
+
+                // =================================
+                // EXISTING SERVER-SIDE SKILLS
+                // =================================
+
+                bindSkillCheckboxes();
+
+
+                // =================================
+                // RE-ENABLE ROLE AFTER VALIDATION
+                // =================================
+
+                if (
+                    categorySelect
+                    &&
+                    roleSelect
+                    &&
+                    parseInt(
+                        categorySelect.value
+                    ) > 0
+                    &&
+                    roleSelect.options.length > 1
+                ) {
+                    roleSelect.disabled =
+                        false;
+                }
+
+
+                // =================================
+                // PREVENT DOUBLE SUBMIT
+                // =================================
+
+                if (
+                    createJobForm
+                    &&
+                    publishButton
+                ) {
+                    createJobForm.addEventListener(
+                        "submit",
+                        function() {
+                            if (
+                                typeof $ !== "undefined"
+                                &&
+                                $.validator
+                                &&
+                                !$(this).valid()
+                            ) {
+                                return;
+                            }
+
+
+                            publishButton.disabled =
+                                true;
+
+
+                            publishButton.textContent =
+                                "Publishing...";
+                        }
+                    );
+                }
+
+
+            }
+        );
+
+    </script>
+}

@@ -1,0 +1,2055 @@
+@model Workhub_Web.Models.ServicesPageViewModel
+
+@{
+    ViewData["Title"] = "Services";
+}
+
+<style>
+    :root {
+        --wh-orange: #ff5a1f;
+        --wh-orange-dark: #e8470d;
+        --wh-orange-light: #fff1ea;
+        --wh-orange-soft: #fff8f4;
+
+        --wh-dark: #111827;
+        --wh-dark-2: #1f2937;
+
+        --wh-text: #1f2937;
+        --wh-muted: #64748b;
+        --wh-muted-light: #94a3b8;
+
+        --wh-border: #e5e7eb;
+        --wh-bg: #f8fafc;
+        --wh-white: #ffffff;
+
+        --wh-green: #16a34a;
+
+        --wh-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+        --wh-shadow-hover: 0 28px 65px rgba(255, 90, 31, .16);
+    }
+
+
+    /* =========================================================
+       PAGE
+       ========================================================= */
+
+    .services-page {
+        min-height: 100vh;
+        background:
+            radial-gradient(
+                circle at 8% 12%,
+                rgba(255, 90, 31, .06),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 92% 48%,
+                rgba(255, 90, 31, .045),
+                transparent 28%
+            ),
+            var(--wh-bg);
+
+        color: var(--wh-text);
+        overflow-x: hidden;
+    }
+
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .services-hero {
+        position: relative;
+        min-height: 390px;
+        overflow: hidden;
+
+        display: flex;
+        align-items: center;
+
+        background:
+            radial-gradient(
+                circle at 82% 28%,
+                rgba(255, 90, 31, .30),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 18% 80%,
+                rgba(255, 90, 31, .14),
+                transparent 27%
+            ),
+            linear-gradient(
+                115deg,
+                #0f172a 0%,
+                #171717 46%,
+                #301509 100%
+            );
+    }
+
+
+    .services-hero::before {
+        content: "";
+        position: absolute;
+
+        width: 620px;
+        height: 620px;
+
+        right: -260px;
+        top: -290px;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(255, 90, 31, .25);
+
+        box-shadow:
+            0 0 0 35px rgba(255, 90, 31, .035),
+            0 0 0 70px rgba(255, 90, 31, .025);
+    }
+
+
+    .services-hero::after {
+        content: "";
+
+        position: absolute;
+
+        width: 360px;
+        height: 360px;
+
+        left: -190px;
+        bottom: -240px;
+
+        border-radius: 50%;
+
+        background: rgba(255, 90, 31, .12);
+
+        filter: blur(3px);
+    }
+
+
+    .services-hero-grid {
+        position: absolute;
+        inset: 0;
+
+        opacity: .075;
+
+        background-image:
+            linear-gradient(
+                rgba(255,255,255,.45) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255,255,255,.45) 1px,
+                transparent 1px
+            );
+
+        background-size: 50px 50px;
+
+        mask-image:
+            linear-gradient(
+                to bottom,
+                black,
+                transparent
+            );
+    }
+
+
+    .services-hero-orb {
+        position: absolute;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(255, 90, 31, .24);
+
+        pointer-events: none;
+    }
+
+
+    .services-hero-orb.one {
+        width: 210px;
+        height: 210px;
+
+        right: 11%;
+        top: 18%;
+    }
+
+
+    .services-hero-orb.two {
+        width: 125px;
+        height: 125px;
+
+        right: 18%;
+        top: 32%;
+
+        background: rgba(255, 90, 31, .07);
+    }
+
+
+    .services-hero-orb.three {
+        width: 58px;
+        height: 58px;
+
+        right: 13%;
+        top: 56%;
+
+        background: rgba(255, 90, 31, .15);
+
+        box-shadow:
+            0 0 55px rgba(255, 90, 31, .30);
+
+        animation:
+            servicesFloat 4s ease-in-out infinite;
+    }
+
+
+    .services-hero-inner {
+        position: relative;
+
+        z-index: 5;
+
+        width: min(
+            1180px,
+            calc(100% - 40px)
+        );
+
+        margin: 0 auto;
+
+        padding: 75px 0;
+    }
+
+
+    .services-hero-content {
+        max-width: 760px;
+    }
+
+
+    .services-eyebrow {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+        padding: 8px 14px;
+
+        border:
+            1px solid
+            rgba(255,255,255,.15);
+
+        background:
+            rgba(255,255,255,.07);
+
+        backdrop-filter: blur(12px);
+
+        border-radius: 999px;
+
+        color: #fff;
+
+        font-size: 12px;
+
+        font-weight: 900;
+
+        letter-spacing: .07em;
+
+        text-transform: uppercase;
+
+        margin-bottom: 20px;
+    }
+
+
+    .services-eyebrow-dot {
+        width: 8px;
+        height: 8px;
+
+        border-radius: 50%;
+
+        background:
+            var(--wh-orange);
+
+        box-shadow:
+            0 0 15px
+            rgba(255,90,31,.85);
+    }
+
+
+    .services-hero h1 {
+        margin: 0;
+
+        color: #fff;
+
+        font-size:
+            clamp(
+                40px,
+                6vw,
+                65px
+            );
+
+        line-height: 1.03;
+
+        font-weight: 900;
+
+        letter-spacing: -2.5px;
+    }
+
+
+    .services-hero h1 span {
+        color: var(--wh-orange);
+    }
+
+
+    .services-hero-description {
+        max-width: 670px;
+
+        margin: 22px 0 0;
+
+        color:
+            rgba(255,255,255,.72);
+
+        font-size: 17px;
+
+        line-height: 1.75;
+    }
+
+
+    /* =========================================================
+       HERO FLOATING CARD
+       ========================================================= */
+
+    .services-floating-card {
+        position: absolute;
+
+        z-index: 6;
+
+        right: 10%;
+        top: 50%;
+
+        transform:
+            translateY(-50%);
+
+        width: 210px;
+
+        padding: 18px;
+
+        border:
+            1px solid
+            rgba(255,255,255,.12);
+
+        background:
+            rgba(255,255,255,.07);
+
+        backdrop-filter:
+            blur(18px);
+
+        border-radius: 20px;
+
+        box-shadow:
+            0 25px 60px
+            rgba(0,0,0,.22);
+
+        animation:
+            servicesFloat 5s
+            ease-in-out
+            infinite;
+    }
+
+
+    .services-floating-icon {
+        width: 52px;
+        height: 52px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 16px;
+
+        background:
+            rgba(255,90,31,.15);
+
+        color:
+            var(--wh-orange);
+
+        margin-bottom: 14px;
+    }
+
+
+    .services-floating-card strong {
+        display: block;
+
+        color: #fff;
+
+        font-size: 15px;
+
+        font-weight: 900;
+    }
+
+
+    .services-floating-card small {
+        display: block;
+
+        margin-top: 5px;
+
+        color:
+            rgba(255,255,255,.58);
+
+        font-size: 11px;
+
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+       MAIN CONTENT
+       ========================================================= */
+
+    .services-content {
+        width: min(
+            1180px,
+            calc(100% - 40px)
+        );
+
+        margin: 0 auto;
+
+        padding:
+            65px 0
+            90px;
+    }
+
+
+    /* =========================================================
+       FILTER BAR
+       ========================================================= */
+
+    .services-filter {
+        position: relative;
+
+        margin-top: -95px;
+
+        z-index: 20;
+
+        padding: 18px;
+
+        background:
+            rgba(255,255,255,.96);
+
+        backdrop-filter:
+            blur(22px);
+
+        border:
+            1px solid
+            rgba(255,255,255,.85);
+
+        border-radius: 24px;
+
+        box-shadow:
+            0 28px 70px
+            rgba(15,23,42,.16);
+    }
+
+
+    .services-filter-grid {
+        display: grid;
+
+        grid-template-columns:
+            1.4fr
+            1fr
+            1fr
+            auto;
+
+        gap: 12px;
+
+        align-items: end;
+    }
+
+
+    .services-field {
+        min-width: 0;
+    }
+
+
+    .services-label {
+        display: block;
+
+        margin:
+            0 0
+            7px 3px;
+
+        color:
+            var(--wh-muted);
+
+        font-size: 11px;
+
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        letter-spacing: .07em;
+    }
+
+
+    .services-input,
+    .services-select {
+        width: 100%;
+
+        height: 54px;
+
+        padding:
+            0 15px;
+
+        border:
+            1px solid
+            var(--wh-border);
+
+        border-radius: 14px;
+
+        background: #fff;
+
+        color:
+            var(--wh-dark);
+
+        outline: none;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        transition:
+            .25s ease;
+    }
+
+
+    .services-input::placeholder {
+        color:
+            #a3afbd;
+    }
+
+
+    .services-input:focus,
+    .services-select:focus {
+        border-color:
+            var(--wh-orange);
+
+        box-shadow:
+            0 0 0 4px
+            rgba(255,90,31,.10);
+    }
+
+
+    .services-search-button {
+        height: 54px;
+
+        padding:
+            0 20px;
+
+        border: 0;
+
+        border-radius: 14px;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--wh-orange),
+                var(--wh-orange-dark)
+            );
+
+        color: #fff;
+
+        font-size: 13px;
+
+        font-weight: 900;
+
+        cursor: pointer;
+
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 9px;
+
+        white-space: nowrap;
+
+        box-shadow:
+            0 10px 25px
+            rgba(255,90,31,.23);
+
+        transition:
+            .25s ease;
+    }
+
+
+    .services-search-button:hover {
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 16px 32px
+            rgba(255,90,31,.32);
+    }
+
+
+    /* =========================================================
+       ICONS
+       ========================================================= */
+
+    .wh-icon {
+        width: 18px;
+        height: 18px;
+
+        flex: 0 0 auto;
+
+        stroke:
+            currentColor;
+
+        fill: none;
+
+        stroke-width: 2;
+
+        stroke-linecap: round;
+
+        stroke-linejoin: round;
+    }
+
+
+    .wh-icon-lg {
+        width: 28px;
+        height: 28px;
+    }
+
+
+    .wh-icon-xl {
+        width: 38px;
+        height: 38px;
+    }
+
+
+    /* =========================================================
+       RESULT HEADER
+       ========================================================= */
+
+    .services-result-header {
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content: space-between;
+
+        gap: 25px;
+
+        margin:
+            58px 0 30px;
+    }
+
+
+    .services-kicker {
+        display: flex;
+
+        align-items: center;
+
+        gap: 8px;
+
+        color:
+            var(--wh-orange);
+
+        font-size: 11px;
+
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        letter-spacing: .09em;
+
+        margin-bottom: 9px;
+    }
+
+
+    .services-kicker::before {
+        content: "";
+
+        width: 25px;
+        height: 3px;
+
+        border-radius: 999px;
+
+        background:
+            var(--wh-orange);
+    }
+
+
+    .services-result-header h2 {
+        margin: 0;
+
+        color:
+            var(--wh-dark);
+
+        font-size: 32px;
+
+        line-height: 1.1;
+
+        font-weight: 900;
+
+        letter-spacing: -1px;
+    }
+
+
+    .services-action-row {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+    }
+
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
+    .services-button {
+        min-height: 45px;
+
+        padding:
+            0 16px;
+
+        border-radius: 12px;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 8px;
+
+        font-size: 12px;
+
+        font-weight: 900;
+
+        text-decoration: none;
+
+        transition:
+            .25s ease;
+    }
+
+
+    .services-button.primary {
+        background:
+            var(--wh-orange);
+
+        color: #fff;
+
+        box-shadow:
+            0 8px 20px
+            rgba(255,90,31,.18);
+    }
+
+
+    .services-button.primary:hover {
+        background:
+            var(--wh-orange-dark);
+
+        color: #fff;
+
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 13px 26px
+            rgba(255,90,31,.26);
+    }
+
+
+    .services-button.ghost {
+        background:
+            #fff;
+
+        color:
+            var(--wh-dark);
+
+        border:
+            1px solid
+            var(--wh-border);
+    }
+
+
+    .services-button.ghost:hover {
+        border-color:
+            rgba(255,90,31,.35);
+
+        color:
+            var(--wh-orange-dark);
+
+        background:
+            var(--wh-orange-soft);
+
+        transform:
+            translateY(-2px);
+    }
+
+
+    /* =========================================================
+       ALERT
+       ========================================================= */
+
+    .services-alert {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding:
+            16px 18px;
+
+        margin-bottom: 25px;
+
+        border-radius: 15px;
+
+        border:
+            1px solid
+            #fecaca;
+
+        background:
+            #fef2f2;
+
+        color:
+            #991b1b;
+
+        font-size: 13px;
+
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       SERVICE GRID
+       ========================================================= */
+
+    .services-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        gap: 24px;
+    }
+
+
+    /* =========================================================
+       SERVICE CARD
+       ========================================================= */
+
+    .service-card {
+        position: relative;
+
+        overflow: hidden;
+
+        background:
+            #fff;
+
+        border:
+            1px solid
+            var(--wh-border);
+
+        border-radius: 23px;
+
+        padding: 23px;
+
+        box-shadow:
+            var(--wh-shadow);
+
+        transition:
+            transform .35s ease,
+            box-shadow .35s ease,
+            border-color .35s ease;
+    }
+
+
+    .service-card::before {
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+
+        left: 12%;
+
+        right: 12%;
+
+        height: 3px;
+
+        border-radius:
+            0 0 999px 999px;
+
+        background:
+            linear-gradient(
+                90deg,
+                transparent,
+                var(--wh-orange),
+                transparent
+            );
+
+        transform:
+            scaleX(0);
+
+        transition:
+            transform .35s ease;
+    }
+
+
+    .service-card::after {
+        content: "";
+
+        position: absolute;
+
+        width: 130px;
+        height: 130px;
+
+        right: -70px;
+        bottom: -70px;
+
+        border-radius: 50%;
+
+        background:
+            rgba(255,90,31,.045);
+
+        transition:
+            .4s ease;
+
+        pointer-events: none;
+    }
+
+
+    .service-card:hover {
+        transform:
+            translateY(-9px);
+
+        border-color:
+            rgba(255,90,31,.28);
+
+        box-shadow:
+            var(--wh-shadow-hover);
+    }
+
+
+    .service-card:hover::before {
+        transform:
+            scaleX(1);
+    }
+
+
+    .service-card:hover::after {
+        transform:
+            scale(1.5);
+    }
+
+
+    /* =========================================================
+       CARD TOP
+       ========================================================= */
+
+    .service-card-top {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 10px;
+
+        margin-bottom: 19px;
+    }
+
+
+    .service-category {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 7px;
+
+        max-width: 70%;
+
+        padding:
+            8px 11px;
+
+        border-radius:
+            999px;
+
+        background:
+            var(--wh-orange-light);
+
+        color:
+            var(--wh-orange-dark);
+
+        border:
+            1px solid
+            rgba(255,90,31,.10);
+
+        font-size: 10px;
+
+        font-weight: 900;
+
+        text-transform: uppercase;
+
+        letter-spacing: .04em;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .service-category-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+
+    .service-verified {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        padding:
+            7px 10px;
+
+        border-radius:
+            999px;
+
+        background:
+            #f0fdf4;
+
+        color:
+            var(--wh-green);
+
+        border:
+            1px solid
+            #dcfce7;
+
+        font-size: 10px;
+
+        font-weight: 900;
+
+        white-space: nowrap;
+    }
+
+
+    .verified-icon {
+        width: 14px;
+        height: 14px;
+
+        padding: 2px;
+
+        border-radius: 50%;
+
+        background:
+            var(--wh-green);
+
+        color: #fff;
+    }
+
+
+    /* =========================================================
+       SERVICE TITLE
+       ========================================================= */
+
+    .service-title {
+        margin: 0;
+
+        color:
+            var(--wh-dark);
+
+        font-size: 21px;
+
+        line-height: 1.3;
+
+        font-weight: 900;
+
+        letter-spacing:
+            -.4px;
+    }
+
+
+    .service-description {
+        margin:
+            10px 0 0;
+
+        color:
+            var(--wh-muted);
+
+        font-size: 13px;
+
+        line-height: 1.7;
+    }
+
+
+    .service-description.clamp-3 {
+        display: -webkit-box;
+
+        -webkit-line-clamp: 3;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+
+        min-height:
+            66px;
+    }
+
+
+    /* =========================================================
+       PROVIDER
+       ========================================================= */
+
+    .service-provider {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        margin-top: 22px;
+
+        padding-top: 18px;
+
+        border-top:
+            1px solid
+            #f1f5f9;
+    }
+
+
+    .service-avatar {
+        width: 44px;
+        height: 44px;
+
+        flex: 0 0 44px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 14px;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--wh-orange),
+                var(--wh-orange-dark)
+            );
+
+        color: #fff;
+
+        font-size: 16px;
+
+        font-weight: 900;
+
+        box-shadow:
+            0 8px 20px
+            rgba(255,90,31,.20);
+    }
+
+
+    .service-provider-info {
+        min-width: 0;
+    }
+
+
+    .service-provider-info strong {
+        display: block;
+
+        color:
+            var(--wh-dark);
+
+        font-size: 13px;
+
+        font-weight: 900;
+
+        overflow:
+            hidden;
+
+        text-overflow:
+            ellipsis;
+
+        white-space:
+            nowrap;
+    }
+
+
+    .service-provider-info small {
+        display: block;
+
+        margin-top: 4px;
+
+        color:
+            var(--wh-muted-light);
+
+        font-size: 11px;
+
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       CARD FOOTER
+       ========================================================= */
+
+    .service-footer {
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content: space-between;
+
+        gap: 15px;
+
+        margin-top: 21px;
+
+        padding-top: 18px;
+
+        border-top:
+            1px solid
+            #f1f5f9;
+    }
+
+
+    .service-price small {
+        display: block;
+
+        color:
+            var(--wh-muted-light);
+
+        font-size: 10px;
+
+        font-weight: 800;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            .06em;
+    }
+
+
+    .service-price strong {
+        display: block;
+
+        margin-top: 3px;
+
+        color:
+            var(--wh-dark);
+
+        font-size: 22px;
+
+        font-weight: 900;
+
+        letter-spacing:
+            -.5px;
+    }
+
+
+    .service-location {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        max-width: 55%;
+
+        color:
+            var(--wh-muted);
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        text-align: right;
+    }
+
+
+    .service-location-icon {
+        width: 16px;
+        height: 16px;
+
+        color:
+            var(--wh-orange);
+    }
+
+
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
+
+    .services-empty {
+        padding:
+            75px 25px;
+
+        text-align:
+            center;
+
+        background:
+            #fff;
+
+        border:
+            1px solid
+            var(--wh-border);
+
+        border-radius:
+            24px;
+
+        box-shadow:
+            var(--wh-shadow);
+    }
+
+
+    .services-empty-icon {
+        width: 90px;
+        height: 90px;
+
+        margin:
+            0 auto 22px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius:
+            26px;
+
+        background:
+            var(--wh-orange-light);
+
+        color:
+            var(--wh-orange);
+    }
+
+
+    .services-empty h3 {
+        margin: 0;
+
+        color:
+            var(--wh-dark);
+
+        font-size: 25px;
+
+        font-weight: 900;
+    }
+
+
+    .services-empty p {
+        max-width: 500px;
+
+        margin:
+            10px auto 0;
+
+        color:
+            var(--wh-muted);
+
+        line-height: 1.7;
+
+        font-size: 14px;
+    }
+
+
+
+
+
+    /* =========================================================
+       TABLET
+       ========================================================= */
+
+    @@media (max-width: 1050px) {
+
+        .services-floating-card {
+            display: none;
+        }
+
+        .services-filter-grid {
+            grid-template-columns:
+                1fr 1fr;
+        }
+
+        .services-search-button {
+            width: 100%;
+        }
+
+        .services-grid {
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+        }
+    }
+
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @@media (max-width: 700px) {
+
+        .services-hero {
+            min-height: 470px;
+        }
+
+        .services-hero-inner {
+            width:
+                calc(100% - 28px);
+
+            padding:
+                65px 0 110px;
+        }
+
+        .services-hero h1 {
+            font-size: 42px;
+
+            letter-spacing:
+                -1.7px;
+        }
+
+        .services-hero-description {
+            font-size: 15px;
+        }
+
+        .services-hero-orb {
+            opacity: .45;
+        }
+
+        .services-filter {
+            width:
+                calc(100% - 28px);
+
+            margin:
+                -80px auto 0;
+
+            padding:
+                15px;
+
+            border-radius:
+                21px;
+        }
+
+        .services-filter-grid {
+            grid-template-columns:
+                1fr;
+
+            gap: 11px;
+        }
+
+        .services-content {
+            width:
+                calc(100% - 28px);
+
+            padding:
+                45px 0 70px;
+        }
+
+        .services-result-header {
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+
+            margin-top:
+                48px;
+        }
+
+        .services-result-header h2 {
+            font-size:
+                28px;
+        }
+
+        .services-action-row {
+            width: 100%;
+
+            justify-content:
+                flex-start;
+        }
+
+        .services-button {
+            flex: 1;
+        }
+
+        .services-grid {
+            grid-template-columns:
+                1fr;
+
+            gap: 18px;
+        }
+
+        .service-card {
+            padding:
+                20px;
+        }
+    }
+
+
+    @@media (max-width: 420px) {
+
+        .services-hero h1 {
+            font-size:
+                37px;
+        }
+
+        .services-action-row {
+            flex-direction:
+                column;
+        }
+
+        .services-button {
+            width:
+                100%;
+        }
+
+        .service-footer {
+            align-items:
+                flex-start;
+
+            flex-direction:
+                column;
+        }
+
+        .service-location {
+            max-width:
+                100%;
+
+            text-align:
+                left;
+        }
+    }
+</style>
+
+
+<div class="services-page">
+
+    <!-- =====================================================
+         HERO
+         ====================================================== -->
+
+    <section class="services-hero">
+
+        <div class="services-hero-grid"></div>
+
+        <div class="services-hero-orb one"></div>
+        <div class="services-hero-orb two"></div>
+        <div class="services-hero-orb three"></div>
+
+
+        <div class="services-hero-inner">
+
+            <div class="services-hero-content">
+
+                <div class="services-eyebrow">
+
+                    <span class="services-eyebrow-dot"></span>
+
+                    WorkHub Services
+
+                </div>
+
+
+                <h1>
+
+                    Find Trusted
+                    <span>Services.</span>
+
+                </h1>
+
+
+                <p class="services-hero-description">
+
+                    Find skilled professionals for your everyday needs.
+                    From plumbers and electricians to IT specialists,
+                    builders, cleaners and tutors — discover trusted
+                    services through WorkHub.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FLOATING CARD -->
+
+        <div class="services-floating-card">
+
+            <div class="services-floating-icon">
+
+                <svg class="wh-icon wh-icon-lg"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.2 2.2-2.7-.6-.6-2.7z"></path>
+                    <path d="m14 10 4 4"></path>
+
+                </svg>
+
+            </div>
+
+            <strong>
+                Skilled Professionals
+            </strong>
+
+            <small>
+                Connect with service providers
+                ready to help.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FILTER
+         ====================================================== -->
+
+    <section class="services-filter">
+
+        <form method="get">
+
+            <div class="services-filter-grid">
+
+
+                <!-- SEARCH -->
+
+                <div class="services-field">
+
+                    <label class="services-label">
+                        Search
+                    </label>
+
+                    <input name="search"
+                           value="@Model.Search"
+                           class="services-input"
+                           placeholder="e.g. plumber, cleaner, laptop repair" />
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="services-field">
+
+                    <label class="services-label">
+                        Category
+                    </label>
+
+                    <select name="categoryId"
+                            class="services-select">
+
+                        <option value="">
+                            All categories
+                        </option>
+
+                        @foreach (var category in Model.Categories)
+                        {
+                            if (Model.CategoryId == category.ServiceCategoryId)
+                            {
+                                <option value="@category.ServiceCategoryId"
+                                        selected>
+                                    @category.CategoryName
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@category.ServiceCategoryId">
+                                    @category.CategoryName
+                                </option>
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="services-field">
+
+                    <label class="services-label">
+                        Location
+                    </label>
+
+                    <input name="location"
+                           value="@Model.Location"
+                           class="services-input"
+                           placeholder="Suburb or city" />
+
+                </div>
+
+
+                <!-- SEARCH BUTTON -->
+
+                <button class="services-search-button"
+                        type="submit">
+
+                    <svg class="wh-icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+
+                        <path d="m20 20-4-4"></path>
+
+                    </svg>
+
+                    Search Services
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTENT
+         ====================================================== -->
+
+    <main class="services-content">
+
+
+        <!-- ERROR -->
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="services-alert">
+
+                <svg class="wh-icon"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <circle cx="12" cy="12" r="9"></circle>
+
+                    <path d="M12 8v4"></path>
+
+                    <path d="M12 16h.01"></path>
+
+                </svg>
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        <!-- RESULT HEADER -->
+
+        <div class="services-result-header">
+
+            <div>
+
+                <div class="services-kicker">
+                    Marketplace of skills
+                </div>
+
+                <h2>
+
+                    @Model.Services.Count
+                    service@(Model.Services.Count == 1 ? "" : "s")
+                    found
+
+                </h2>
+
+            </div>
+
+
+            <div class="services-action-row">
+
+
+                <!-- POST REQUEST -->
+
+                <a class="services-button primary"
+                   asp-controller="ServiceRequests"
+                   asp-action="Index">
+
+                    <svg class="wh-icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M12 5v14"></path>
+
+                        <path d="M5 12h14"></path>
+
+                    </svg>
+
+                    Post a Service Request
+
+                </a>
+
+
+                <!-- PROVIDER -->
+
+                <a class="services-button ghost"
+                   asp-controller="Account"
+                   asp-action="Profile">
+
+                    <svg class="wh-icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <circle cx="12" cy="8" r="3"></circle>
+
+                        <path d="M5 20c.8-3.5 3.1-5 7-5s6.2 1.5 7 5"></path>
+
+                    </svg>
+
+                    Become a Provider
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EMPTY
+             ================================================== -->
+
+        @if (!Model.Services.Any())
+        {
+            <div class="services-empty">
+
+                <div class="services-empty-icon">
+
+                    <svg class="wh-icon wh-icon-xl"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.2 2.2-2.7-.6-.6-2.7z"></path>
+
+                        <path d="m14 10 4 4"></path>
+
+                    </svg>
+
+                </div>
+
+
+                <h3>
+                    No services match your filters
+                </h3>
+
+
+                <p>
+                    Try another category, location or keyword
+                    to discover more professionals.
+                </p>
+
+            </div>
+        }
+
+
+        <!-- =================================================
+             SERVICES
+             ================================================== -->
+
+       
+            <div class="services-grid">
+
+                @foreach (var service in Model.Services)
+                {
+                    <article class="service-card">
+
+
+                        <!-- CARD TOP -->
+
+                        <div class="service-card-top">
+
+
+                            <!-- CATEGORY -->
+
+                            <span class="service-category">
+
+                                <svg class="wh-icon service-category-icon"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true">
+
+                                    <path d="M20 7h-9"></path>
+
+                                    <path d="M20 12h-9"></path>
+
+                                    <path d="M20 17h-9"></path>
+
+                                    <path d="M4 7h.01"></path>
+
+                                    <path d="M4 12h.01"></path>
+
+                                    <path d="M4 17h.01"></path>
+
+                                </svg>
+
+                                @service.Category
+
+                            </span>
+
+
+                            <!-- VERIFIED -->
+
+                            @if (
+                                string.Equals(
+                                    service.Provider.VerificationStatus,
+                                    "Approved",
+                                    StringComparison.OrdinalIgnoreCase
+                                )
+                            )
+                            {
+                                <span class="service-verified">
+
+                                    <svg class="wh-icon verified-icon"
+                                         viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="m5 12 4 4L19 6"></path>
+
+                                    </svg>
+
+                                    Verified
+
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <!-- TITLE -->
+
+                        <h3 class="service-title">
+                            @service.Title
+                        </h3>
+
+
+                        <!-- DESCRIPTION -->
+
+                        <p class="service-description clamp-3">
+
+                            @(
+                                string.IsNullOrWhiteSpace(service.Description)
+                                    ? "Professional service available through WorkHub."
+                                    : service.Description
+                            )
+
+                        </p>
+
+
+                        <!-- PROVIDER -->
+
+                        <div class="service-provider">
+
+
+                            <!-- AVATAR -->
+
+                            <div class="service-avatar">
+
+                                @(
+                                    string.IsNullOrWhiteSpace(
+                                        service.Provider.DisplayName
+                                    )
+                                        ? "P"
+                                        : service.Provider.DisplayName
+                                            .Substring(0, 1)
+                                            .ToUpperInvariant()
+                                )
+
+                            </div>
+
+
+                            <div class="service-provider-info">
+
+                                <strong>
+                                    @service.Provider.DisplayName
+                                </strong>
+
+
+                                <small>
+
+                                    @(
+                                        service.Provider.YearsOfExperience.HasValue
+                                            ? $"{service.Provider.YearsOfExperience} yrs experience"
+                                            : "Service provider"
+                                    )
+
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FOOTER -->
+
+                        <div class="service-footer">
+
+
+                            <!-- PRICE -->
+
+                            <div class="service-price">
+
+                                <small>
+                                    Starting from
+                                </small>
+
+                                <strong>
+                                    $@service.StartingPrice.ToString("0.00")
+                                </strong>
+
+                            </div>
+
+
+                            <!-- LOCATION -->
+
+                            <span class="service-location">
+
+                                <svg class="wh-icon service-location-icon"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true">
+
+                                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+
+                                    <circle cx="12" cy="10" r="2.5"></circle>
+
+                                </svg>
+
+                                @(
+                                    string.IsNullOrWhiteSpace(
+                                        service.Location
+                                    )
+                                        ? "Flexible"
+                                        : service.Location
+                                )
+
+                            </span>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        
+
+    </main>
+
+</div>

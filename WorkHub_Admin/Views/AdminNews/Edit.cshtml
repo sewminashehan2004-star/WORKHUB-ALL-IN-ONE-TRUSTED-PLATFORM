@@ -1,0 +1,716 @@
+﻿@model WorkHub_Admin.Models.AdminNewsFormViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Edit News";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        WorkHub Admin - Edit News
+    </title>
+
+    <style>
+
+            /* =========================================================
+                   WORKHUB ADMIN - EDIT NEWS
+                   PROFESSIONAL FORM UI
+                ========================================================== */
+
+            :root {
+                --orange: #FD5000;
+                --orange-dark: #D94700;
+                --orange-hover: #E94A00;
+                --orange-light: #FF6A21;
+                --orange-soft: #FFF4EE;
+                --orange-soft-2: #FFFAF7;
+                --orange-border: #FFD5C2;
+                --dark: #101828;
+                --dark-2: #1D2939;
+                --text: #475467;
+                --muted: #667085;
+                --light-text: #98A2B3;
+                --border: #E4E7EC;
+                --border-soft: #F0F2F5;
+                --bg: #F7F8FA;
+                --white: #FFFFFF;
+                --red: #B42318;
+                --red-soft: #FEF3F2;
+                --red-border: #FECDCA;
+                --shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.04);
+                --shadow-md: 0 10px 35px rgba(16, 24, 40, 0.08);
+                --shadow-hover: 0 16px 45px rgba(16, 24, 40, 0.11);
+            }
+
+
+            /* =========================================================
+                   RESET
+                ========================================================== */
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                font-size: 16px;
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                font-size: 16px;
+                line-height: 1.6;
+                background: linear-gradient( 180deg, #FFFFFF 0px, var(--bg) 280px );
+                color: var(--dark);
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            input,
+            textarea,
+            select,
+            button {
+                font: inherit;
+            }
+
+            a {
+                color: inherit;
+            }
+
+
+            /* =========================================================
+                   PAGE
+                ========================================================== */
+
+            .page {
+                width: calc(100% - 48px);
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 48px 0 90px;
+            }
+
+
+            /* =========================================================
+                   BACK BUTTON
+                ========================================================== */
+
+            .back {
+                min-height: 42px;
+                margin-bottom: 25px;
+                padding: 0 13px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--orange-border);
+                border-radius: 9px;
+                background: var(--orange-soft);
+                color: var(--orange-dark);
+                font-size: 14px;
+                font-weight: 750;
+                text-decoration: none;
+                transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+                .back:hover {
+                    background: var(--orange);
+                    color: #FFFFFF;
+                    transform: translateY(-1px);
+                    box-shadow: 0 5px 14px rgba(253, 80, 0, 0.18);
+                }
+
+
+            /* =========================================================
+                   PAGE HEADING
+                ========================================================== */
+
+            .heading {
+                margin-bottom: 30px;
+            }
+
+                .heading > span {
+                    display: block;
+                    margin-bottom: 8px;
+                    color: var(--orange);
+                    font-size: 12px;
+                    font-weight: 850;
+                    letter-spacing: 1.3px;
+                    text-transform: uppercase;
+                }
+
+                .heading h1 {
+                    margin: 0 0 10px;
+                    color: var(--dark);
+                    font-size: clamp(34px, 4vw, 42px);
+                    line-height: 1.15;
+                    font-weight: 900;
+                    letter-spacing: -1px;
+                }
+
+                .heading p {
+                    margin: 0;
+                    color: var(--muted);
+                    font-size: 15px;
+                    line-height: 1.65;
+                }
+
+
+            /* =========================================================
+                   MAIN CARD
+                ========================================================== */
+
+            .card {
+                padding: 34px;
+                border: 1px solid var(--border);
+                border-radius: 18px;
+                background: #FFFFFF;
+                box-shadow: var(--shadow-md);
+                transition: box-shadow 0.25s ease, border-color 0.25s ease;
+            }
+
+                .card:hover {
+                    border-color: #D9DEE5;
+                    box-shadow: var(--shadow-hover);
+                }
+
+
+            /* =========================================================
+                   ERROR MESSAGE
+                ========================================================== */
+
+            .error {
+                margin-bottom: 22px;
+                padding: 15px 17px;
+                border: 1px solid var(--red-border);
+                border-radius: 10px;
+                background: var(--red-soft);
+                color: var(--red);
+                font-size: 14px;
+                font-weight: 700;
+                line-height: 1.5;
+            }
+
+
+            /* =========================================================
+                   FORM FIELD
+                ========================================================== */
+
+            .field {
+                margin-bottom: 23px;
+            }
+
+
+            /* =========================================================
+                   LABELS
+                ========================================================== */
+
+            label {
+                display: block;
+                margin-bottom: 9px;
+                color: var(--dark-2);
+                font-size: 14px;
+                font-weight: 750;
+                line-height: 1.4;
+            }
+
+
+            /* =========================================================
+                   INPUTS
+                ========================================================== */
+
+            .input {
+                width: 100%;
+                min-height: 50px;
+                padding: 12px 15px;
+                border: 1px solid #D0D5DD;
+                border-radius: 10px;
+                background: #FFFFFF;
+                color: var(--dark);
+                font-size: 15px;
+                line-height: 1.5;
+                outline: none;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            }
+
+                .input:hover {
+                    border-color: #F8A17A;
+                }
+
+                .input:focus {
+                    border-color: var(--orange);
+                    box-shadow: 0 0 0 4px rgba(253, 80, 0, 0.10);
+                }
+
+                .input::placeholder {
+                    color: var(--light-text);
+                }
+
+
+            /* =========================================================
+                   SELECT
+                ========================================================== */
+
+            select.input {
+                cursor: pointer;
+                background-color: #FFFFFF;
+            }
+
+
+            /* =========================================================
+                   SUMMARY TEXTAREA
+                ========================================================== */
+
+            textarea.input {
+                min-height: 130px;
+                resize: vertical;
+            }
+
+
+            /* =========================================================
+                   FULL CONTENT TEXTAREA
+                ========================================================== */
+
+            textarea.content {
+                min-height: 330px;
+                line-height: 1.75;
+            }
+
+
+            /* =========================================================
+                   PUBLISH BOX
+                ========================================================== */
+
+            .publish-box {
+                margin-bottom: 26px;
+                padding: 18px;
+                display: flex;
+                align-items: flex-start;
+                gap: 13px;
+                border: 1px solid var(--orange-border);
+                border-radius: 12px;
+                background: linear-gradient( 135deg, var(--orange-soft-2), #FFFFFF );
+                cursor: pointer;
+                transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            }
+
+                .publish-box:hover {
+                    border-color: var(--orange);
+                    background: var(--orange-soft);
+                    box-shadow: 0 4px 14px rgba(253, 80, 0, 0.08);
+                }
+
+                .publish-box input {
+                    width: 18px;
+                    height: 18px;
+                    margin-top: 3px;
+                    accent-color: var(--orange);
+                    cursor: pointer;
+                    flex-shrink: 0;
+                }
+
+                .publish-box > span {
+                    flex: 1;
+                }
+
+                .publish-box strong {
+                    display: block;
+                    margin-bottom: 4px;
+                    color: var(--dark);
+                    font-size: 15px;
+                    font-weight: 800;
+                }
+
+                .publish-box span span {
+                    color: var(--muted);
+                    font-size: 13px;
+                    line-height: 1.55;
+                }
+
+
+            /* =========================================================
+                   ACTIONS
+                ========================================================== */
+
+            .actions {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                padding-top: 4px;
+            }
+
+
+            /* =========================================================
+                   SAVE / CANCEL BUTTONS
+                ========================================================== */
+
+            .save-button,
+            .cancel-button {
+                min-height: 46px;
+                padding: 0 21px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 9px;
+                font-size: 14px;
+                font-weight: 800;
+                text-decoration: none;
+                transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+
+            /* =========================================================
+                   SAVE BUTTON
+                ========================================================== */
+
+            .save-button {
+                border: none;
+                background: linear-gradient( 135deg, var(--orange), var(--orange-light) );
+                color: #FFFFFF;
+                cursor: pointer;
+                box-shadow: 0 6px 16px rgba(253, 80, 0, 0.22);
+            }
+
+                .save-button:hover {
+                    background: var(--orange-dark);
+                    transform: translateY(-2px);
+                    box-shadow: 0 9px 22px rgba(253, 80, 0, 0.28);
+                }
+
+                .save-button:active {
+                    transform: translateY(0);
+                }
+
+
+            /* =========================================================
+                   CANCEL BUTTON
+                ========================================================== */
+
+            .cancel-button {
+                border: 1px solid var(--border);
+                background: #FFFFFF;
+                color: var(--text);
+            }
+
+                .cancel-button:hover {
+                    border-color: #C7CDD5;
+                    background: #F8FAFC;
+                    color: var(--dark);
+                    transform: translateY(-1px);
+                }
+
+
+            /* =========================================================
+                   TEXT SELECTION
+                ========================================================== */
+
+            ::selection {
+                background: rgba(253, 80, 0, 0.18);
+                color: var(--dark);
+            }
+
+
+            /* =========================================================
+                   TABLET
+                ========================================================== */
+
+            @@media (max-width: 768px) {
+
+                .page {
+                    width: calc(100% - 30px);
+                    padding: 34px 0 70px;
+                }
+
+                .card {
+                    padding: 25px;
+                }
+
+                .heading h1 {
+                    font-size: 32px;
+                }
+            }
+
+
+            /* =========================================================
+                   MOBILE
+                ========================================================== */
+
+            @@media (max-width: 600px) {
+
+                .page {
+                    width: calc(100% - 22px);
+                    padding: 25px 0 55px;
+                }
+
+                .back {
+                    min-height: 40px;
+                    margin-bottom: 20px;
+                    font-size: 13px;
+                }
+
+                .heading {
+                    margin-bottom: 22px;
+                }
+
+                    .heading > span {
+                        font-size: 11px;
+                    }
+
+                    .heading h1 {
+                        font-size: 28px;
+                    }
+
+                    .heading p {
+                        font-size: 14px;
+                    }
+
+                .card {
+                    padding: 20px;
+                    border-radius: 14px;
+                }
+
+                .field {
+                    margin-bottom: 20px;
+                }
+
+                label {
+                    font-size: 13px;
+                }
+
+                .input {
+                    min-height: 48px;
+                    padding: 11px 13px;
+                    font-size: 14px;
+                }
+
+                textarea.input {
+                    min-height: 120px;
+                }
+
+                textarea.content {
+                    min-height: 260px;
+                }
+
+                .publish-box {
+                    padding: 15px;
+                }
+
+                    .publish-box strong {
+                        font-size: 14px;
+                    }
+
+                    .publish-box span span {
+                        font-size: 12px;
+                    }
+
+                .actions {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .save-button,
+                .cancel-button {
+                    width: 100%;
+                    min-height: 46px;
+                    font-size: 14px;
+                }
+            }
+
+
+            /* =========================================================
+                   SMALL MOBILE
+                ========================================================== */
+
+            @@media (max-width: 420px) {
+
+                .card {
+                    padding: 17px;
+                }
+
+                .heading h1 {
+                    font-size: 26px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="page">
+
+
+        <a href="/AdminNews/Index"
+           class="back">
+
+            ← Back to News & Updates
+
+        </a>
+
+
+        <div class="heading">
+
+            <span>
+                News #@Model.NewsUpdateId
+            </span>
+
+            <h1>
+                Edit News
+            </h1>
+
+            <p>
+                Update the WorkHub news item.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+
+            @if (!string.IsNullOrWhiteSpace(
+                Model.ErrorMessage))
+            {
+                <div class="error">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+
+            <form asp-controller="AdminNews"
+                  asp-action="Edit"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+
+                <input asp-for="NewsUpdateId"
+                       type="hidden" />
+
+
+                <div class="field">
+
+                    <label asp-for="Title">
+                        Title
+                    </label>
+
+                    <input asp-for="Title"
+                           class="input"
+                           maxlength="200"
+                           required />
+
+                </div>
+
+
+                <div class="field">
+
+                    <label asp-for="Category">
+                        Category
+                    </label>
+
+                    <select asp-for="Category"
+                            class="input">
+
+                        <option value="General">General</option>
+                        <option value="Platform Update">Platform Update</option>
+                        <option value="Career">Career</option>
+                        <option value="Marketplace">Marketplace</option>
+                        <option value="Services">Services</option>
+                        <option value="Announcement">Announcement</option>
+                        <option value="Maintenance">Maintenance</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label asp-for="Summary">
+                        Short Summary
+                    </label>
+
+                    <textarea asp-for="Summary"
+                              class="input"
+                              maxlength="500"></textarea>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label asp-for="Content">
+                        Full Content
+                    </label>
+
+                    <textarea asp-for="Content"
+                              class="input content"
+                              required></textarea>
+
+                </div>
+
+
+                <label class="publish-box">
+
+                    <input asp-for="IsPublished"
+                           type="checkbox" />
+
+                    <span>
+
+                        <strong>
+                            Published
+                        </strong>
+
+                        <span>
+                            Published items are visible to WorkHub users.
+                        </span>
+
+                    </span>
+
+                </label>
+
+
+                <div class="actions">
+
+                    <button type="submit"
+                            class="save-button">
+
+                        Save Changes
+
+                    </button>
+
+
+                    <a href="/AdminNews/Index"
+                       class="cancel-button">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </main>
+
+
+</body>
+
+</html>

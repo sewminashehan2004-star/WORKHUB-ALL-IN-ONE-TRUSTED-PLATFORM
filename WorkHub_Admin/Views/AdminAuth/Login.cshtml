@@ -1,0 +1,611 @@
+﻿@model WorkHub_Admin.Models.AdminLoginViewModel
+
+@{
+    ViewData["Title"] = "Admin Sign In";
+}
+
+<style>
+
+    :root {
+        --admin-orange: #FD5000;
+        --admin-orange-dark: #D94300;
+        --admin-orange-soft: #FFF3EC;
+        --admin-dark: #0F172A;
+        --admin-dark-2: #1E293B;
+        --admin-text: #64748B;
+        --admin-border: #E2E8F0;
+        --admin-bg: #F8FAFC;
+        --admin-red: #DC2626;
+        --admin-red-soft: #FEF2F2;
+    }
+
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .admin-login-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 35px 20px;
+        background: radial-gradient( circle at 85% 15%, rgba(253, 80, 0, .12), transparent 30% ), radial-gradient( circle at 10% 90%, rgba(15, 23, 42, .08), transparent 35% ), var(--admin-bg);
+    }
+
+
+    .admin-login-container {
+        width: 100%;
+        max-width: 1000px;
+    }
+
+
+    /* =========================================
+           MAIN CARD
+        ========================================= */
+
+    .admin-login-card {
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(320px, .9fr) minmax(0, 1.1fr);
+        border: 1px solid var(--admin-border);
+        border-radius: 20px;
+        background: #FFFFFF;
+        box-shadow: 0 22px 60px rgba(15, 23, 42, .12);
+    }
+
+
+    /* =========================================
+           LEFT PANEL
+        ========================================= */
+
+    .admin-login-left {
+        position: relative;
+        min-height: 560px;
+        padding: 50px 42px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: radial-gradient( circle at 85% 15%, rgba(253, 80, 0, .38), transparent 30% ), linear-gradient( 145deg, #0F172A, #172033 58%, #431407 );
+    }
+
+
+        .admin-login-left::after {
+            content: "";
+            position: absolute;
+            width: 290px;
+            height: 290px;
+            right: -140px;
+            bottom: -140px;
+            border-radius: 50%;
+            background: rgba(253, 80, 0, .11);
+        }
+
+
+    .admin-brand {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .admin-brand-name {
+        margin-bottom: 28px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #FFFFFF;
+        font-size: 24px;
+        font-weight: 950;
+        letter-spacing: -.5px;
+    }
+
+
+    .admin-brand-mark {
+        width: 37px;
+        height: 37px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: var(--admin-orange);
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 950;
+    }
+
+
+    .admin-login-label {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 6px 10px;
+        border: 1px solid rgba(255, 255, 255, .14);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, .06);
+        color: #FDBA74;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+
+    .admin-login-left h1 {
+        margin: 0 0 15px;
+        color: #FFFFFF;
+        font-size: 38px;
+        font-weight: 950;
+        line-height: 1.12;
+        letter-spacing: -1px;
+    }
+
+
+    .admin-login-left p {
+        max-width: 390px;
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 11px;
+        line-height: 1.75;
+    }
+
+
+    .admin-security-box {
+        position: relative;
+        z-index: 2;
+        margin-top: 35px;
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, .09);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, .05);
+    }
+
+
+        .admin-security-box strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #FFFFFF;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+
+        .admin-security-box span {
+            color: #CBD5E1;
+            font-size: 8px;
+            line-height: 1.6;
+        }
+
+
+    /* =========================================
+           RIGHT SIDE
+        ========================================= */
+
+    .admin-login-form-area {
+        padding: 62px 52px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+
+    .admin-form-heading {
+        margin-bottom: 31px;
+    }
+
+
+        .admin-form-heading span {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--admin-orange);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+        }
+
+
+        .admin-form-heading h2 {
+            margin: 0 0 8px;
+            color: var(--admin-dark);
+            font-size: 29px;
+            font-weight: 950;
+        }
+
+
+        .admin-form-heading p {
+            margin: 0;
+            color: var(--admin-text);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+
+    /* =========================================
+           VALIDATION
+        ========================================= */
+
+    .validation-summary-errors {
+        margin-bottom: 20px;
+        padding: 13px 15px;
+        border: 1px solid #FECACA;
+        border-radius: 9px;
+        background: var(--admin-red-soft);
+        color: #B91C1C;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+
+    .field-validation-error {
+        color: var(--admin-red);
+        font-size: 8px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================
+           FORM
+        ========================================= */
+
+    .admin-field {
+        margin-bottom: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+
+        .admin-field label {
+            color: #334155;
+            font-size: 10px;
+            font-weight: 850;
+        }
+
+
+    .admin-input-wrapper {
+        position: relative;
+    }
+
+
+    .admin-input {
+        width: 100%;
+        height: 50px;
+        padding: 0 43px 0 13px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        background: #FFFFFF;
+        color: var(--admin-dark);
+        font-size: 11px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+
+        .admin-input:focus {
+            border-color: var(--admin-orange);
+            box-shadow: 0 0 0 3px rgba(253, 80, 0, .10);
+        }
+
+
+    .admin-input-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+
+    /* =========================================
+           BUTTON
+        ========================================= */
+
+    .admin-login-button {
+        width: 100%;
+        margin-top: 7px;
+        padding: 14px 18px;
+        border: none;
+        border-radius: 9px;
+        background: var(--admin-orange);
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+
+        .admin-login-button:hover {
+            background: var(--admin-orange-dark);
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================
+           FOOTER
+        ========================================= */
+
+    .admin-login-footer {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #F1F5F9;
+        color: #94A3B8;
+        font-size: 8px;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 800px) {
+
+        .admin-login-card {
+            grid-template-columns: 1fr;
+        }
+
+
+        .admin-login-left {
+            min-height: auto;
+            padding: 38px 30px;
+        }
+
+
+        .admin-security-box {
+            display: none;
+        }
+
+
+        .admin-login-form-area {
+            padding: 42px 30px;
+        }
+    }
+
+
+    @@media (max-width: 500px) {
+
+        .admin-login-page {
+            padding: 15px;
+        }
+
+
+        .admin-login-left,
+        .admin-login-form-area {
+            padding: 30px 22px;
+        }
+
+
+            .admin-login-left h1 {
+                font-size: 31px;
+            }
+
+
+        .admin-form-heading h2 {
+            font-size: 25px;
+        }
+    }
+
+</style>
+
+
+<section class="admin-login-page">
+
+
+    <div class="admin-login-container">
+
+
+        <div class="admin-login-card">
+
+
+            <!-- =================================
+                 LEFT
+            ================================== -->
+
+            <div class="admin-login-left">
+
+
+                <div class="admin-brand">
+
+
+                    <div class="admin-brand-name">
+
+                        <div class="admin-brand-mark">
+                            W
+                        </div>
+
+                        WorkHub
+
+                    </div>
+
+
+                    <span class="admin-login-label">
+
+                        Administration Portal
+
+                    </span>
+
+
+                    <h1>
+
+                        WorkHub
+                        Admin Control
+
+                    </h1>
+
+
+                    <p>
+
+                        Secure administrative access for
+                        managing WorkHub users, company
+                        registrations, jobs, services,
+                        marketplace activity and system
+                        operations.
+
+                    </p>
+
+
+                </div>
+
+
+                <div class="admin-security-box">
+
+                    <strong>
+                        Restricted Access
+                    </strong>
+
+                    <span>
+                        This portal is available only to
+                        authorized WorkHub administrators.
+                        Registered users and company accounts
+                        cannot access the administration
+                        dashboard.
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================
+                 FORM
+            ================================== -->
+
+            <div class="admin-login-form-area">
+
+
+                <div class="admin-form-heading">
+
+                    <span>
+                        Administrator Sign In
+                    </span>
+
+                    <h2>
+                        Sign in to Admin Dashboard
+                    </h2>
+
+                    <p>
+                        Enter your WorkHub administrator
+                        account credentials.
+                    </p>
+
+                </div>
+
+
+                <div asp-validation-summary="ModelOnly">
+                </div>
+
+
+                <form asp-controller="AdminAuth"
+                      asp-action="Login"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <!-- EMAIL -->
+
+                    <div class="admin-field">
+
+                        <label asp-for="Email">
+                            Admin Email
+                        </label>
+
+
+                        <div class="admin-input-wrapper">
+
+                            <input asp-for="Email"
+                                   type="email"
+                                   class="admin-input"
+                                   placeholder="admin@workhub.com"
+                                   autocomplete="email" />
+
+                            <span class="admin-input-icon">
+                                ✉
+                            </span>
+
+                        </div>
+
+
+                        <span asp-validation-for="Email">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="admin-field">
+
+                        <label asp-for="Password">
+                            Password
+                        </label>
+
+
+                        <div class="admin-input-wrapper">
+
+                            <input asp-for="Password"
+                                   type="password"
+                                   class="admin-input"
+                                   placeholder="Enter admin password"
+                                   autocomplete="current-password" />
+
+                            <span class="admin-input-icon">
+                                ●
+                            </span>
+
+                        </div>
+
+
+                        <span asp-validation-for="Password">
+                        </span>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="admin-login-button">
+
+                        Sign In to Admin Portal
+
+                    </button>
+
+
+                </form>
+
+
+                <div class="admin-login-footer">
+
+                    WorkHub Administration Portal
+                    <br />
+                    Authorized access only.
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,1332 @@
+@model Workhub_Web.Models.MarketplaceDetailsViewModel
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = Model.Title;
+
+
+    // =========================================
+    // API BASE URL
+    // =========================================
+
+    var apiBaseUrl =
+        Configuration["ApiSettings:BaseUrl"]
+        ?? "https://localhost:7015/";
+
+
+    if (!apiBaseUrl.EndsWith("/"))
+    {
+        apiBaseUrl += "/";
+    }
+
+
+    // =========================================
+    // PRIMARY IMAGE
+    // =========================================
+
+    var primary =
+        Model.Images?
+            .FirstOrDefault(
+                x => x.IsPrimary)
+        ??
+        Model.Images?
+            .FirstOrDefault();
+
+
+    // =========================================
+    // GET IMAGE ID SAFELY
+    //
+    // Supports different model property names:
+    //
+    // MarketplaceImageId
+    // MarketplaceListingImageId
+    // ImageId
+    //
+    // This prevents compile errors if the model
+    // uses a slightly different property name.
+    // =========================================
+
+    int? GetMarketplaceImageId(
+        object? image)
+    {
+        if (image == null)
+        {
+            return null;
+        }
+
+
+        var propertyNames =
+            new[]
+            {
+                "MarketplaceImageId",
+                "MarketplaceListingImageId",
+                "ImageId"
+            };
+
+
+        foreach (
+            var propertyName
+            in propertyNames)
+        {
+            var property =
+                image.GetType()
+                    .GetProperty(
+                        propertyName);
+
+
+            if (property == null)
+            {
+                continue;
+            }
+
+
+            var value =
+                property.GetValue(
+                    image);
+
+
+            if (value == null)
+            {
+                continue;
+            }
+
+
+            if (
+                int.TryParse(
+                    value.ToString(),
+                    out var id)
+                &&
+                id > 0
+            )
+            {
+                return id;
+            }
+        }
+
+
+        return null;
+    }
+
+
+    // =========================================
+    // NORMALIZE OLD IMAGE PATH
+    //
+    // Used only as fallback.
+    // =========================================
+
+    string NormalizeMarketplaceImagePath(
+        string? imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(
+                imagePath))
+        {
+            return string.Empty;
+        }
+
+
+        var path =
+            imagePath
+                .Trim()
+                .Replace(
+                    "\\",
+                    "/");
+
+
+        // FULL URL
+
+        if (
+            path.StartsWith(
+                "http://",
+                System.StringComparison.OrdinalIgnoreCase)
+            ||
+            path.StartsWith(
+                "https://",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return path;
+        }
+
+
+        // REMOVE ~
+
+        if (path.StartsWith("~/"))
+        {
+            path =
+                path.Substring(1);
+        }
+
+
+        // REMOVE WWWROOT/
+
+        if (
+            path.StartsWith(
+                "wwwroot/",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            path =
+                path.Substring(
+                    "wwwroot/".Length);
+        }
+
+
+        // REMOVE /WWWROOT/
+
+        if (
+            path.StartsWith(
+                "/wwwroot/",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            path =
+                path.Substring(
+                    "/wwwroot".Length);
+        }
+
+
+        if (!path.StartsWith("/"))
+        {
+            path =
+                "/" + path;
+        }
+
+
+        return path;
+    }
+
+
+    // =========================================
+    // OLD PATH FALLBACK URL
+    // =========================================
+
+    string GetMarketplacePathFallback(
+        string? imagePath)
+    {
+        var normalized =
+            NormalizeMarketplaceImagePath(
+                imagePath);
+
+
+        if (string.IsNullOrWhiteSpace(
+                normalized))
+        {
+            return string.Empty;
+        }
+
+
+        if (
+            normalized.StartsWith(
+                "http://",
+                System.StringComparison.OrdinalIgnoreCase)
+            ||
+            normalized.StartsWith(
+                "https://",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return normalized;
+        }
+
+
+        return
+            apiBaseUrl.TrimEnd('/')
+            +
+            normalized;
+    }
+
+
+    // =========================================
+    // MAIN IMAGE URL
+    //
+    // FIRST:
+    // api/MarketplaceImages/{id}/file
+    //
+    // FALLBACK:
+    // old ImagePath
+    // =========================================
+
+    string GetMarketplaceImageUrl(
+        object? image,
+        string? imagePath)
+    {
+        var imageId =
+            GetMarketplaceImageId(
+                image);
+
+
+        if (
+            imageId.HasValue
+            &&
+            imageId.Value > 0)
+        {
+            return
+                apiBaseUrl
+                +
+                "api/MarketplaceImages/"
+                +
+                imageId.Value
+                +
+                "/file";
+        }
+
+
+        return
+            GetMarketplacePathFallback(
+                imagePath);
+    }
+}
+
+
+<style>
+
+    /* =========================================
+           MARKETPLACE DETAILS
+        ========================================= */
+
+    .wh-listing-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(330px, .7fr);
+        gap: 30px;
+        align-items: start;
+    }
+
+
+    /* =========================================
+           GALLERY
+        ========================================= */
+
+    .wh-listing-gallery {
+        min-width: 0;
+    }
+
+
+    .wh-listing-main-image {
+        position: relative;
+        width: 100%;
+        height: 540px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #E2E8F0;
+        border-radius: 18px;
+        background: #F8FAFC;
+        box-shadow: 0 8px 28px rgba(15,23,42,.06);
+    }
+
+
+        .wh-listing-main-image img {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            object-position: center;
+            transition: opacity .2s ease, transform .25s ease;
+        }
+
+
+        .wh-listing-main-image:hover img {
+            transform: scale(1.015);
+        }
+
+
+    /* =========================================
+           IMAGE PLACEHOLDER
+        ========================================= */
+
+    .marketplace-main-placeholder {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        background: linear-gradient( 135deg, #F8FAFC, #E2E8F0 );
+        color: #64748B;
+    }
+
+
+    .marketplace-placeholder-icon {
+        width: 86px;
+        height: 86px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        background: #FFFFFF;
+        color: #FD5000;
+        font-size: 31px;
+        font-weight: 900;
+        box-shadow: 0 10px 25px rgba(15,23,42,.09);
+    }
+
+
+    .marketplace-main-placeholder strong {
+        color: #334155;
+        font-size: 15px;
+        font-weight: 850;
+    }
+
+
+    .marketplace-main-placeholder span {
+        color: #94A3B8;
+        font-size: 11px;
+    }
+
+
+    /* =========================================
+           THUMBNAILS
+        ========================================= */
+
+    .wh-thumb-row {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: repeat( 5, minmax(0,1fr) );
+        gap: 10px;
+    }
+
+
+    .marketplace-thumb {
+        position: relative;
+        height: 95px;
+        overflow: hidden;
+        padding: 0;
+        border: 2px solid transparent;
+        border-radius: 11px;
+        background: #F1F5F9;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+
+        .marketplace-thumb:hover {
+            border-color: #FDBA74;
+        }
+
+
+        .marketplace-thumb.active {
+            border-color: #FD5000;
+            box-shadow: 0 0 0 2px rgba(253,80,0,.10);
+        }
+
+
+        .marketplace-thumb img {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            object-position: center;
+        }
+
+
+    .thumb-placeholder {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #F1F5F9;
+        color: #94A3B8;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+
+    /* =========================================
+           RIGHT PANEL
+        ========================================= */
+
+    .wh-listing-panel {
+        position: sticky;
+        top: 100px;
+        padding: 28px;
+        border: 1px solid #E2E8F0;
+        border-radius: 18px;
+        background: #FFFFFF;
+        box-shadow: 0 10px 32px rgba(15,23,42,.06);
+    }
+
+
+        .wh-listing-panel h1 {
+            margin: 12px 0 10px;
+            color: #0F172A;
+            font-size: 30px;
+            font-weight: 900;
+            line-height: 1.25;
+        }
+
+
+    .wh-listing-price {
+        margin-top: 18px;
+        color: #FD5000;
+        font-size: 34px;
+        font-weight: 950;
+    }
+
+
+    .wh-meta-line {
+        margin: 0 0 22px;
+        color: #64748B;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================
+           SELLER
+        ========================================= */
+
+    .wh-seller-box {
+        margin: 22px 0;
+        padding: 17px;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        border-radius: 12px;
+        background: #F8FAFC;
+    }
+
+
+        .wh-seller-box > div:last-child {
+            min-width: 0;
+        }
+
+
+        .wh-seller-box small {
+            display: block;
+            margin-bottom: 3px;
+            color: #94A3B8;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+
+        .wh-seller-box strong {
+            display: block;
+            color: #0F172A;
+            font-size: 14px;
+            font-weight: 850;
+            overflow-wrap: anywhere;
+        }
+
+
+        .wh-seller-box span {
+            display: block;
+            margin-top: 3px;
+            color: #16A34A;
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+
+    .wh-safe-note {
+        margin: 15px 0 0;
+        padding: 13px 14px;
+        border-left: 3px solid #FD5000;
+        border-radius: 0 8px 8px 0;
+        background: #FFF7F2;
+        color: #64748B;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================
+           DESCRIPTION
+        ========================================= */
+
+    .listing-description {
+        margin-top: 30px;
+        padding: 30px;
+        border: 1px solid #E2E8F0;
+        border-radius: 17px;
+        background: #FFFFFF;
+    }
+
+
+        .listing-description h2 {
+            margin: 5px 0 14px;
+            color: #0F172A;
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+
+        .listing-description p {
+            margin: 0;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 950px) {
+
+        .wh-listing-layout {
+            grid-template-columns: 1fr;
+        }
+
+
+        .wh-listing-panel {
+            position: static;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .wh-listing-main-image {
+            height: 370px;
+        }
+
+
+        .wh-thumb-row {
+            grid-template-columns: repeat( 4, minmax(0,1fr) );
+        }
+
+
+        .marketplace-thumb {
+            height: 75px;
+        }
+
+
+        .wh-listing-panel {
+            padding: 22px;
+        }
+
+
+            .wh-listing-panel h1 {
+                font-size: 25px;
+            }
+
+
+        .wh-listing-price {
+            font-size: 29px;
+        }
+    }
+</style>
+
+
+<section class="wh-shell wh-page-space">
+
+
+    <!-- =========================================
+         ERRORS
+    ========================================= -->
+    @if (
+            !string.IsNullOrWhiteSpace(
+                Model.ErrorMessage))
+    {
+        <div class="wh-alert danger">
+
+            @Model.ErrorMessage
+
+        </div>
+    }
+
+
+    @if (
+        TempData["MarketplaceError"]
+        != null)
+    {
+        <div class="wh-alert danger">
+
+            @TempData["MarketplaceError"]
+
+        </div>
+    }
+
+
+    <!-- =========================================
+         BACK
+    ========================================= -->
+
+    <a class="wh-back-link"
+       asp-action="Index">
+
+        ← Back to Marketplace
+
+    </a>
+
+
+    <!-- =========================================
+         MAIN LISTING
+    ========================================= -->
+
+    <div class="wh-listing-layout">
+
+
+        <!-- =====================================
+             IMAGE GALLERY
+        ====================================== -->
+
+        <div class="wh-listing-gallery">
+
+
+            <div class="wh-listing-main-image"
+                 id="mainImageContainer">
+
+
+                @if (primary != null)
+                {
+                    var primaryImageUrl =
+                        GetMarketplaceImageUrl(
+                            primary,
+                            primary.ImagePath);
+
+
+                    var primaryFallbackUrl =
+                        GetMarketplacePathFallback(
+                            primary.ImagePath);
+
+
+                    <img id="marketplaceMainImage"
+                         src="@primaryImageUrl"
+                         data-path-fallback="@primaryFallbackUrl"
+                         data-fallback-used="false"
+                         alt="@Model.Title"
+                         onload="handleMarketplaceMainImageLoad(this);"
+                         onerror="handleMarketplaceMainImageError(this);" />
+
+
+                    <div id="marketplaceMainPlaceholder"
+                         class="marketplace-main-placeholder"
+                         style="display:none;">
+
+
+                        <div class="marketplace-placeholder-icon">
+                            WH
+                        </div>
+
+
+                        <strong>
+                            Image unavailable
+                        </strong>
+
+
+                        <span>
+                            WorkHub Marketplace
+                        </span>
+
+
+                    </div>
+                }
+                else
+                {
+                    <div id="marketplaceMainPlaceholder"
+                         class="marketplace-main-placeholder">
+
+
+                        <div class="marketplace-placeholder-icon">
+                            WH
+                        </div>
+
+
+                        <strong>
+                            No image available
+                        </strong>
+
+
+                        <span>
+                            WorkHub Marketplace
+                        </span>
+
+
+                    </div>
+                }
+
+
+            </div>
+
+
+            <!-- =================================
+                 THUMBNAILS
+            ================================== -->
+            @if (
+                            Model.Images != null
+                            &&
+                            Model.Images.Count > 1)
+            {
+                <div class="wh-thumb-row">
+
+
+                    @{
+                        var imageNumber =
+                            0;
+                    }
+
+
+                    @foreach (
+                        var image
+                        in Model.Images.Take(5))
+                    {
+                        imageNumber++;
+
+
+                        var imageUrl =
+                            GetMarketplaceImageUrl(
+                                image,
+                                image.ImagePath);
+
+
+                        var fallbackUrl =
+                            GetMarketplacePathFallback(
+                                image.ImagePath);
+
+
+                        var isPrimaryImage =
+                            ReferenceEquals(
+                                image,
+                                primary)
+                            ||
+                            image.IsPrimary;
+
+
+                        <button type="button"
+                                class="marketplace-thumb @(isPrimaryImage ? "active" : "")"
+                                data-main-src="@imageUrl"
+                                data-path-fallback="@fallbackUrl"
+                                onclick="selectMarketplaceImage(this)">
+
+
+                            <img src="@imageUrl"
+                                 data-path-fallback="@fallbackUrl"
+                                 data-fallback-used="false"
+                                 alt="@Model.Title image @imageNumber"
+                                 loading="lazy"
+                                 onload="handleMarketplaceThumbLoad(this);"
+                                 onerror="handleMarketplaceThumbError(this);" />
+
+
+                            <div class="thumb-placeholder"
+                                 style="display:none;">
+
+                                WH
+
+                            </div>
+
+
+                        </button>
+                    }
+
+
+                </div>
+            }
+
+
+        </div>
+
+
+        <!-- =====================================
+             LISTING INFORMATION
+        ====================================== -->
+
+        <aside class="wh-listing-panel">
+
+
+            <span class="wh-chip orange">
+
+                @(Model.Category?.CategoryName
+                    ?? "Marketplace")
+
+            </span>
+
+
+            <div class="wh-listing-price">
+
+                $@Model.Price.ToString("N0")
+
+            </div>
+
+
+            <h1>
+
+                @Model.Title
+
+            </h1>
+
+
+            <p class="wh-meta-line">
+
+                @Model.ListingType
+
+
+                @if (
+                    !string.IsNullOrWhiteSpace(
+                        Model.Condition))
+                {
+                    <span>
+                        • @Model.Condition
+                    </span>
+                }
+
+
+                @if (
+                    !string.IsNullOrWhiteSpace(
+                        Model.Location))
+                {
+                    <span>
+
+                        • 📍 @Model.Location
+
+                    </span>
+                }
+                else
+                {
+                    <span>
+
+                        • 📍 Location not set
+
+                    </span>
+                }
+
+            </p>
+
+
+            <!-- =================================
+                 SELLER
+            ================================== -->
+
+            <div class="wh-seller-box">
+
+
+                <div class="wh-avatar lg">
+
+                    @(
+                        string.IsNullOrWhiteSpace(
+                            Model.Seller?.BusinessName)
+
+                            ? "S"
+
+                            : Model.Seller.BusinessName
+                                .Substring(
+                                    0,
+                                    1)
+                                .ToUpperInvariant()
+                    )
+
+                </div>
+
+
+                <div>
+
+
+                    <small>
+                        Seller
+                    </small>
+
+
+                    <strong>
+
+                        @(
+                            string.IsNullOrWhiteSpace(
+                                Model.Seller?.BusinessName)
+
+                                ? "WorkHub Seller"
+
+                                : Model.Seller.BusinessName
+                        )
+
+                    </strong>
+
+
+                    @if (
+                        !string.IsNullOrWhiteSpace(
+                            Model.Seller?.VerificationStatus))
+                    {
+                        <span>
+
+                            @Model.Seller.VerificationStatus
+
+                        </span>
+                    }
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================
+                 MESSAGE SELLER
+            ================================== -->
+
+            <form asp-action="MessageSeller"
+                  asp-route-id="@Model.MarketplaceListingId"
+                  method="post"
+                  class="marketplace-message-form">
+
+                @Html.AntiForgeryToken()
+
+                <label for="sellerMessage" style="display:block;margin:0 0 7px;font-size:12px;font-weight:850;color:#334155;">
+                    Message seller
+                </label>
+
+                <textarea id="sellerMessage"
+                          name="message"
+                          maxlength="2000"
+                          rows="4"
+                          placeholder="Hi, is this still available?"
+                          style="width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:10px;resize:vertical;font:inherit;font-size:13px;outline:none;margin-bottom:10px;"></textarea>
+
+                <button class="wh-btn primary wide"
+                        type="submit">
+                    Start conversation
+                </button>
+
+            </form>
+
+
+            <a class="wh-btn ghost wide"
+               href="/Marketplace/Messages">
+
+                Open my messages
+
+            </a>
+
+
+            <p class="wh-safe-note">
+
+                For your safety, keep communication
+                inside WorkHub and verify the item
+                before making payment.
+
+            </p>
+
+
+        </aside>
+
+
+    </div>
+
+
+    <!-- =========================================
+         DESCRIPTION
+    ========================================= -->
+
+    <div class="wh-content-card listing-description">
+
+
+        <span class="wh-kicker">
+
+            Details
+
+        </span>
+
+
+        <h2>
+
+            About this listing
+
+        </h2>
+
+
+        <p>@Model.Description</p>
+
+
+    </div>
+
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+
+        // =========================================
+        // MAIN IMAGE LOADED
+        // =========================================
+
+        function handleMarketplaceMainImageLoad(
+            image) {
+            image.style.display =
+                "block";
+
+
+            const placeholder =
+                document.getElementById(
+                    "marketplaceMainPlaceholder"
+                );
+
+
+            if (placeholder) {
+                placeholder.style.display =
+                    "none";
+            }
+        }
+
+
+        // =========================================
+        // MAIN IMAGE ERROR
+        //
+        // Primary method:
+        //
+        // /api/MarketplaceImages/{id}/file
+        //
+        // If that fails, try old ImagePath.
+        // =========================================
+
+        function handleMarketplaceMainImageError(
+            image) {
+            const fallbackUsed =
+                image.dataset
+                    .fallbackUsed;
+
+
+            const pathFallback =
+                image.dataset
+                    .pathFallback;
+
+
+            if (
+                fallbackUsed !== "true"
+                &&
+                pathFallback
+                &&
+                pathFallback.trim() !== ""
+                &&
+                image.src !== pathFallback
+            ) {
+                image.dataset
+                    .fallbackUsed =
+                    "true";
+
+
+                image.src =
+                    pathFallback;
+
+
+                return;
+            }
+
+
+            image.style.display =
+                "none";
+
+
+            const placeholder =
+                document.getElementById(
+                    "marketplaceMainPlaceholder"
+                );
+
+
+            if (placeholder) {
+                placeholder.style.display =
+                    "flex";
+            }
+
+
+            console.log(
+                "Marketplace main image failed:",
+                image.src
+            );
+        }
+
+
+        // =========================================
+        // THUMBNAIL LOADED
+        // =========================================
+
+        function handleMarketplaceThumbLoad(
+            image) {
+            image.style.display =
+                "block";
+
+
+            const placeholder =
+                image.parentElement
+                    ?.querySelector(
+                        ".thumb-placeholder"
+                    );
+
+
+            if (placeholder) {
+                placeholder.style.display =
+                    "none";
+            }
+        }
+
+
+        // =========================================
+        // THUMBNAIL ERROR
+        // =========================================
+
+        function handleMarketplaceThumbError(
+            image) {
+            const fallbackUsed =
+                image.dataset
+                    .fallbackUsed;
+
+
+            const pathFallback =
+                image.dataset
+                    .pathFallback;
+
+
+            if (
+                fallbackUsed !== "true"
+                &&
+                pathFallback
+                &&
+                pathFallback.trim() !== ""
+                &&
+                image.src !== pathFallback
+            ) {
+                image.dataset
+                    .fallbackUsed =
+                    "true";
+
+
+                image.src =
+                    pathFallback;
+
+
+                return;
+            }
+
+
+            image.style.display =
+                "none";
+
+
+            const placeholder =
+                image.parentElement
+                    ?.querySelector(
+                        ".thumb-placeholder"
+                    );
+
+
+            if (placeholder) {
+                placeholder.style.display =
+                    "flex";
+            }
+
+
+            console.log(
+                "Marketplace thumbnail failed:",
+                image.src
+            );
+        }
+
+
+        // =========================================
+        // SELECT THUMBNAIL
+        // =========================================
+
+        function selectMarketplaceImage(
+            button) {
+            const mainImage =
+                document.getElementById(
+                    "marketplaceMainImage"
+                );
+
+
+            const placeholder =
+                document.getElementById(
+                    "marketplaceMainPlaceholder"
+                );
+
+
+            if (!mainImage) {
+                return;
+            }
+
+
+            const imageUrl =
+                button.dataset
+                    .mainSrc;
+
+
+            const pathFallback =
+                button.dataset
+                    .pathFallback;
+
+
+            if (
+                !imageUrl
+                ||
+                imageUrl.trim() === ""
+            ) {
+                return;
+            }
+
+
+            // =================================
+            // RESET PLACEHOLDER
+            // =================================
+
+            if (placeholder) {
+                placeholder.style.display =
+                    "none";
+            }
+
+
+            // =================================
+            // RESET MAIN IMAGE
+            // =================================
+
+            mainImage.style.display =
+                "block";
+
+
+            mainImage.dataset
+                .fallbackUsed =
+                "false";
+
+
+            mainImage.dataset
+                .pathFallback =
+                pathFallback
+                ||
+                "";
+
+
+            mainImage.src =
+                imageUrl;
+
+
+            // =================================
+            // ACTIVE THUMBNAIL
+            // =================================
+
+            document
+                .querySelectorAll(
+                    ".marketplace-thumb"
+                )
+                .forEach(
+                    function(thumb) {
+                        thumb.classList
+                            .remove(
+                                "active"
+                            );
+                    }
+                );
+
+
+            button.classList.add(
+                "active"
+            );
+        }
+
+    </script>
+}

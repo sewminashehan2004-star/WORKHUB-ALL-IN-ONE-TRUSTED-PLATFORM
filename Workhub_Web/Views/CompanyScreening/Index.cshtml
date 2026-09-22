@@ -1,0 +1,1175 @@
+@model Workhub_Web.Models.CompanyScreeningViewModel
+
+@{
+    ViewData["Title"] = "Screening Questions";
+    Layout = "_CompanyLayout";
+}
+
+<style>
+
+    :root {
+        --screen-orange: #FD5000;
+        --screen-orange-dark: #D94300;
+        --screen-orange-light: #FF7A00;
+        --screen-orange-soft: #FFF2EB;
+        --screen-dark: #0F172A;
+        --screen-dark-2: #1E293B;
+        --screen-text: #64748B;
+        --screen-text-dark: #334155;
+        --screen-border: #E2E8F0;
+        --screen-bg: #F8FAFC;
+        --screen-green: #16A34A;
+        --screen-green-soft: #F0FDF4;
+        --screen-red: #DC2626;
+        --screen-red-dark: #B91C1C;
+        --screen-red-soft: #FEF2F2;
+        --screen-blue: #2563EB;
+        --screen-blue-soft: #EFF6FF;
+        --screen-shadow: 0 12px 32px rgba(15, 23, 42, .07);
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    .screen-svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .screening-page {
+        min-height: calc(100vh - 72px);
+        padding: 48px 24px 90px;
+        background: radial-gradient( circle at top right, rgba(253,80,0,.07), transparent 30% ), radial-gradient( circle at bottom left, rgba(253,80,0,.03), transparent 28% ), var(--screen-bg);
+    }
+
+
+    .screening-container {
+        width: 100%;
+        max-width: 1220px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================
+           BACK BUTTON
+        ========================================= */
+
+    .screening-back {
+        min-height: 42px;
+        margin-bottom: 23px;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--screen-border);
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 850;
+        text-decoration: none;
+        box-shadow: 0 5px 14px rgba(15,23,42,.04);
+        transition: .2s ease;
+    }
+
+
+        .screening-back svg {
+            width: 17px;
+            height: 17px;
+        }
+
+
+        .screening-back:hover {
+            transform: translateY(-1px);
+            border-color: var(--screen-orange);
+            background: var(--screen-orange-soft);
+            color: var(--screen-orange-dark);
+        }
+
+
+    /* =========================================
+           HERO
+        ========================================= */
+
+    .screening-header {
+        position: relative;
+        margin-bottom: 26px;
+        padding: 34px;
+        overflow: hidden;
+        border-radius: 21px;
+        background: radial-gradient( circle at 88% 15%, rgba(253,80,0,.43), transparent 31% ), linear-gradient( 135deg, #0F172A, #1E293B 62%, #431407 );
+        color: #FFFFFF;
+        box-shadow: 0 18px 46px rgba(15,23,42,.16);
+    }
+
+
+        .screening-header::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            right: -80px;
+            bottom: -140px;
+            border-radius: 50%;
+            border: 45px solid rgba(255,255,255,.025);
+        }
+
+
+    .screening-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .screening-kicker {
+        margin-bottom: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #FDBA74;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+    }
+
+
+        .screening-kicker svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+    .screening-header h1 {
+        margin: 0 0 10px;
+        color: #FFFFFF;
+        font-size: 36px;
+        font-weight: 950;
+        line-height: 1.2;
+        letter-spacing: -.6px;
+    }
+
+
+    .screening-header p {
+        max-width: 720px;
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+
+    /* =========================================
+           ALERTS
+        ========================================= */
+
+    .screening-alert {
+        margin-bottom: 20px;
+        padding: 15px 17px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 11px;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+        .screening-alert.success {
+            border: 1px solid #BBF7D0;
+            background: var(--screen-green-soft);
+            color: #15803D;
+        }
+
+
+        .screening-alert.danger {
+            border: 1px solid #FECACA;
+            background: var(--screen-red-soft);
+            color: var(--screen-red-dark);
+        }
+
+
+    /* =========================================
+           LAYOUT
+        ========================================= */
+
+    .screening-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(340px, .65fr);
+        gap: 23px;
+        align-items: start;
+    }
+
+
+    /* =========================================
+           CARD
+        ========================================= */
+
+    .screening-card {
+        padding: 29px;
+        border: 1px solid var(--screen-border);
+        border-radius: 17px;
+        background: #FFFFFF;
+        box-shadow: var(--screen-shadow);
+    }
+
+
+    .screening-card-header {
+        margin-bottom: 23px;
+        padding-bottom: 17px;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+
+    .screening-card-icon {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--screen-orange-soft);
+        color: var(--screen-orange-dark);
+    }
+
+
+        .screening-card-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+
+    .screening-card-header h2 {
+        margin: 0 0 6px;
+        color: var(--screen-dark);
+        font-size: 21px;
+        font-weight: 950;
+    }
+
+
+    .screening-card-header p {
+        margin: 0;
+        color: var(--screen-text);
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+
+    /* =========================================
+           QUESTIONS LIST
+        ========================================= */
+
+    .screening-question-list {
+        display: grid;
+        gap: 13px;
+    }
+
+
+    .screening-question-row {
+        padding: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        background: #F8FAFC;
+        transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+
+        .screening-question-row:hover {
+            transform: translateY(-2px);
+            border-color: #FDBA95;
+            background: #FFF9F5;
+            box-shadow: 0 8px 20px rgba(15,23,42,.05);
+        }
+
+
+    .question-content {
+        min-width: 0;
+    }
+
+
+    .question-top {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+
+    .question-type {
+        padding: 6px 9px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 30px;
+        background: var(--screen-orange-soft);
+        color: var(--screen-orange-dark);
+        font-size: 9px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+
+        .question-type svg {
+            width: 13px;
+            height: 13px;
+        }
+
+
+    .question-required {
+        padding: 5px 8px;
+        border-radius: 30px;
+        background: var(--screen-red-soft);
+        color: var(--screen-red-dark);
+        font-size: 8px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+
+    .question-optional {
+        padding: 5px 8px;
+        border-radius: 30px;
+        background: var(--screen-blue-soft);
+        color: var(--screen-blue);
+        font-size: 8px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+
+    .question-content strong {
+        display: block;
+        color: var(--screen-dark);
+        font-size: 14px;
+        font-weight: 900;
+        line-height: 1.55;
+    }
+
+
+    /* =========================================
+           DELETE BUTTON
+        ========================================= */
+
+    .screening-delete-form {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+
+    .screening-delete-button {
+        min-height: 39px;
+        padding: 0 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: 1px solid #FECACA;
+        border-radius: 9px;
+        background: #FFFFFF;
+        color: var(--screen-red);
+        font-size: 10px;
+        font-weight: 850;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+
+        .screening-delete-button svg {
+            width: 15px;
+            height: 15px;
+        }
+
+
+        .screening-delete-button:hover {
+            border-color: #FCA5A5;
+            background: var(--screen-red-soft);
+            transform: translateY(-1px);
+        }
+
+
+    /* =========================================
+           EMPTY
+        ========================================= */
+
+    .screening-empty {
+        padding: 52px 20px;
+        border: 1px dashed #CBD5E1;
+        border-radius: 13px;
+        background: #FAFCFE;
+        text-align: center;
+    }
+
+
+    .screening-empty-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 17px;
+        background: var(--screen-orange-soft);
+        color: var(--screen-orange-dark);
+    }
+
+
+        .screening-empty-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+
+    .screening-empty h3 {
+        margin: 0 0 7px;
+        color: var(--screen-dark);
+        font-size: 18px;
+        font-weight: 900;
+    }
+
+
+    .screening-empty p {
+        max-width: 470px;
+        margin: 0 auto;
+        color: var(--screen-text);
+        font-size: 12px;
+        line-height: 1.65;
+    }
+
+
+    /* =========================================
+           ADD QUESTION FORM
+        ========================================= */
+
+    .add-question-card {
+        position: sticky;
+        top: 90px;
+    }
+
+
+    .screening-field {
+        margin-bottom: 17px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+
+        .screening-field label {
+            color: var(--screen-text-dark);
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+
+        .screening-field textarea,
+        .screening-field select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: 10px;
+            background: #FFFFFF;
+            color: var(--screen-dark);
+            font-size: 13px;
+            outline: none;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+
+        .screening-field select {
+            min-height: 47px;
+        }
+
+
+        .screening-field textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+
+            .screening-field textarea:hover,
+            .screening-field select:hover {
+                border-color: #94A3B8;
+            }
+
+
+            .screening-field textarea:focus,
+            .screening-field select:focus {
+                border-color: var(--screen-orange);
+                box-shadow: 0 0 0 4px rgba(253,80,0,.09);
+            }
+
+
+    /* =========================================
+           CHECKBOX
+        ========================================= */
+
+    .screening-check {
+        margin: 4px 0 19px;
+        padding: 13px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        background: #F8FAFC;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+
+        .screening-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--screen-orange);
+            cursor: pointer;
+        }
+
+
+    /* =========================================
+           ADD BUTTON
+        ========================================= */
+
+    .screening-add-button {
+        width: 100%;
+        min-height: 49px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, var(--screen-orange), var(--screen-orange-light) );
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 9px 22px rgba(253,80,0,.22);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+
+        .screening-add-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+        .screening-add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 28px rgba(253,80,0,.30);
+        }
+
+
+    /* =========================================
+           INFO BOX
+        ========================================= */
+
+    .screening-help {
+        margin-top: 17px;
+        padding: 14px;
+        display: flex;
+        gap: 9px;
+        border-left: 3px solid var(--screen-orange);
+        border-radius: 0 9px 9px 0;
+        background: var(--screen-orange-soft);
+        color: #64748B;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+
+        .screening-help svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            color: var(--screen-orange-dark);
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 900px) {
+
+        .screening-layout {
+            grid-template-columns: 1fr;
+        }
+
+
+        .add-question-card {
+            position: static;
+        }
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .screening-page {
+            padding: 30px 14px 65px;
+        }
+
+
+        .screening-header {
+            padding: 27px 23px;
+        }
+
+
+            .screening-header h1 {
+                font-size: 29px;
+            }
+
+
+            .screening-header p {
+                font-size: 13px;
+            }
+
+
+        .screening-card {
+            padding: 21px;
+        }
+
+
+        .screening-question-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .screening-delete-button {
+            width: 100%;
+        }
+
+
+        .screening-delete-form {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<section class="screening-page">
+
+    <div class="screening-container">
+
+
+        <!-- =========================================
+             BACK
+        ========================================= -->
+
+        <a class="screening-back"
+           href="/Employer/Jobs">
+
+            <svg viewBox="0 0 24 24"
+                 class="screen-svg">
+
+                <path d="M19 12H5" />
+
+                <path d="m11 18-6-6 6-6" />
+
+            </svg>
+
+            Back to Jobs
+
+        </a>
+
+
+        <!-- =========================================
+             HEADER
+        ========================================= -->
+
+        <div class="screening-header">
+
+            <div class="screening-header-content">
+
+
+                <span class="screening-kicker">
+
+                    <svg viewBox="0 0 24 24"
+                         class="screen-svg">
+
+                        <path d="M9 11l3 3L22 4" />
+
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+
+                    </svg>
+
+                    Candidate Screening
+
+                </span>
+
+
+                <h1>
+                    @Model.JobTitle
+                </h1>
+
+
+                <p>
+
+                    Create screening questions that candidates
+                    must answer when applying for this vacancy.
+
+                </p>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             MESSAGES
+        ========================================= -->
+        @if (
+                    !string.IsNullOrWhiteSpace(
+                        Model.SuccessMessage))
+        {
+            <div class="screening-alert success">
+
+                <svg viewBox="0 0 24 24"
+                     class="screen-svg">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="9" />
+
+                    <path d="m8 12 3 3 5-6" />
+
+                </svg>
+
+                @Model.SuccessMessage
+
+            </div>
+        }
+
+
+        @if (
+            !string.IsNullOrWhiteSpace(
+                Model.ErrorMessage))
+        {
+            <div class="screening-alert danger">
+
+                <svg viewBox="0 0 24 24"
+                     class="screen-svg">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="9" />
+
+                    <path d="M12 8v5" />
+
+                    <path d="M12 17h.01" />
+
+                </svg>
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        <!-- =========================================
+             MAIN LAYOUT
+        ========================================= -->
+
+        <div class="screening-layout">
+
+
+            <!-- =====================================
+                 QUESTIONS
+            ====================================== -->
+
+            <div class="screening-card">
+
+
+                <div class="screening-card-header">
+
+
+                    <div class="screening-card-icon">
+
+                        <svg viewBox="0 0 24 24"
+                             class="screen-svg">
+
+                            <circle cx="12"
+                                    cy="12"
+                                    r="9" />
+
+                            <path d="M9.5 9a2.5 2.5 0 0 1 4.8 1c0 2-2.3 2.1-2.3 4" />
+
+                            <path d="M12 18h.01" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2>
+                            Screening Questions
+                        </h2>
+
+                        <p>
+                            Questions candidates will answer
+                            during the job application process.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                @if (!Model.Questions.Any())
+                {
+                    <div class="screening-empty">
+
+
+                        <div class="screening-empty-icon">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="screen-svg">
+
+                                <circle cx="12"
+                                        cy="12"
+                                        r="9" />
+
+                                <path d="M9.5 9a2.5 2.5 0 0 1 4.8 1c0 2-2.3 2.1-2.3 4" />
+
+                                <path d="M12 18h.01" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <h3>
+                            No Screening Questions
+                        </h3>
+
+
+                        <p>
+
+                            Add questions such as work rights,
+                            driver licence, availability,
+                            certifications or role-specific requirements.
+
+                        </p>
+
+
+                    </div>
+                }
+                else
+                {
+                    <div class="screening-question-list">
+
+
+                        @foreach (var q in Model.Questions)
+                        {
+                            <div class="screening-question-row">
+
+
+                                <div class="question-content">
+
+
+                                    <div class="question-top">
+
+
+                                        <span class="question-type">
+
+                                            <svg viewBox="0 0 24 24"
+                                                 class="screen-svg">
+
+                                                <path d="M4 6h16" />
+
+                                                <path d="M4 12h10" />
+
+                                                <path d="M4 18h7" />
+
+                                            </svg>
+
+                                            @q.QuestionType
+
+                                        </span>
+
+
+                                        @if (q.IsRequired)
+                                        {
+                                            <span class="question-required">
+
+                                                Required
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="question-optional">
+
+                                                Optional
+
+                                            </span>
+                                        }
+
+
+                                    </div>
+
+
+                                    <strong>
+                                        @q.QuestionText
+                                    </strong>
+
+
+                                </div>
+
+
+                                <form asp-action="Delete"
+                                      asp-route-questionId="@q.JobScreeningQuestionId"
+                                      method="post"
+                                      class="screening-delete-form">
+
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <input type="hidden"
+                                           name="jobId"
+                                           value="@Model.JobId" />
+
+
+                                    <button class="screening-delete-button"
+                                            type="submit">
+
+                                        <svg viewBox="0 0 24 24"
+                                             class="screen-svg">
+
+                                            <path d="M4 7h16" />
+
+                                            <path d="M9 7V4h6v3" />
+
+                                            <path d="M7 7l1 13h8l1-13" />
+
+                                        </svg>
+
+                                        Delete
+
+                                    </button>
+
+
+                                </form>
+
+
+                            </div>
+                        }
+
+
+                    </div>
+                }
+
+
+            </div>
+
+
+            <!-- =====================================
+                 ADD QUESTION
+            ====================================== -->
+
+            <form asp-action="Add"
+                  asp-route-jobId="@Model.JobId"
+                  method="post"
+                  class="screening-card add-question-card">
+
+
+                @Html.AntiForgeryToken()
+
+
+                <div class="screening-card-header">
+
+
+                    <div class="screening-card-icon">
+
+                        <svg viewBox="0 0 24 24"
+                             class="screen-svg">
+
+                            <circle cx="12"
+                                    cy="12"
+                                    r="9" />
+
+                            <path d="M12 8v8" />
+
+                            <path d="M8 12h8" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2>
+                            Add Question
+                        </h2>
+
+                        <p>
+                            Create a new screening question
+                            for candidates.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- QUESTION -->
+
+                <div class="screening-field">
+
+                    <label asp-for="NewQuestionText">
+                        Question
+                    </label>
+
+                    <textarea asp-for="NewQuestionText"
+                              rows="4"
+                              placeholder="Example: Are you available to work weekends?"></textarea>
+
+                </div>
+
+
+                <!-- TYPE -->
+
+                <div class="screening-field">
+
+                    <label asp-for="NewQuestionType">
+                        Answer Type
+                    </label>
+
+
+                    <select asp-for="NewQuestionType">
+
+                        <option value="Text">
+                            Text Answer
+                        </option>
+
+                        <option value="YesNo">
+                            Yes / No
+                        </option>
+
+                        <option value="MultipleChoice">
+                            Multiple Choice
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- OPTIONS -->
+
+                <div class="screening-field">
+
+                    <label asp-for="NewOptions">
+                        Multiple Choice Options
+                    </label>
+
+
+                    <textarea asp-for="NewOptions"
+                              rows="4"
+                              placeholder="Enter one option per line"></textarea>
+
+                </div>
+
+
+                <!-- REQUIRED -->
+
+                <label class="screening-check">
+
+                    <input asp-for="NewQuestionRequired" />
+
+                    <span>
+                        Candidate must answer this question
+                    </span>
+
+                </label>
+
+
+                <!-- BUTTON -->
+
+                <button class="screening-add-button"
+                        type="submit">
+
+                    <svg viewBox="0 0 24 24"
+                         class="screen-svg">
+
+                        <path d="M12 5v14" />
+
+                        <path d="M5 12h14" />
+
+                    </svg>
+
+                    Add Screening Question
+
+                </button>
+
+
+                <!-- INFO -->
+
+                <div class="screening-help">
+
+                    <svg viewBox="0 0 24 24"
+                         class="screen-svg">
+
+                        <circle cx="12"
+                                cy="12"
+                                r="9" />
+
+                        <path d="M12 11v5" />
+
+                        <path d="M12 8h.01" />
+
+                    </svg>
+
+                    <div>
+
+                        Use screening questions only for
+                        information that helps evaluate whether
+                        a candidate meets the vacancy requirements.
+
+                    </div>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+</section>

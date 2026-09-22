@@ -1,0 +1,929 @@
+@model Workhub_Web.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<style>
+    :root {
+        --auth-orange: #FD5000;
+        --auth-orange-dark: #D94300;
+        --auth-orange-light: #FF7A00;
+        --auth-orange-soft: #FFF3EC;
+        --auth-dark: #0F172A;
+        --auth-dark-2: #1E293B;
+        --auth-text: #64748B;
+        --auth-text-dark: #334155;
+        --auth-border: #E2E8F0;
+        --auth-bg: #F8FAFC;
+        --auth-white: #FFFFFF;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .wh-auth-page {
+        min-height: calc(100vh - 70px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 45px 20px;
+        background: radial-gradient( circle at 8% 20%, rgba(253,80,0,.055), transparent 27% ), radial-gradient( circle at 92% 80%, rgba(253,80,0,.045), transparent 30% ), var(--auth-bg);
+    }
+
+    .wh-auth-shell {
+        position: relative;
+        width: 100%;
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+        overflow: hidden;
+        border: 1px solid rgba(226,232,240,.95);
+        border-radius: 25px;
+        background: #FFFFFF;
+        box-shadow: 0 30px 80px rgba(15,23,42,.12), 0 8px 25px rgba(15,23,42,.05);
+    }
+
+    /* =========================================
+           LEFT STORY
+        ========================================= */
+
+    .wh-auth-story {
+        position: relative;
+        overflow: hidden;
+        padding: 45px;
+        color: #FFFFFF;
+        background: radial-gradient( circle at 85% 12%, rgba(253,80,0,.52), transparent 30% ), radial-gradient( circle at 10% 90%, rgba(255,122,0,.13), transparent 32% ), linear-gradient( 145deg, #0F172A 0%, #182235 58%, #431407 100% );
+    }
+
+        .wh-auth-story::before {
+            content: "";
+            position: absolute;
+            width: 390px;
+            height: 390px;
+            right: -210px;
+            top: -170px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 50%;
+            box-shadow: 0 0 0 42px rgba(255,255,255,.018), 0 0 0 84px rgba(255,255,255,.012);
+        }
+
+        .wh-auth-story::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            background: linear-gradient( 90deg, transparent, var(--auth-orange), transparent );
+        }
+
+    /* =========================================
+           BRAND
+        ========================================= */
+
+    .wh-auth-brand {
+        position: relative;
+        z-index: 2;
+        display: inline-block;
+        margin-bottom: 55px;
+        color: #FFFFFF;
+        font-size: 25px;
+        font-weight: 950;
+        letter-spacing: -1px;
+        text-decoration: none;
+    }
+
+        .wh-auth-brand span {
+            color: #FF8A55;
+        }
+
+    /* =========================================
+           EYEBROW
+        ========================================= */
+
+    .wh-auth-eyebrow {
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 17px;
+        padding: 8px 12px;
+        border: 1px solid rgba(255,255,255,.13);
+        border-radius: 30px;
+        background: rgba(255,255,255,.07);
+        backdrop-filter: blur(12px);
+        color: #FDBA74;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+        .wh-auth-eyebrow::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--auth-orange);
+            box-shadow: 0 0 11px rgba(253,80,0,.9);
+        }
+
+    /* =========================================
+           STORY CONTENT
+        ========================================= */
+
+    .wh-auth-story h1 {
+        position: relative;
+        z-index: 2;
+        max-width: 450px;
+        margin: 0 0 17px;
+        color: #FFFFFF;
+        font-size: clamp(33px, 4vw, 46px);
+        font-weight: 950;
+        line-height: 1.07;
+        letter-spacing: -1.6px;
+    }
+
+    .wh-auth-story > p {
+        position: relative;
+        z-index: 2;
+        max-width: 470px;
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    /* =========================================
+           BENEFITS
+        ========================================= */
+
+    .wh-auth-benefits {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        gap: 11px;
+        margin-top: 32px;
+    }
+
+    .wh-auth-benefit {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 12px;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 13px;
+        background: rgba(255,255,255,.045);
+        backdrop-filter: blur(10px);
+        transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+        .wh-auth-benefit:hover {
+            transform: translateX(4px);
+            border-color: rgba(253,80,0,.32);
+            background: rgba(255,255,255,.07);
+        }
+
+    .wh-auth-benefit-icon {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(253,80,0,.25);
+        border-radius: 11px;
+        background: rgba(253,80,0,.13);
+        color: #FF955F;
+    }
+
+        .wh-auth-benefit-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+    .wh-auth-benefit strong {
+        display: block;
+        margin-bottom: 3px;
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    .wh-auth-benefit small {
+        display: block;
+        color: #94A3B8;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    /* =========================================
+           RIGHT FORM
+        ========================================= */
+
+    .wh-auth-form-panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 42px 55px;
+        background: #FFFFFF;
+    }
+
+        .wh-auth-form-panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 55px;
+            width: 70px;
+            height: 3px;
+            border-radius: 0 0 5px 5px;
+            background: linear-gradient( 90deg, var(--auth-orange), var(--auth-orange-light) );
+        }
+
+    .wh-auth-form-kicker {
+        display: inline-block;
+        margin-bottom: 9px;
+        color: var(--auth-orange);
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    .wh-auth-form-panel h2 {
+        margin: 0 0 6px;
+        color: var(--auth-dark);
+        font-size: 28px;
+        font-weight: 950;
+        letter-spacing: -.8px;
+    }
+
+    .wh-auth-form-copy {
+        margin: 0 0 24px;
+        color: var(--auth-text);
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    /* =========================================
+           FORM
+        ========================================= */
+
+    .wh-auth-form {
+        display: grid;
+        gap: 13px;
+    }
+
+    .wh-auth-validation {
+        color: #DC2626;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .wh-auth-field {
+        display: grid;
+        gap: 6px;
+    }
+
+        .wh-auth-field label {
+            color: var(--auth-text-dark);
+            font-size: 11px;
+            font-weight: 850;
+        }
+
+    /* =========================================
+           INPUTS
+        ========================================= */
+
+    .wh-auth-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .wh-auth-input-wrap > svg {
+            position: absolute;
+            left: 14px;
+            z-index: 2;
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: #94A3B8;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+            transition: stroke .2s ease;
+        }
+
+        .wh-auth-input-wrap:focus-within > svg {
+            stroke: var(--auth-orange);
+        }
+
+        .wh-auth-input-wrap input {
+            width: 100%;
+            height: 47px;
+            padding: 0 45px;
+            border: 1px solid #CBD5E1;
+            border-radius: 10px;
+            outline: none;
+            background: #FFFFFF;
+            color: var(--auth-dark);
+            font-family: inherit;
+            font-size: 12px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+            .wh-auth-input-wrap input::placeholder {
+                color: #94A3B8;
+            }
+
+            .wh-auth-input-wrap input:hover {
+                border-color: #94A3B8;
+            }
+
+            .wh-auth-input-wrap input:focus {
+                border-color: var(--auth-orange);
+                box-shadow: 0 0 0 3px rgba(253,80,0,.09), 0 5px 15px rgba(253,80,0,.05);
+            }
+
+    .wh-auth-password-wrap input {
+        padding-right: 48px;
+    }
+
+    /* =========================================
+           PASSWORD TOGGLE
+        ========================================= */
+
+    .wh-password-toggle {
+        position: absolute;
+        right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: #94A3B8;
+        cursor: pointer;
+        transition: color .2s ease, background .2s ease;
+    }
+
+        .wh-password-toggle:hover {
+            background: var(--auth-orange-soft);
+            color: var(--auth-orange);
+        }
+
+        .wh-password-toggle svg {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+    /* =========================================
+           VALIDATION
+        ========================================= */
+
+    .wh-auth-field-error {
+        min-height: 11px;
+        color: #DC2626;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    /* =========================================
+           CREATE ACCOUNT BUTTON
+        ========================================= */
+
+    .wh-auth-submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        height: 49px;
+        margin-top: 4px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, var(--auth-orange), var(--auth-orange-light) );
+        color: #FFFFFF;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 10px 22px rgba(253,80,0,.21);
+        transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+        .wh-auth-submit svg {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform .2s ease;
+        }
+
+        .wh-auth-submit:hover {
+            transform: translateY(-2px);
+            background: linear-gradient( 135deg, var(--auth-orange-dark), var(--auth-orange) );
+            box-shadow: 0 15px 30px rgba(253,80,0,.27);
+        }
+
+            .wh-auth-submit:hover svg {
+                transform: translateX(3px);
+            }
+
+        .wh-auth-submit:active {
+            transform: translateY(0);
+        }
+
+    /* =========================================
+           LOGIN LINK
+        ========================================= */
+
+    .wh-auth-switch {
+        margin: 21px 0 0;
+        text-align: center;
+        color: var(--auth-text);
+        font-size: 11px;
+    }
+
+        .wh-auth-switch a {
+            color: var(--auth-orange);
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+            .wh-auth-switch a:hover {
+                color: var(--auth-orange-dark);
+                text-decoration: underline;
+            }
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 900px) {
+
+        .wh-auth-shell {
+            max-width: 760px;
+            grid-template-columns: 1fr;
+        }
+
+        .wh-auth-story {
+            padding: 38px;
+        }
+
+        .wh-auth-brand {
+            margin-bottom: 40px;
+        }
+
+        .wh-auth-story h1 {
+            max-width: 650px;
+        }
+
+        .wh-auth-story > p {
+            max-width: 650px;
+        }
+
+        .wh-auth-benefits {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .wh-auth-benefit {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .wh-auth-form-panel {
+            padding: 42px 55px;
+        }
+    }
+
+    @@media (max-width: 650px) {
+
+        .wh-auth-page {
+            padding: 20px 13px;
+        }
+
+        .wh-auth-shell {
+            border-radius: 18px;
+        }
+
+        .wh-auth-story {
+            padding: 30px 22px;
+        }
+
+        .wh-auth-brand {
+            margin-bottom: 35px;
+        }
+
+        .wh-auth-story h1 {
+            font-size: 33px;
+            letter-spacing: -1px;
+        }
+
+        .wh-auth-story > p {
+            font-size: 12px;
+        }
+
+        .wh-auth-benefits {
+            grid-template-columns: 1fr;
+            gap: 9px;
+            margin-top: 25px;
+        }
+
+        .wh-auth-benefit {
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .wh-auth-form-panel {
+            padding: 35px 21px;
+        }
+
+            .wh-auth-form-panel::before {
+                left: 21px;
+            }
+
+            .wh-auth-form-panel h2 {
+                font-size: 24px;
+            }
+    }
+</style>
+
+<section class="wh-auth-page">
+
+    ```
+    <div class="wh-auth-shell">
+
+        <!-- =====================================
+         LEFT STORY
+    ====================================== -->
+
+        <aside class="wh-auth-story">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="wh-auth-brand">
+
+                Work<span>Hub</span>
+
+            </a>
+
+
+            <span class="wh-auth-eyebrow">
+                Create your account
+            </span>
+
+
+            <h1>
+                One account.
+                More ways to move forward.
+            </h1>
+
+
+            <p>
+                Join WorkHub to find jobs, offer services,
+                buy or sell items and manage your opportunities
+                from a single profile.
+            </p>
+
+
+            <div class="wh-auth-benefits">
+
+                <!-- JOB SEEKER -->
+
+                <div class="wh-auth-benefit">
+
+                    <span class="wh-auth-benefit-icon">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="7" width="18" height="13" rx="2" />
+                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <path d="M3 12h18" />
+                        </svg>
+
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Job seeker
+                        </strong>
+
+                        <small>
+                            Build your profile, upload a CV and apply to jobs.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SERVICES -->
+
+                <div class="wh-auth-benefit">
+
+                    <span class="wh-auth-benefit-icon">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="4" y="3" width="16" height="18" rx="2" />
+                            <path d="M8 8h8" />
+                            <path d="M8 12h5" />
+                            <path d="M8 16h7" />
+                        </svg>
+
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Services
+                        </strong>
+
+                        <small>
+                            Create a service profile and respond to opportunities.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MARKETPLACE -->
+
+                <div class="wh-auth-benefit">
+
+                    <span class="wh-auth-benefit-icon">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 7h18l-2 13H5L3 7Z" />
+                            <path d="M8 7a4 4 0 0 1 8 0" />
+                            <path d="M9 11h.01" />
+                            <path d="M15 11h.01" />
+                        </svg>
+
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Marketplace
+                        </strong>
+
+                        <small>
+                            Sell, rent, buy and message people directly through WorkHub.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================
+         REGISTER FORM
+    ====================================== -->
+
+        <div class="wh-auth-form-panel">
+
+            <span class="wh-auth-form-kicker">
+                Get started
+            </span>
+
+
+            <h2>
+                Create your WorkHub account
+            </h2>
+
+
+            <p class="wh-auth-form-copy">
+                It only takes a minute to create your account.
+            </p>
+
+
+            <form asp-controller="Account"
+                  asp-action="Register"
+                  method="post"
+                  class="wh-auth-form">
+
+                @Html.AntiForgeryToken()
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="wh-auth-validation">
+                </div>
+
+
+                <!-- FULL NAME -->
+
+                <div class="wh-auth-field">
+
+                    <label asp-for="FullName">
+                        Full Name
+                    </label>
+
+                    <div class="wh-auth-input-wrap">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 21a8 8 0 0 1 16 0" />
+                        </svg>
+
+                        <input asp-for="FullName"
+                               autocomplete="name"
+                               placeholder="Your full name" />
+
+                    </div>
+
+                    <span asp-validation-for="FullName"
+                          class="wh-auth-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="wh-auth-field">
+
+                    <label asp-for="Email">
+                        Email Address
+                    </label>
+
+                    <div class="wh-auth-input-wrap">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2" />
+                            <path d="m3 7 9 6 9-6" />
+                        </svg>
+
+                        <input asp-for="Email"
+                               autocomplete="email"
+                               placeholder="you@example.com" />
+
+                    </div>
+
+                    <span asp-validation-for="Email"
+                          class="wh-auth-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="wh-auth-field">
+
+                    <label asp-for="Password">
+                        Password
+                    </label>
+
+                    <div class="wh-auth-input-wrap wh-auth-password-wrap">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="4" y="10" width="16" height="11" rx="2" />
+                            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                        </svg>
+
+                        <input asp-for="Password"
+                               autocomplete="new-password"
+                               placeholder="At least 6 characters" />
+
+                        <button type="button"
+                                class="wh-password-toggle"
+                                data-password-target="Password"
+                                aria-label="Show password">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                    <span asp-validation-for="Password"
+                          class="wh-auth-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="wh-auth-field">
+
+                    <label asp-for="ConfirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <div class="wh-auth-input-wrap wh-auth-password-wrap">
+
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z" />
+                            <path d="m9 12 2 2 4-5" />
+                        </svg>
+
+                        <input asp-for="ConfirmPassword"
+                               autocomplete="new-password"
+                               placeholder="Repeat your password" />
+
+                        <button type="button"
+                                class="wh-password-toggle"
+                                data-password-target="ConfirmPassword"
+                                aria-label="Show password">
+
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                    <span asp-validation-for="ConfirmPassword"
+                          class="wh-auth-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- CREATE ACCOUNT -->
+
+                <button type="submit"
+                        class="wh-auth-submit">
+
+                    <span>
+                        Create Account
+                    </span>
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                    </svg>
+
+                </button>
+
+            </form>
+
+
+            <p class="wh-auth-switch">
+
+                Already have an account?
+
+                <a asp-controller="Account"
+                   asp-action="Login">
+
+                    Sign in
+
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+    
+
+</section>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+   
+    <script src="~/js/auth.js"
+            asp-append-version="true">
+    </script>
+   
+
+}

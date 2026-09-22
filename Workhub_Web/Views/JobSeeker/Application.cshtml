@@ -1,0 +1,2933 @@
+﻿@model Workhub_Web.Models.JobSeekerApplicationViewModel
+
+@{
+    ViewData["Title"] = "Job Seeker Profile";
+
+    var remainingSkills =
+        Model.AvailableSkills
+            .Where(
+                available =>
+                    !Model.Skills.Any(
+                        saved =>
+                            saved.SkillId ==
+                            available.SkillId))
+            .ToList();
+}
+
+
+<style>
+
+    :root {
+        --wh-orange: #FD5000;
+        --wh-orange-dark: #D94300;
+        --wh-orange-hover: #B93800;
+        --wh-orange-soft: #FFF2EB;
+        --wh-dark: #0F172A;
+        --wh-text: #64748B;
+        --wh-text-dark: #334155;
+        --wh-border: #E2E8F0;
+        --wh-bg: #F8FAFC;
+        --wh-green: #16A34A;
+        --wh-green-soft: #F0FDF4;
+        --wh-red: #DC2626;
+        --wh-red-soft: #FEF2F2;
+        --wh-blue: #2563EB;
+        --wh-blue-soft: #EFF6FF;
+    }
+
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .jobseeker-page {
+        min-height: calc(100vh - 76px);
+        padding: 48px 28px 90px;
+        background: var(--wh-bg);
+    }
+
+
+    .jobseeker-container {
+        width: 100%;
+        max-width: 1240px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================
+           PAGE HEADER
+        ========================================= */
+
+    .jobseeker-header {
+        margin-bottom: 26px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+
+    .jobseeker-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--wh-orange);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+    }
+
+
+    .jobseeker-header h1 {
+        margin: 0 0 8px;
+        color: var(--wh-dark);
+        font-size: 36px;
+        font-weight: 900;
+        letter-spacing: -.5px;
+    }
+
+
+    .jobseeker-header p {
+        max-width: 740px;
+        margin: 0;
+        color: var(--wh-text);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+
+    .back-dashboard {
+        padding: 10px 16px;
+        border: 1px solid var(--wh-border);
+        border-radius: 9px;
+        background: #FFFFFF;
+        color: var(--wh-text-dark);
+        font-size: 11px;
+        font-weight: 850;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: .2s ease;
+    }
+
+
+        .back-dashboard:hover {
+            border-color: var(--wh-orange);
+            color: var(--wh-orange-dark);
+            background: var(--wh-orange-soft);
+        }
+
+
+    /* =========================================
+           SECTION NAVIGATION
+        ========================================= */
+
+    .section-navigation {
+        margin-bottom: 24px;
+        padding: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        border: 1px solid var(--wh-border);
+        border-radius: 13px;
+        background: #FFFFFF;
+    }
+
+
+    .section-nav-link {
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: #475569;
+        font-size: 10px;
+        font-weight: 850;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+
+        .section-nav-link:hover {
+            background: var(--wh-orange-soft);
+            color: var(--wh-orange-dark);
+        }
+
+
+    /* =========================================
+           MESSAGES
+        ========================================= */
+
+    .jobseeker-message {
+        margin-bottom: 20px;
+        padding: 14px 17px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+
+    .jobseeker-success {
+        border: 1px solid #BBF7D0;
+        background: var(--wh-green-soft);
+        color: #15803D;
+    }
+
+
+    .jobseeker-error {
+        border: 1px solid #FECACA;
+        background: var(--wh-red-soft);
+        color: #B91C1C;
+    }
+
+
+    /* =========================================
+           MAIN CARD
+        ========================================= */
+
+    .jobseeker-card {
+        margin-bottom: 22px;
+        padding: 28px;
+        scroll-margin-top: 95px;
+        border: 1px solid var(--wh-border);
+        border-radius: 16px;
+        background: #FFFFFF;
+        box-shadow: 0 7px 24px rgba(15, 23, 42, .04);
+    }
+
+
+    .card-header {
+        margin-bottom: 23px;
+        padding-bottom: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+
+        .card-header h2 {
+            margin: 0;
+            color: var(--wh-dark);
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+
+        .card-header span {
+            color: var(--wh-text);
+            font-size: 10px;
+            font-weight: 650;
+        }
+
+
+    /* =========================================
+           PERSONAL PROFILE
+        ========================================= */
+
+    .personal-profile-header {
+        margin-bottom: 23px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+
+    .personal-avatar {
+        position: relative;
+        width: 75px;
+        height: 75px;
+        overflow: hidden;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--wh-orange);
+        color: #FFFFFF;
+        font-size: 27px;
+        font-weight: 900;
+    }
+
+
+        .personal-avatar img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+    .personal-profile-header h3 {
+        margin: 0 0 4px;
+        color: var(--wh-dark);
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+
+    .personal-profile-header p {
+        margin: 0;
+        color: var(--wh-text);
+        font-size: 11px;
+    }
+
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+
+    .detail-box {
+        padding: 16px 17px;
+        border-radius: 10px;
+        background: #F8FAFC;
+    }
+
+
+        .detail-box.full {
+            grid-column: 1 / -1;
+        }
+
+
+    .detail-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #94A3B8;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+
+    .detail-value {
+        color: var(--wh-text-dark);
+        font-size: 12px;
+        font-weight: 750;
+        word-break: break-word;
+    }
+
+
+    .personal-footer {
+        margin-top: 20px;
+        padding-top: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border-top: 1px solid #F1F5F9;
+    }
+
+
+        .personal-footer p {
+            margin: 0;
+            color: var(--wh-text);
+            font-size: 10px;
+        }
+
+
+    .outline-button {
+        padding: 9px 14px;
+        border: 1px solid var(--wh-orange);
+        border-radius: 8px;
+        background: #FFFFFF;
+        color: var(--wh-orange-dark);
+        font-size: 10px;
+        font-weight: 850;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+
+        .outline-button:hover {
+            background: var(--wh-orange-soft);
+            color: var(--wh-orange-dark);
+        }
+
+
+    /* =========================================
+           FORM
+        ========================================= */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .form-group label {
+            color: var(--wh-text-dark);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+
+    .form-control-custom {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        background: #FFFFFF;
+        color: var(--wh-dark);
+        font-size: 12px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+
+        .form-control-custom:focus {
+            border-color: var(--wh-orange);
+            box-shadow: 0 0 0 3px rgba(253, 80, 0, .10);
+        }
+
+
+    textarea.form-control-custom {
+        min-height: 125px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+
+    .field-help {
+        color: #94A3B8;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+
+    .primary-button {
+        margin-top: 19px;
+        padding: 11px 19px;
+        border: none;
+        border-radius: 8px;
+        background: var(--wh-orange-dark);
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+
+        .primary-button:hover {
+            background: var(--wh-orange-hover);
+        }
+
+
+    /* =========================================
+           OPTIONAL SECTION NOTE
+        ========================================= */
+
+    .optional-note {
+        margin-bottom: 20px;
+        padding: 13px 15px;
+        border: 1px solid #E2E8F0;
+        border-radius: 9px;
+        background: #F8FAFC;
+        color: #64748B;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+        .optional-note strong {
+            color: var(--wh-dark);
+        }
+
+
+    /* =========================================
+           LOCK / EMPTY
+        ========================================= */
+
+    .section-locked {
+        padding: 18px;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        background: #F8FAFC;
+        color: #64748B;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+        .section-locked strong {
+            color: var(--wh-dark);
+        }
+
+
+    .section-empty {
+        margin-bottom: 20px;
+        padding: 25px 18px;
+        border: 1px dashed #CBD5E1;
+        border-radius: 10px;
+        background: #FAFAFA;
+        text-align: center;
+    }
+
+
+    .section-empty-icon {
+        margin-bottom: 7px;
+        font-size: 25px;
+    }
+
+
+    .section-empty strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--wh-dark);
+        font-size: 12px;
+    }
+
+
+    .section-empty p {
+        margin: 0;
+        color: var(--wh-text);
+        font-size: 10px;
+    }
+
+
+    /* =========================================
+           ITEMS
+        ========================================= */
+
+    .item-card {
+        margin-bottom: 12px;
+        padding: 17px;
+        border: 1px solid #E2E8F0;
+        border-radius: 11px;
+        background: #F8FAFC;
+    }
+
+
+    .item-main {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+    }
+
+
+    .item-left {
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+    }
+
+
+    .item-icon {
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: var(--wh-orange-soft);
+        font-size: 19px;
+    }
+
+
+    .item-content h4 {
+        margin: 0 0 4px;
+        color: var(--wh-dark);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+    .item-company {
+        margin-bottom: 4px;
+        color: #475569;
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+
+    .item-detail {
+        margin-bottom: 4px;
+        color: var(--wh-text);
+        font-size: 10px;
+    }
+
+
+    .item-date {
+        color: #94A3B8;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+
+    .item-description {
+        margin-top: 8px;
+        color: #64748B;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+    .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+    }
+
+
+    .small-button {
+        padding: 7px 10px;
+        border-radius: 7px;
+        background: #FFFFFF;
+        font-size: 9px;
+        font-weight: 850;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+    .edit-button {
+        border: 1px solid var(--wh-orange);
+        color: var(--wh-orange-dark);
+    }
+
+
+    .delete-button {
+        border: 1px solid #FECACA;
+        color: var(--wh-red);
+    }
+
+
+        .delete-button:hover {
+            background: var(--wh-red-soft);
+        }
+
+
+    /* =========================================
+           DETAILS / INLINE EDIT
+        ========================================= */
+
+    .edit-details {
+        margin-top: 15px;
+        border-top: 1px solid #E2E8F0;
+    }
+
+
+        .edit-details summary {
+            padding-top: 15px;
+            color: var(--wh-orange-dark);
+            font-size: 10px;
+            font-weight: 850;
+            cursor: pointer;
+            list-style: none;
+        }
+
+
+            .edit-details summary::-webkit-details-marker {
+                display: none;
+            }
+
+
+    .edit-form {
+        margin-top: 15px;
+    }
+
+
+    /* =========================================
+           CHECKBOX
+        ========================================= */
+
+    .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+
+        .checkbox-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--wh-orange);
+        }
+
+
+        .checkbox-row label {
+            margin: 0;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+
+    /* =========================================
+           SKILLS
+        ========================================= */
+
+    .skills-grid {
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+    }
+
+
+    .skill-card {
+        padding: 15px;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        background: #F8FAFC;
+    }
+
+
+    .skill-header {
+        margin-bottom: 9px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+
+    .skill-name {
+        color: var(--wh-dark);
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+
+    .skill-category {
+        margin-top: 3px;
+        color: #94A3B8;
+        font-size: 8px;
+    }
+
+
+    .skill-info {
+        margin-bottom: 10px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+
+    .skill-badge {
+        padding: 5px 8px;
+        border-radius: 20px;
+        background: var(--wh-orange-soft);
+        color: var(--wh-orange-dark);
+        font-size: 8px;
+        font-weight: 850;
+    }
+
+
+    .skill-experience {
+        padding: 5px 8px;
+        border-radius: 20px;
+        background: #EEF2F7;
+        color: #475569;
+        font-size: 8px;
+        font-weight: 750;
+    }
+
+
+    /* =========================================
+           CV
+        ========================================= */
+
+    .cv-list {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+    }
+
+
+    .cv-card {
+        padding: 16px;
+        border: 1px solid #E2E8F0;
+        border-radius: 11px;
+        background: #F8FAFC;
+    }
+
+
+        .cv-card.primary {
+            border-color: #FDBA95;
+            background: #FFF9F5;
+        }
+
+
+    .cv-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+
+    .cv-info {
+        min-width: 0;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+
+    .cv-icon {
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        background: var(--wh-orange-soft);
+        font-size: 19px;
+    }
+
+
+    .cv-name {
+        margin-bottom: 4px;
+        color: var(--wh-dark);
+        font-size: 11px;
+        font-weight: 900;
+        overflow-wrap: anywhere;
+    }
+
+
+    .cv-meta {
+        color: var(--wh-text);
+        font-size: 9px;
+        line-height: 1.55;
+    }
+
+
+    .primary-badge {
+        display: inline-block;
+        margin-top: 7px;
+        padding: 4px 7px;
+        border-radius: 20px;
+        background: #DCFCE7;
+        color: #15803D;
+        font-size: 8px;
+        font-weight: 900;
+    }
+
+
+    .cv-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+
+    .cv-upload-box {
+        padding: 20px;
+        border: 1px dashed #FDBA95;
+        border-radius: 11px;
+        background: #FFFAF7;
+    }
+
+
+        .cv-upload-box h3 {
+            margin: 0 0 5px;
+            color: var(--wh-dark);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+
+        .cv-upload-box p {
+            margin: 0 0 15px;
+            color: var(--wh-text);
+            font-size: 9px;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 720px) {
+
+        .jobseeker-page {
+            padding: 32px 14px 65px;
+        }
+
+
+        .jobseeker-header {
+            flex-direction: column;
+        }
+
+
+        .details-grid,
+        .form-grid,
+        .skills-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .detail-box.full,
+        .form-group.full {
+            grid-column: auto;
+        }
+
+
+        .item-main,
+        .cv-main,
+        .personal-footer {
+            flex-direction: column;
+        }
+
+
+        .item-actions,
+        .cv-actions {
+            justify-content: flex-start;
+        }
+
+
+        .jobseeker-card {
+            padding: 21px;
+        }
+    }
+
+</style>
+
+
+<section class="jobseeker-page">
+
+    <div class="jobseeker-container">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="jobseeker-header">
+
+            <div>
+
+                <span class="jobseeker-eyebrow">
+                    WorkHub Job Seeker
+                </span>
+
+                <h1>
+                    Job Seeker Profile
+                </h1>
+
+                <p>
+                    Manage your professional information,
+                    education, skills, work experience and CV.
+                    These details help you build a stronger
+                    professional profile and support future
+                    WorkHub job features.
+                </p>
+
+            </div>
+
+
+            <a asp-controller="Account"
+               asp-action="Profile"
+               class="back-dashboard">
+
+                ← Back to Dashboard
+
+            </a>
+
+        </div>
+
+
+        <!-- =====================================
+             NAVIGATION
+        ====================================== -->
+
+        <div class="section-navigation">
+
+            <a href="#personal"
+               class="section-nav-link">
+                Personal
+            </a>
+
+            <a href="#professional"
+               class="section-nav-link">
+                Professional
+            </a>
+
+            <a href="#education"
+               class="section-nav-link">
+                Education
+            </a>
+
+            <a href="#skills"
+               class="section-nav-link">
+                Skills
+            </a>
+
+            <a href="#experience"
+               class="section-nav-link">
+                Work Experience
+            </a>
+
+            <a href="#cv"
+               class="section-nav-link">
+                CV & Resume
+            </a>
+
+        </div>
+
+
+        <!-- =====================================
+             MESSAGES
+        ====================================== -->
+        @if (TempData["JobSeekerSuccess"] != null)
+        {
+            <div class="jobseeker-message jobseeker-success">
+
+                @TempData["JobSeekerSuccess"]
+
+            </div>
+        }
+
+
+        @if (TempData["JobSeekerError"] != null)
+        {
+            <div class="jobseeker-message jobseeker-error">
+
+                @TempData["JobSeekerError"]
+
+            </div>
+        }
+
+
+        <!-- =====================================
+             PERSONAL INFORMATION
+        ====================================== -->
+
+        <div class="jobseeker-card"
+             id="personal">
+
+
+            <div class="card-header">
+
+                <h2>
+                    Personal Information
+                </h2>
+
+                <span>
+                    From your main WorkHub profile
+                </span>
+
+            </div>
+
+
+            <div class="personal-profile-header">
+
+
+                <div class="personal-avatar">
+
+                    <span>
+                        @Model.Initial
+                    </span>
+
+
+                    @if (Model.HasProfileImage)
+                    {
+                        <img src="/UserProfile/ProfileImage?v=@DateTime.UtcNow.Ticks"
+                             alt="@Model.FullName"
+                             onerror="this.style.display='none';" />
+                    }
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        @Model.FullName
+                    </h3>
+
+                    <p>
+                        @Model.Email
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="details-grid">
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        First Name
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.FirstName
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Last Name
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.LastName
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Date of Birth
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(Model.DateOfBirth.HasValue
+                            ? Model.DateOfBirth.Value.ToString("dd MMM yyyy")
+                            : "Not added")
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Email
+                    </span>
+
+                    <div class="detail-value">
+                        @Model.Email
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Country
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(string.IsNullOrWhiteSpace(Model.Country)
+                            ? "Not added"
+                            : Model.Country)
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Location
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(string.IsNullOrWhiteSpace(Model.Location)
+                            ? "Not added"
+                            : Model.Location)
+
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box full">
+
+                    <span class="detail-label">
+                        Phone
+                    </span>
+
+                    <div class="detail-value">
+
+                        @(string.IsNullOrWhiteSpace(Model.Phone)
+                            ? "Not added"
+                            : Model.Phone)
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="personal-footer">
+
+                <p>
+                    Personal information is managed
+                    through your main WorkHub profile.
+                </p>
+
+
+                <a asp-controller="UserProfile"
+                   asp-action="Edit"
+                   class="outline-button">
+
+                    Edit Personal Profile
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =====================================
+             PROFESSIONAL INFORMATION
+        ====================================== -->
+
+        <div class="jobseeker-card"
+             id="professional">
+
+
+            <div class="card-header">
+
+                <h2>
+                    Professional Information
+                </h2>
+
+                <span>
+                    Career preferences
+                </span>
+
+            </div>
+
+
+            <div class="optional-note">
+
+                <strong>
+                    Professional details are flexible.
+                </strong>
+
+                Update these fields whenever your career
+                preferences change. They are not used to
+                calculate a profile completion percentage.
+
+            </div>
+
+
+            <form asp-controller="JobSeeker"
+                  asp-action="SaveProfessionalProfile"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Professional Summary
+                        </label>
+
+                        <textarea asp-for="ProfessionalSummary"
+                                  maxlength="1000"
+                                  class="form-control-custom"
+                                  placeholder="Describe your professional background, strengths and career interests..."></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Preferred Job Category
+                        </label>
+
+                        <select asp-for="PreferredJobCategory"
+                                class="form-control-custom">
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            <option value="Information Technology">
+                                Information Technology
+                            </option>
+
+                            <option value="Accounting & Finance">
+                                Accounting & Finance
+                            </option>
+
+                            <option value="Engineering">
+                                Engineering
+                            </option>
+
+                            <option value="Healthcare">
+                                Healthcare
+                            </option>
+
+                            <option value="Sales & Marketing">
+                                Sales & Marketing
+                            </option>
+
+                            <option value="Education">
+                                Education
+                            </option>
+
+                            <option value="Hospitality & Tourism">
+                                Hospitality & Tourism
+                            </option>
+
+                            <option value="Construction & Trades">
+                                Construction & Trades
+                            </option>
+
+                            <option value="Human Resources">
+                                Human Resources
+                            </option>
+
+                            <option value="Administration & Customer Service">
+                                Administration & Customer Service
+                            </option>
+
+                            <option value="Logistics & Supply Chain">
+                                Logistics & Supply Chain
+                            </option>
+
+                            <option value="Design & Creative">
+                                Design & Creative
+                            </option>
+
+                            <option value="Legal & Compliance">
+                                Legal & Compliance
+                            </option>
+
+                            <option value="Science & Laboratory">
+                                Science & Laboratory
+                            </option>
+
+                            <option value="Community & Social Services">
+                                Community & Social Services
+                            </option>
+
+                            <option value="Retail">
+                                Retail
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Expected Annual Salary
+                        </label>
+
+                        <input asp-for="ExpectedSalary"
+                               type="number"
+                               min="0"
+                               step="1000"
+                               class="form-control-custom"
+                               placeholder="Optional" />
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Current / Preferred Job Location
+                        </label>
+
+                        <input asp-for="CurrentLocation"
+                               maxlength="150"
+                               class="form-control-custom"
+                               placeholder="Example: Melbourne, Victoria" />
+
+                    </div>
+
+
+                </div>
+
+
+                <button type="submit"
+                        class="primary-button">
+
+                    Save Professional Information
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+        <!-- =====================================
+             EDUCATION
+        ====================================== -->
+
+        <div class="jobseeker-card"
+             id="education">
+
+
+            <div class="card-header">
+
+                <h2>
+                    Education
+                </h2>
+
+                <span>
+                    @Model.Educations.Count record(s)
+                </span>
+
+            </div>
+
+
+            <div class="optional-note">
+
+                Education is optional.
+                Add qualifications that are useful
+                for your professional profile.
+
+            </div>
+
+
+            @if (!Model.JobSeekerProfileExists)
+            {
+                <div class="section-locked">
+
+                    <strong>
+                        Job Seeker profile data is not available yet.
+                    </strong>
+
+                    Save your Professional Information once,
+                    then you can add education records.
+
+                </div>
+            }
+            else
+            {
+
+                @if (Model.Educations.Any())
+                {
+
+                    @foreach (var education in Model.Educations)
+                    {
+
+                        var educationCurrentId =
+                            $"education-current-{education.JobSeekerEducationId}";
+
+                        var educationEndId =
+                            $"education-end-{education.JobSeekerEducationId}";
+
+
+                        <div class="item-card">
+
+
+                            <div class="item-main">
+
+
+                                <div class="item-left">
+
+                                    <div class="item-icon">
+                                        🎓
+                                    </div>
+
+
+                                    <div class="item-content">
+
+                                        <h4>
+                                            @education.Qualification
+                                        </h4>
+
+                                        <div class="item-company">
+                                            @education.InstitutionName
+                                        </div>
+
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            education.FieldOfStudy))
+                                        {
+                                            <div class="item-detail">
+                                                @education.FieldOfStudy
+                                            </div>
+                                        }
+
+
+                                        <div class="item-date">
+                                            @education.DateRange
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="item-actions">
+
+
+                                    <form asp-controller="JobSeeker"
+                                          asp-action="DeleteEducation"
+                                          method="post"
+                                          onsubmit="return confirm('Delete this education record?');">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@education.JobSeekerEducationId" />
+
+                                        <button type="submit"
+                                                class="small-button delete-button">
+
+                                            Delete
+
+                                        </button>
+
+                                    </form>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                            <details class="edit-details">
+
+                                <summary>
+                                    ✎ Edit Education
+                                </summary>
+
+
+                                <form asp-controller="JobSeeker"
+                                      asp-action="UpdateEducation"
+                                      method="post"
+                                      class="edit-form">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@education.JobSeekerEducationId" />
+
+
+                                    <div class="form-grid">
+
+
+                                        <div class="form-group full">
+
+                                            <label>
+                                                Institution Name
+                                            </label>
+
+                                            <input type="text"
+                                                   name="InstitutionName"
+                                                   value="@education.InstitutionName"
+                                                   maxlength="150"
+                                                   class="form-control-custom"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                Qualification
+                                            </label>
+
+                                            <input type="text"
+                                                   name="Qualification"
+                                                   value="@education.Qualification"
+                                                   maxlength="150"
+                                                   class="form-control-custom"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                Field of Study
+                                            </label>
+
+                                            <input type="text"
+                                                   name="FieldOfStudy"
+                                                   value="@education.FieldOfStudy"
+                                                   maxlength="150"
+                                                   class="form-control-custom" />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                Start Date
+                                            </label>
+
+                                            <input type="date"
+                                                   name="StartDate"
+                                                   value="@(education.StartDate?.ToString("yyyy-MM-dd"))"
+                                                   class="form-control-custom" />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                End Date
+                                            </label>
+
+                                            <input type="date"
+                                                   id="@educationEndId"
+                                                   name="EndDate"
+                                                   value="@(education.EndDate?.ToString("yyyy-MM-dd"))"
+                                                   class="form-control-custom"
+                                                   disabled="@education.IsCurrentlyStudying" />
+
+                                        </div>
+
+
+                                        <div class="form-group full">
+
+                                            <div class="checkbox-row">
+
+                                                <input type="checkbox"
+                                                       id="@educationCurrentId"
+                                                       name="IsCurrentlyStudying"
+                                                       value="true"
+                                                       checked="@education.IsCurrentlyStudying"
+                                                       onchange="toggleEndDate('@educationCurrentId', '@educationEndId')" />
+
+                                                <input type="hidden"
+                                                       name="IsCurrentlyStudying"
+                                                       value="false" />
+
+                                                <label for="@educationCurrentId">
+                                                    I am currently studying here
+                                                </label>
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <button type="submit"
+                                            class="primary-button">
+
+                                        Update Education
+
+                                    </button>
+
+
+                                </form>
+
+                            </details>
+
+
+                        </div>
+
+                    }
+
+                }
+                else
+                {
+
+                    <div class="section-empty">
+
+                        <div class="section-empty-icon">
+                            🎓
+                        </div>
+
+                        <strong>
+                            No education records added
+                        </strong>
+
+                        <p>
+                            Add a qualification below if relevant.
+                        </p>
+
+                    </div>
+
+                }
+
+
+                <details class="edit-details">
+
+                    <summary>
+                        + Add Education
+                    </summary>
+
+
+                    <form asp-controller="JobSeeker"
+                          asp-action="AddEducation"
+                          method="post"
+                          class="edit-form">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Institution Name
+                                </label>
+
+                                <input type="text"
+                                       name="InstitutionName"
+                                       maxlength="150"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Qualification
+                                </label>
+
+                                <input type="text"
+                                       name="Qualification"
+                                       maxlength="150"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Field of Study
+                                </label>
+
+                                <input type="text"
+                                       name="FieldOfStudy"
+                                       maxlength="150"
+                                       class="form-control-custom" />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Start Date
+                                </label>
+
+                                <input type="date"
+                                       name="StartDate"
+                                       class="form-control-custom" />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    End Date
+                                </label>
+
+                                <input type="date"
+                                       id="newEducationEndDate"
+                                       name="EndDate"
+                                       class="form-control-custom" />
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="checkbox-row">
+
+                                    <input type="checkbox"
+                                           id="newEducationCurrent"
+                                           name="IsCurrentlyStudying"
+                                           value="true"
+                                           onchange="toggleEndDate('newEducationCurrent', 'newEducationEndDate')" />
+
+                                    <input type="hidden"
+                                           name="IsCurrentlyStudying"
+                                           value="false" />
+
+                                    <label for="newEducationCurrent">
+                                        I am currently studying here
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="primary-button">
+
+                            Add Education
+
+                        </button>
+
+
+                    </form>
+
+                </details>
+
+            }
+
+
+        </div>
+
+
+        <!-- =====================================
+             SKILLS
+        ====================================== -->
+
+        <div class="jobseeker-card"
+             id="skills">
+
+
+            <div class="card-header">
+
+                <h2>
+                    Skills
+                </h2>
+
+                <span>
+                    @Model.Skills.Count skill(s)
+                </span>
+
+            </div>
+
+
+            <div class="optional-note">
+
+                Skills are optional.
+                Add the skills that represent your
+                current knowledge and experience.
+
+            </div>
+
+
+            @if (!Model.JobSeekerProfileExists)
+            {
+
+                <div class="section-locked">
+
+                    <strong>
+                        Job Seeker profile data is not available yet.
+                    </strong>
+
+                    Save your Professional Information once,
+                    then you can add skills.
+
+                </div>
+
+            }
+            else
+            {
+
+                @if (Model.Skills.Any())
+                {
+
+                    <div class="skills-grid">
+
+
+                        @foreach (var skill in Model.Skills)
+                        {
+
+                            <div class="skill-card">
+
+
+                                <div class="skill-header">
+
+
+                                    <div>
+
+                                        <div class="skill-name">
+                                            @skill.SkillName
+                                        </div>
+
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            skill.Category))
+                                        {
+                                            <div class="skill-category">
+                                                @skill.Category
+                                            </div>
+                                        }
+
+                                    </div>
+
+
+                                    <form asp-controller="JobSeeker"
+                                          asp-action="DeleteSkill"
+                                          method="post"
+                                          onsubmit="return confirm('Remove this skill?');">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@skill.JobSeekerSkillId" />
+
+                                        <button type="submit"
+                                                class="small-button delete-button">
+
+                                            Remove
+
+                                        </button>
+
+                                    </form>
+
+
+                                </div>
+
+
+                                <div class="skill-info">
+
+                                    <span class="skill-badge">
+                                        @skill.ProficiencyLevel
+                                    </span>
+
+                                    <span class="skill-experience">
+                                        @skill.ExperienceText
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+                        }
+
+
+                    </div>
+
+                }
+                else
+                {
+
+                    <div class="section-empty">
+
+                        <div class="section-empty-icon">
+                            🧩
+                        </div>
+
+                        <strong>
+                            No skills added
+                        </strong>
+
+                        <p>
+                            Add skills below whenever you are ready.
+                        </p>
+
+                    </div>
+
+                }
+
+
+                @if (remainingSkills.Any())
+                {
+
+                    <details class="edit-details">
+
+                        <summary>
+                            + Add Skill
+                        </summary>
+
+
+                        <form asp-controller="JobSeeker"
+                              asp-action="AddSkill"
+                              method="post"
+                              class="edit-form">
+
+                            @Html.AntiForgeryToken()
+
+
+                            <div class="form-grid">
+
+
+                                <div class="form-group full">
+
+                                    <label>
+                                        Skill
+                                    </label>
+
+                                    <select name="SkillId"
+                                            class="form-control-custom"
+                                            required>
+
+                                        <option value="">
+                                            Select a skill
+                                        </option>
+
+
+                                        @foreach (var skill in remainingSkills)
+                                        {
+                                            <option value="@skill.SkillId">
+                                                @skill.DisplayText
+                                            </option>
+                                        }
+
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Proficiency Level
+                                    </label>
+
+                                    <select name="ProficiencyLevel"
+                                            class="form-control-custom"
+                                            required>
+
+                                        <option value="">
+                                            Select level
+                                        </option>
+
+                                        <option value="Beginner">
+                                            Beginner
+                                        </option>
+
+                                        <option value="Intermediate">
+                                            Intermediate
+                                        </option>
+
+                                        <option value="Advanced">
+                                            Advanced
+                                        </option>
+
+                                        <option value="Expert">
+                                            Expert
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Years of Experience
+                                    </label>
+
+                                    <input type="number"
+                                           name="YearsOfExperience"
+                                           min="0"
+                                           max="50"
+                                           step="0.5"
+                                           value="0"
+                                           class="form-control-custom"
+                                           required />
+
+                                </div>
+
+
+                            </div>
+
+
+                            <button type="submit"
+                                    class="primary-button">
+
+                                Add Skill
+
+                            </button>
+
+
+                        </form>
+
+                    </details>
+
+                }
+                else
+                {
+
+                    <div class="optional-note">
+
+                        All currently available WorkHub skills
+                        are already included in your profile.
+
+                    </div>
+
+                }
+
+            }
+
+
+        </div>
+
+
+        <!-- =====================================
+             WORK EXPERIENCE
+        ====================================== -->
+
+        <div class="jobseeker-card"
+             id="experience">
+
+
+            <div class="card-header">
+
+                <h2>
+                    Work Experience
+                </h2>
+
+                <span>
+                    @Model.Experiences.Count record(s)
+                </span>
+
+            </div>
+
+
+            <div class="optional-note">
+
+                Work experience is optional.
+                Add employment history that is useful
+                for your professional profile.
+
+            </div>
+
+
+            @if (!Model.JobSeekerProfileExists)
+            {
+
+                <div class="section-locked">
+
+                    <strong>
+                        Job Seeker profile data is not available yet.
+                    </strong>
+
+                    Save your Professional Information once,
+                    then you can add work experience.
+
+                </div>
+
+            }
+            else
+            {
+
+                @if (Model.Experiences.Any())
+                {
+
+                    @foreach (var experience in Model.Experiences)
+                    {
+
+                        var experienceCurrentId =
+                            $"experience-current-{experience.JobSeekerExperienceId}";
+
+                        var experienceEndId =
+                            $"experience-end-{experience.JobSeekerExperienceId}";
+
+
+                        <div class="item-card">
+
+
+                            <div class="item-main">
+
+
+                                <div class="item-left">
+
+
+                                    <div class="item-icon">
+                                        💼
+                                    </div>
+
+
+                                    <div class="item-content">
+
+
+                                        <h4>
+                                            @experience.JobTitle
+                                        </h4>
+
+
+                                        <div class="item-company">
+                                            @experience.CompanyName
+                                        </div>
+
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            experience.Location))
+                                        {
+                                            <div class="item-detail">
+                                                @experience.Location
+                                            </div>
+                                        }
+
+
+                                        <div class="item-date">
+                                            @experience.DateRange
+                                        </div>
+
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            experience.Description))
+                                        {
+                                            <div class="item-description">
+                                                @experience.Description
+                                            </div>
+                                        }
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="item-actions">
+
+
+                                    <form asp-controller="JobSeeker"
+                                          asp-action="DeleteExperience"
+                                          method="post"
+                                          onsubmit="return confirm('Delete this work experience?');">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@experience.JobSeekerExperienceId" />
+
+                                        <button type="submit"
+                                                class="small-button delete-button">
+
+                                            Delete
+
+                                        </button>
+
+                                    </form>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                            <details class="edit-details">
+
+                                <summary>
+                                    ✎ Edit Work Experience
+                                </summary>
+
+
+                                <form asp-controller="JobSeeker"
+                                      asp-action="UpdateExperience"
+                                      method="post"
+                                      class="edit-form">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@experience.JobSeekerExperienceId" />
+
+
+                                    <div class="form-grid">
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                Job Title
+                                            </label>
+
+                                            <input type="text"
+                                                   name="JobTitle"
+                                                   value="@experience.JobTitle"
+                                                   maxlength="150"
+                                                   class="form-control-custom"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                Company Name
+                                            </label>
+
+                                            <input type="text"
+                                                   name="CompanyName"
+                                                   value="@experience.CompanyName"
+                                                   maxlength="150"
+                                                   class="form-control-custom"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="form-group full">
+
+                                            <label>
+                                                Location
+                                            </label>
+
+                                            <input type="text"
+                                                   name="Location"
+                                                   value="@experience.Location"
+                                                   maxlength="150"
+                                                   class="form-control-custom" />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                Start Date
+                                            </label>
+
+                                            <input type="date"
+                                                   name="StartDate"
+                                                   value="@experience.StartDate.ToString("yyyy-MM-dd")"
+                                                   class="form-control-custom"
+                                                   required />
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label>
+                                                End Date
+                                            </label>
+
+                                            <input type="date"
+                                                   id="@experienceEndId"
+                                                   name="EndDate"
+                                                   value="@(experience.EndDate?.ToString("yyyy-MM-dd"))"
+                                                   class="form-control-custom"
+                                                   disabled="@experience.IsCurrentJob" />
+
+                                        </div>
+
+
+                                        <div class="form-group full">
+
+                                            <div class="checkbox-row">
+
+                                                <input type="checkbox"
+                                                       id="@experienceCurrentId"
+                                                       name="IsCurrentJob"
+                                                       value="true"
+                                                       checked="@experience.IsCurrentJob"
+                                                       onchange="toggleEndDate('@experienceCurrentId', '@experienceEndId')" />
+
+                                                <input type="hidden"
+                                                       name="IsCurrentJob"
+                                                       value="false" />
+
+                                                <label for="@experienceCurrentId">
+                                                    I currently work here
+                                                </label>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="form-group full">
+
+                                            <label>
+                                                Description / Responsibilities
+                                            </label>
+
+                                            <textarea name="Description"
+                                                      maxlength="1500"
+                                                      class="form-control-custom">@experience.Description</textarea>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <button type="submit"
+                                            class="primary-button">
+
+                                        Update Work Experience
+
+                                    </button>
+
+
+                                </form>
+
+                            </details>
+
+
+                        </div>
+
+                    }
+
+                }
+                else
+                {
+
+                    <div class="section-empty">
+
+                        <div class="section-empty-icon">
+                            💼
+                        </div>
+
+                        <strong>
+                            No work experience added
+                        </strong>
+
+                        <p>
+                            Add experience below if relevant.
+                        </p>
+
+                    </div>
+
+                }
+
+
+                <details class="edit-details">
+
+                    <summary>
+                        + Add Work Experience
+                    </summary>
+
+
+                    <form asp-controller="JobSeeker"
+                          asp-action="AddExperience"
+                          method="post"
+                          class="edit-form">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Job Title
+                                </label>
+
+                                <input type="text"
+                                       name="JobTitle"
+                                       maxlength="150"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Company Name
+                                </label>
+
+                                <input type="text"
+                                       name="CompanyName"
+                                       maxlength="150"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Location
+                                </label>
+
+                                <input type="text"
+                                       name="Location"
+                                       maxlength="150"
+                                       class="form-control-custom" />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    Start Date
+                                </label>
+
+                                <input type="date"
+                                       name="StartDate"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>
+                                    End Date
+                                </label>
+
+                                <input type="date"
+                                       id="newExperienceEndDate"
+                                       name="EndDate"
+                                       class="form-control-custom" />
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="checkbox-row">
+
+                                    <input type="checkbox"
+                                           id="newExperienceCurrent"
+                                           name="IsCurrentJob"
+                                           value="true"
+                                           onchange="toggleEndDate('newExperienceCurrent', 'newExperienceEndDate')" />
+
+                                    <input type="hidden"
+                                           name="IsCurrentJob"
+                                           value="false" />
+
+                                    <label for="newExperienceCurrent">
+                                        I currently work here
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Description / Responsibilities
+                                </label>
+
+                                <textarea name="Description"
+                                          maxlength="1500"
+                                          class="form-control-custom"
+                                          placeholder="Describe your main responsibilities and achievements..."></textarea>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="primary-button">
+
+                            Add Work Experience
+
+                        </button>
+
+
+                    </form>
+
+                </details>
+
+            }
+
+
+        </div>
+
+
+        <!-- =====================================
+             CV & RESUME
+        ====================================== -->
+
+        <div class="jobseeker-card"
+             id="cv">
+
+
+            <div class="card-header">
+
+                <h2>
+                    CV & Resume
+                </h2>
+
+                <span>
+                    @Model.CVDocuments.Count CV(s)
+                </span>
+
+            </div>
+
+
+            <div class="optional-note">
+
+                CV upload is optional.
+                You can keep multiple CV files and select
+                one as your primary CV for WorkHub
+                job-related features.
+
+            </div>
+
+
+            @if (!Model.JobSeekerProfileExists)
+            {
+
+                <div class="section-locked">
+
+                    <strong>
+                        Job Seeker profile data is not available yet.
+                    </strong>
+
+                    Save your Professional Information once,
+                    then CV documents can be uploaded.
+
+                </div>
+
+            }
+            else
+            {
+
+                @if (Model.CVDocuments.Any())
+                {
+
+                    <div class="cv-list">
+
+
+                        @foreach (var cv in Model.CVDocuments)
+                        {
+
+                            <div class="cv-card
+                                @(cv.IsPrimary
+                                    ? "primary"
+                                    : "")">
+
+
+                                <div class="cv-main">
+
+
+                                    <div class="cv-info">
+
+
+                                        <div class="cv-icon">
+                                            📄
+                                        </div>
+
+
+                                        <div>
+
+
+                                            <div class="cv-name">
+                                                @cv.FileName
+                                            </div>
+
+
+                                            <div class="cv-meta">
+
+                                                @cv.FileTypeText
+                                                ·
+                                                @cv.FileSizeText
+
+                                                <br />
+
+                                                Uploaded:
+                                                @cv.UploadedDateText
+
+                                            </div>
+
+
+                                            @if (cv.IsPrimary)
+                                            {
+                                                <span class="primary-badge">
+
+                                                    ✓ PRIMARY CV
+
+                                                </span>
+                                            }
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <div class="cv-actions">
+
+
+                                        @if (!cv.IsPrimary)
+                                        {
+
+                                            <form asp-controller="JobSeeker"
+                                                  asp-action="SetPrimaryCV"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@cv.CVDocumentId" />
+
+                                                <button type="submit"
+                                                        class="small-button edit-button">
+
+                                                    Set Primary
+
+                                                </button>
+
+                                            </form>
+
+                                        }
+
+
+                                        <a asp-controller="JobSeeker"
+                                           asp-action="DownloadCV"
+                                           asp-route-id="@cv.CVDocumentId"
+                                           class="small-button edit-button">
+
+                                            Download
+
+                                        </a>
+
+
+                                        <form asp-controller="JobSeeker"
+                                              asp-action="DeleteCV"
+                                              method="post"
+                                              onsubmit="return confirm('Delete this CV?');">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@cv.CVDocumentId" />
+
+                                            <button type="submit"
+                                                    class="small-button delete-button">
+
+                                                Delete
+
+                                            </button>
+
+                                        </form>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        }
+
+
+                    </div>
+
+                }
+                else
+                {
+
+                    <div class="section-empty">
+
+                        <div class="section-empty-icon">
+                            📄
+                        </div>
+
+                        <strong>
+                            No CV uploaded
+                        </strong>
+
+                        <p>
+                            Upload one below whenever you are ready.
+                        </p>
+
+                    </div>
+
+                }
+
+
+                <div class="cv-upload-box">
+
+
+                    <h3>
+                        Upload CV
+                    </h3>
+
+
+                    <p>
+                        PDF or DOCX only · Maximum file size 5 MB
+                    </p>
+
+
+                    <form asp-controller="JobSeeker"
+                          asp-action="UploadCV"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Select CV File
+                                </label>
+
+                                <input type="file"
+                                       name="file"
+                                       class="form-control-custom"
+                                       accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="checkbox-row">
+
+                                    <input type="checkbox"
+                                           id="isPrimaryCV"
+                                           name="isPrimary"
+                                           value="true"
+                                           checked />
+
+                                    <input type="hidden"
+                                           name="isPrimary"
+                                           value="false" />
+
+                                    <label for="isPrimaryCV">
+                                        Make this my primary CV
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="primary-button">
+
+                            Upload CV
+
+                        </button>
+
+
+                    </form>
+
+
+                </div>
+
+            }
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+
+        function toggleEndDate(
+            checkboxId,
+            endDateId) {
+
+            const checkbox =
+                document.getElementById(
+                    checkboxId
+                );
+
+            const endDate =
+                document.getElementById(
+                    endDateId
+                );
+
+
+            if (!checkbox ||
+                !endDate) {
+
+                return;
+            }
+
+
+            if (checkbox.checked) {
+
+                endDate.value =
+                    "";
+
+                endDate.disabled =
+                    true;
+
+                endDate.required =
+                    false;
+
+            }
+            else {
+
+                endDate.disabled =
+                    false;
+
+            }
+
+        }
+
+    </script>
+}

@@ -1,0 +1,2259 @@
+@model Workhub_Web.Models.MarketplaceSellerPortalViewModel
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Marketplace Seller";
+
+    var apiBaseUrl =
+        Configuration["ApiSettings:BaseUrl"]
+        ?? "https://localhost:7015/";
+
+    if (!apiBaseUrl.EndsWith("/"))
+    {
+        apiBaseUrl += "/";
+    }
+
+    var totalListings =
+        Model.Listings?.Count ?? 0;
+
+    var activeListings =
+        Model.Listings?
+            .Count(x =>
+                string.Equals(
+                    x.Status,
+                    "Active",
+                    StringComparison.OrdinalIgnoreCase))
+        ?? 0;
+
+    var soldListings =
+        Model.Listings?
+            .Count(x =>
+                string.Equals(
+                    x.Status,
+                    "Sold",
+                    StringComparison.OrdinalIgnoreCase))
+        ?? 0;
+
+    var sellerName =
+        string.IsNullOrWhiteSpace(
+            Model.Profile.BusinessName)
+            ? "My Marketplace"
+            : Model.Profile.BusinessName;
+}
+
+<style>
+    :root {
+        --seller-orange: #FD5000;
+        --seller-orange-dark: #D94300;
+        --seller-orange-light: #FF7200;
+        --seller-orange-soft: #FFF2EB;
+        --seller-dark: #0F172A;
+        --seller-text: #64748B;
+        --seller-text-dark: #334155;
+        --seller-border: #E2E8F0;
+        --seller-bg: #F8FAFC;
+        --seller-green: #16A34A;
+        --seller-green-soft: #F0FDF4;
+        --seller-red: #DC2626;
+        --seller-red-soft: #FEF2F2;
+        --seller-blue: #2563EB;
+        --seller-blue-soft: #EFF6FF;
+        --seller-shadow: 0 14px 36px rgba(15, 23, 42, .07);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .seller-svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .seller-page {
+        min-height: calc(100vh - 80px);
+        padding: 46px 24px 90px;
+        background: radial-gradient( circle at 90% 0, rgba(253, 80, 0, .07), transparent 30% ), #F8FAFC;
+    }
+
+    .seller-shell {
+        width: 100%;
+        max-width: 1320px;
+        margin: 0 auto;
+    }
+
+    .seller-header {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+        padding: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        border-radius: 22px;
+        background: radial-gradient( circle at 88% 10%, rgba(253, 80, 0, .46), transparent 30% ), linear-gradient( 135deg, #0F172A, #1E293B 60%, #431407 );
+        color: #FFFFFF;
+        box-shadow: 0 20px 48px rgba(15, 23, 42, .16);
+    }
+
+        .seller-header::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -95px;
+            bottom: -165px;
+            border: 45px solid rgba(255, 255, 255, .025);
+            border-radius: 50%;
+        }
+
+    .seller-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .seller-kicker {
+        margin-bottom: 9px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #FDBA74;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+    }
+
+    .seller-header h1 {
+        margin: 0 0 9px;
+        color: #FFFFFF;
+        font-size: 38px;
+        font-weight: 950;
+    }
+
+    .seller-header p {
+        margin: 0;
+        max-width: 680px;
+        color: #CBD5E1;
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .seller-header-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .seller-header-button {
+        min-height: 44px;
+        padding: 0 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: 1px solid rgba(255, 255, 255, .20);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, .08);
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: 850;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+        .seller-header-button:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, .15);
+            transform: translateY(-2px);
+        }
+
+    .seller-alert {
+        margin-bottom: 20px;
+        padding: 15px 17px;
+        border-radius: 11px;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+        .seller-alert.success {
+            border: 1px solid #BBF7D0;
+            background: var(--seller-green-soft);
+            color: #15803D;
+        }
+
+        .seller-alert.error {
+            border: 1px solid #FECACA;
+            background: var(--seller-red-soft);
+            color: #B91C1C;
+        }
+
+    .seller-stats {
+        margin-bottom: 24px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .seller-stat-card {
+        min-height: 120px;
+        padding: 21px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid var(--seller-border);
+        border-radius: 16px;
+        background: #FFFFFF;
+        box-shadow: var(--seller-shadow);
+    }
+
+    .seller-stat-icon {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        background: var(--seller-orange-soft);
+        color: var(--seller-orange-dark);
+    }
+
+        .seller-stat-icon.green {
+            background: var(--seller-green-soft);
+            color: var(--seller-green);
+        }
+
+        .seller-stat-icon.blue {
+            background: var(--seller-blue-soft);
+            color: var(--seller-blue);
+        }
+
+    .seller-stat-card strong {
+        display: block;
+        color: var(--seller-dark);
+        font-size: 30px;
+        font-weight: 950;
+    }
+
+    .seller-stat-card span {
+        color: var(--seller-text);
+        font-size: 13px;
+    }
+
+    .seller-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(340px, .65fr);
+        gap: 23px;
+        align-items: start;
+    }
+
+    .seller-card {
+        margin-bottom: 23px;
+        padding: 28px;
+        border: 1px solid var(--seller-border);
+        border-radius: 17px;
+        background: #FFFFFF;
+        box-shadow: var(--seller-shadow);
+    }
+
+    .seller-card-header {
+        margin-bottom: 22px;
+        padding-bottom: 17px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .seller-card-icon {
+        width: 45px;
+        height: 45px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--seller-orange-soft);
+        color: var(--seller-orange-dark);
+    }
+
+    .seller-card-header h2 {
+        margin: 0 0 5px;
+        color: var(--seller-dark);
+        font-size: 21px;
+        font-weight: 950;
+    }
+
+    .seller-card-header p {
+        margin: 0;
+        color: var(--seller-text);
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    .seller-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .seller-field {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+        .seller-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .seller-field label {
+            color: var(--seller-text-dark);
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+    .seller-input,
+    .seller-select,
+    .seller-textarea {
+        width: 100%;
+        padding: 13px 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: var(--seller-dark);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .seller-input,
+    .seller-select {
+        min-height: 47px;
+    }
+
+    .seller-textarea {
+        min-height: 115px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+        .seller-input:focus,
+        .seller-select:focus,
+        .seller-textarea:focus {
+            border-color: var(--seller-orange);
+            box-shadow: 0 0 0 4px rgba(253, 80, 0, .09);
+        }
+
+    .seller-check {
+        min-height: 47px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        background: #F8FAFC;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+        .seller-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--seller-orange);
+        }
+
+    /* ============================================================
+           MULTIPLE PHOTO UPLOAD
+        ============================================================ */
+
+    .marketplace-photo-upload {
+        position: relative;
+        overflow: hidden;
+        border: 2px dashed #CBD5E1;
+        border-radius: 14px;
+        background: #F8FAFC;
+        transition: all .2s ease;
+    }
+
+        .marketplace-photo-upload:hover,
+        .marketplace-photo-upload.dragging {
+            border-color: var(--seller-orange);
+            background: #FFF9F5;
+            box-shadow: 0 0 0 4px rgba(253, 80, 0, .06);
+        }
+
+        .marketplace-photo-upload input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+    .marketplace-photo-upload-label {
+        min-height: 190px;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .marketplace-photo-upload-icon {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        background: #FFF2EB;
+        color: var(--seller-orange-dark);
+    }
+
+        .marketplace-photo-upload-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+    .marketplace-photo-upload-label strong {
+        margin-bottom: 6px;
+        color: var(--seller-dark);
+        font-size: 15px;
+        font-weight: 900;
+    }
+
+    .marketplace-photo-upload-label span {
+        margin-bottom: 5px;
+        color: var(--seller-text);
+        font-size: 12px;
+    }
+
+    .marketplace-photo-upload-label small {
+        color: #94A3B8;
+        font-size: 10px;
+    }
+
+    .marketplace-photo-summary {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--seller-text);
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+        .marketplace-photo-summary span:first-child {
+            color: var(--seller-text-dark);
+            font-weight: 850;
+        }
+
+    .marketplace-photo-preview-grid {
+        margin-top: 13px;
+        display: grid;
+        grid-template-columns: repeat( auto-fill, minmax(105px, 1fr) );
+        gap: 10px;
+    }
+
+    .marketplace-photo-preview-item {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+        border: 1px solid #E2E8F0;
+        border-radius: 11px;
+        background: #F8FAFC;
+    }
+
+        .marketplace-photo-preview-item img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+    .marketplace-photo-primary {
+        position: absolute;
+        left: 7px;
+        bottom: 7px;
+        padding: 4px 7px;
+        border-radius: 30px;
+        background: var(--seller-orange);
+        color: #FFFFFF;
+        font-size: 8px;
+        font-weight: 900;
+    }
+
+    .marketplace-photo-number {
+        position: absolute;
+        top: 7px;
+        left: 7px;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, .82);
+        color: #FFFFFF;
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .marketplace-photo-remove {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, .86);
+        color: #FFFFFF;
+        font-size: 17px;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .marketplace-photo-remove:hover {
+            background: var(--seller-red);
+        }
+
+    .seller-primary-button {
+        min-height: 48px;
+        margin-top: 15px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient( 135deg, var(--seller-orange), var(--seller-orange-light) );
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 9px 20px rgba(253, 80, 0, .22);
+        transition: all .2s ease;
+    }
+
+        .seller-primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 27px rgba(253, 80, 0, .29);
+        }
+
+        .seller-primary-button.wide {
+            width: 100%;
+        }
+
+    /* ============================================================
+           LISTINGS
+        ============================================================ */
+
+    .seller-listings {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .seller-listing {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--seller-border);
+        border-radius: 14px;
+        background: #FFFFFF;
+        transition: all .2s ease;
+    }
+
+        .seller-listing:hover {
+            transform: translateY(-3px);
+            border-color: #FDBA95;
+            box-shadow: 0 12px 27px rgba(15, 23, 42, .08);
+        }
+
+    .seller-listing-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: linear-gradient( 135deg, #F1F5F9, #E2E8F0 );
+    }
+
+    .seller-market-image {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: none;
+        object-fit: cover;
+    }
+
+    .seller-image-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #94A3B8;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+        .seller-image-placeholder svg {
+            width: 40px;
+            height: 40px;
+            color: var(--seller-orange);
+        }
+
+    .seller-listing-body {
+        padding: 17px;
+        flex: 1;
+    }
+
+    .seller-listing-price {
+        margin-bottom: 6px;
+        color: var(--seller-orange);
+        font-size: 21px;
+        font-weight: 950;
+    }
+
+    .seller-listing h3 {
+        margin: 0 0 7px;
+        color: var(--seller-dark);
+        font-size: 16px;
+        font-weight: 900;
+    }
+
+    .seller-listing-meta {
+        margin-bottom: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+        .seller-listing-meta span {
+            padding: 5px 8px;
+            border-radius: 30px;
+            background: #F1F5F9;
+            color: var(--seller-text);
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+    .seller-listing-description {
+        margin: 0;
+        color: var(--seller-text);
+        font-size: 11px;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .seller-listing-footer {
+        padding: 13px 17px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        border-top: 1px solid #F1F5F9;
+    }
+
+        .seller-listing-footer form {
+            margin: 0;
+        }
+
+    .seller-action {
+        min-height: 37px;
+        padding: 0 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 850;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .seller-action.view {
+            background: var(--seller-blue-soft);
+            color: var(--seller-blue);
+            border: 1px solid #BFDBFE;
+        }
+
+        .seller-action.sold {
+            background: var(--seller-green-soft);
+            color: var(--seller-green);
+            border: 1px solid #BBF7D0;
+        }
+
+        .seller-action.delete {
+            background: var(--seller-red-soft);
+            color: var(--seller-red);
+            border: 1px solid #FECACA;
+        }
+
+    .seller-empty {
+        padding: 45px 20px;
+        border: 1px dashed #CBD5E1;
+        border-radius: 13px;
+        background: #FAFCFE;
+        text-align: center;
+    }
+
+        .seller-empty svg {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 10px;
+            color: var(--seller-orange);
+        }
+
+        .seller-empty h3 {
+            margin: 0 0 6px;
+            color: var(--seller-dark);
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .seller-empty p {
+            margin: 0;
+            color: var(--seller-text);
+            font-size: 12px;
+        }
+
+    @@media (max-width: 950px) {
+        .seller-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 720px) {
+        .seller-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .seller-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .seller-listings {
+            grid-template-columns: 1fr;
+        }
+
+        .seller-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .seller-field.full {
+            grid-column: auto;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .seller-page {
+            padding: 28px 14px 65px;
+        }
+
+        .seller-header {
+            padding: 24px;
+        }
+
+            .seller-header h1 {
+                font-size: 30px;
+            }
+
+        .seller-card {
+            padding: 21px;
+        }
+
+        .seller-header-button {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<section class="seller-page">
+
+    <div class="seller-shell">
+
+
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
+
+        <div class="seller-header">
+
+            <div class="seller-header-content">
+
+                <span class="seller-kicker">
+
+                    <svg viewBox="0 0 24 24"
+                         class="seller-svg">
+
+                        <path d="M4 7h16l-1 14H5z" />
+
+                        <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+
+                    </svg>
+
+                    WorkHub Marketplace Seller
+
+                </span>
+
+
+                <h1>
+                    @sellerName
+                </h1>
+
+
+                <p>
+                    Create listings, upload multiple product photos,
+                    manage your marketplace items and communicate
+                    directly with WorkHub buyers.
+                </p>
+
+            </div>
+
+
+            <div class="seller-header-actions">
+
+                <a asp-controller="Marketplace"
+                   asp-action="Index"
+                   class="seller-header-button">
+
+                    <svg viewBox="0 0 24 24"
+                         class="seller-svg">
+
+                        <path d="M3 3h18v18H3z" />
+                        <path d="M3 9h18" />
+                        <path d="M9 9v12" />
+
+                    </svg>
+
+                    View Marketplace
+
+                </a>
+
+
+                <a asp-controller="MarketplaceMessages"
+                   asp-action="Index"
+                   class="seller-header-button">
+
+                    <svg viewBox="0 0 24 24"
+                         class="seller-svg">
+
+                        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+
+                    </svg>
+
+                    Buyer Messages
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             MESSAGES
+        ====================================================== -->
+        @if (TempData["SellerSuccess"] != null)
+        {
+            <div class="seller-alert success">
+                @TempData["SellerSuccess"]
+            </div>
+        }
+
+
+        @if (TempData["SellerError"] != null)
+        {
+            <div class="seller-alert error">
+                @TempData["SellerError"]
+            </div>
+        }
+
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="seller-alert error">
+                @Model.ErrorMessage
+            </div>
+        }
+
+
+        <!-- =====================================================
+             STATS
+        ====================================================== -->
+
+        <div class="seller-stats">
+
+
+            <div class="seller-stat-card">
+
+                <div class="seller-stat-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         class="seller-svg">
+
+                        <path d="M4 7h16l-1 14H5z" />
+                        <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        @totalListings
+                    </strong>
+
+                    <span>
+                        Total Listings
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="seller-stat-card">
+
+                <div class="seller-stat-icon green">
+
+                    <svg viewBox="0 0 24 24"
+                         class="seller-svg">
+
+                        <circle cx="12"
+                                cy="12"
+                                r="9" />
+
+                        <path d="m8 12 3 3 5-6" />
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        @activeListings
+                    </strong>
+
+                    <span>
+                        Active Listings
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="seller-stat-card">
+
+                <div class="seller-stat-icon blue">
+
+                    <svg viewBox="0 0 24 24"
+                         class="seller-svg">
+
+                        <path d="M5 12l4 4L19 6" />
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        @soldListings
+                    </strong>
+
+                    <span>
+                        Sold Listings
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="seller-layout">
+
+
+            <!-- =================================================
+                 LEFT SIDE
+            ================================================== -->
+
+            <div>
+
+
+                <!-- SELLER PROFILE -->
+
+                <div class="seller-card">
+
+                    <div class="seller-card-header">
+
+                        <div class="seller-card-icon">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="seller-svg">
+
+                                <circle cx="12"
+                                        cy="8"
+                                        r="4" />
+
+                                <path d="M4 21a8 8 0 0 1 16 0" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2>
+                                Seller Profile
+                            </h2>
+
+                            <p>
+                                Information shown with your
+                                marketplace listings.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <form asp-controller="MarketplaceSellerPortal"
+                          asp-action="UpdateProfile"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="seller-form-grid">
+
+
+                            <div class="seller-field">
+
+                                <label asp-for="Profile.BusinessName">
+                                    Business / Seller Name
+                                </label>
+
+                                <input asp-for="Profile.BusinessName"
+                                       class="seller-input"
+                                       placeholder="Example: My Marketplace" />
+
+                            </div>
+
+
+                            <div class="seller-field">
+
+                                <label asp-for="Profile.Location">
+                                    Location
+                                </label>
+
+                                <input asp-for="Profile.Location"
+                                       class="seller-input"
+                                       placeholder="Example: Melbourne" />
+
+                            </div>
+
+
+                            <div class="seller-field full">
+
+                                <label asp-for="Profile.Description">
+                                    Description
+                                </label>
+
+                                <textarea asp-for="Profile.Description"
+                                          class="seller-textarea"
+                                          placeholder="Tell buyers about you or your business..."></textarea>
+
+                            </div>
+
+
+                            <div class="seller-field full">
+
+                                <label class="seller-check">
+
+                                    <input asp-for="Profile.IsBusinessSeller" />
+
+                                    I am selling as a business
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="seller-primary-button">
+
+                            Save Seller Profile
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- =================================================
+                     LISTINGS
+                ================================================== -->
+
+                <div class="seller-card">
+
+                    <div class="seller-card-header">
+
+                        <div class="seller-card-icon">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="seller-svg">
+
+                                <path d="M4 7h16l-1 14H5z" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2>
+                                My Listings
+                            </h2>
+
+                            <p>
+                                View and manage your current
+                                marketplace items.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    @if (
+                        Model.Listings == null ||
+                        !Model.Listings.Any())
+                    {
+                        <div class="seller-empty">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="seller-svg">
+
+                                <path d="M4 7h16l-1 14H5z" />
+                                <path d="M12 11v6" />
+                                <path d="M9 14h6" />
+
+                            </svg>
+
+
+                            <h3>
+                                No Listings Yet
+                            </h3>
+
+
+                            <p>
+                                Create your first marketplace listing
+                                using the form on this page.
+                            </p>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="seller-listings">
+
+                            @foreach (var item in Model.Listings)
+                            {
+                                var isActive =
+                                    string.Equals(
+                                        item.Status,
+                                        "Active",
+                                        StringComparison.OrdinalIgnoreCase);
+
+
+                                <article class="seller-listing">
+
+
+                                    <div class="seller-listing-image">
+
+
+                                        <div class="seller-image-placeholder">
+
+                                            <svg viewBox="0 0 24 24"
+                                                 class="seller-svg">
+
+                                                <rect x="3"
+                                                      y="5"
+                                                      width="18"
+                                                      height="16"
+                                                      rx="2" />
+
+                                                <circle cx="8.5"
+                                                        cy="10"
+                                                        r="2" />
+
+                                                <path d="m21 15-5-5L5 21" />
+
+                                            </svg>
+
+                                            <span>
+                                                WorkHub Marketplace
+                                            </span>
+
+                                        </div>
+
+
+                                        <img class="seller-market-image"
+                                             data-listing-id="@item.MarketplaceListingId"
+                                             alt="@item.Title" />
+
+                                    </div>
+
+
+                                    <div class="seller-listing-body">
+
+
+                                        <div class="seller-listing-price">
+                                            $@item.Price.ToString("N0")
+                                        </div>
+
+
+                                        <h3>
+                                            @item.Title
+                                        </h3>
+
+
+                                        <div class="seller-listing-meta">
+
+                                            <span>
+                                                @item.ListingType
+                                            </span>
+
+                                            <span>
+                                                @item.Condition
+                                            </span>
+
+                                            <span>
+                                                @item.Status
+                                            </span>
+
+                                            <span>
+                                                @item.ImageCount photo(s)
+                                            </span>
+
+                                        </div>
+
+
+                                        <p class="seller-listing-description">
+                                            @item.Description
+                                        </p>
+
+                                    </div>
+
+
+                                    <div class="seller-listing-footer">
+
+
+                                        <a asp-controller="Marketplace"
+                                           asp-action="Details"
+                                           asp-route-id="@item.MarketplaceListingId"
+                                           class="seller-action view">
+
+                                            View
+
+                                        </a>
+
+
+                                        @if (isActive)
+                                        {
+                                            <form asp-controller="MarketplaceSellerPortal"
+                                                  asp-action="MarkSold"
+                                                  asp-route-id="@item.MarketplaceListingId"
+                                                  method="post"
+                                                  class="mark-sold-form">
+
+                                                @Html.AntiForgeryToken()
+
+
+                                                <button type="submit"
+                                                        class="seller-action sold">
+
+                                                    Mark Sold
+
+                                                </button>
+
+                                            </form>
+                                        }
+
+
+                                        <form asp-controller="MarketplaceSellerPortal"
+                                              asp-action="DeleteListing"
+                                              asp-route-id="@item.MarketplaceListingId"
+                                              method="post"
+                                              class="delete-listing-form">
+
+                                            @Html.AntiForgeryToken()
+
+
+                                            <button type="submit"
+                                                    class="seller-action delete">
+
+                                                Delete
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </article>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CREATE LISTING
+            ================================================== -->
+
+            <div>
+
+                <div class="seller-card">
+
+                    <div class="seller-card-header">
+
+                        <div class="seller-card-icon">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="seller-svg">
+
+                                <path d="M12 5v14" />
+                                <path d="M5 12h14" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2>
+                                Create New Listing
+                            </h2>
+
+                            <p>
+                                Add a product or rental to the
+                                WorkHub marketplace.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <form asp-controller="MarketplaceSellerPortal"
+                          asp-action="CreateListing"
+                          method="post"
+                          enctype="multipart/form-data"
+                          id="createListingForm">
+
+                        @Html.AntiForgeryToken()
+
+
+                        <div class="seller-field">
+
+                            <label asp-for="NewListing.Title">
+                                Listing Title
+                            </label>
+
+                            <input asp-for="NewListing.Title"
+                                   class="seller-input"
+                                   placeholder="Example: iPhone 16 Pro"
+                                   required />
+
+                        </div>
+
+
+                        <div class="seller-field">
+
+                            <label asp-for="NewListing.MarketplaceCategoryId">
+                                Category
+                            </label>
+
+                            <select asp-for="NewListing.MarketplaceCategoryId"
+                                    class="seller-select"
+                                    required>
+
+                                <option value="">
+                                    Select category
+                                </option>
+
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.MarketplaceCategoryId">
+                                        @category.CategoryName
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="seller-form-grid">
+
+
+                            <div class="seller-field">
+
+                                <label asp-for="NewListing.Price">
+                                    Price
+                                </label>
+
+                                <input asp-for="NewListing.Price"
+                                       type="number"
+                                       min="0"
+                                       step="0.01"
+                                       class="seller-input"
+                                       required />
+
+                            </div>
+
+
+                            <div class="seller-field">
+
+                                <label asp-for="NewListing.ListingType">
+                                    Listing Type
+                                </label>
+
+                                <select asp-for="NewListing.ListingType"
+                                        class="seller-select">
+
+                                    <option value="Sale">
+                                        For Sale
+                                    </option>
+
+                                    <option value="Rent">
+                                        For Rent
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="seller-field">
+
+                                <label asp-for="NewListing.Condition">
+                                    Condition
+                                </label>
+
+                                <select asp-for="NewListing.Condition"
+                                        class="seller-select">
+
+                                    <option value="New">
+                                        New
+                                    </option>
+
+                                    <option value="Used">
+                                        Used
+                                    </option>
+
+                                    <option value="Refurbished">
+                                        Refurbished
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="seller-field">
+
+                                <label asp-for="NewListing.Location">
+                                    Location
+                                </label>
+
+                                <input asp-for="NewListing.Location"
+                                       class="seller-input"
+                                       placeholder="Example: Melbourne" />
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="seller-field">
+
+                            <label asp-for="NewListing.Description">
+                                Description
+                            </label>
+
+                            <textarea asp-for="NewListing.Description"
+                                      class="seller-textarea"
+                                      placeholder="Describe the item clearly..."
+                                      required></textarea>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             MULTIPLE PHOTOS
+                        ================================================== -->
+
+                        <div class="seller-field">
+
+                            <label>
+                                Listing Photos
+                            </label>
+
+
+                            <div class="marketplace-photo-upload"
+                                 id="marketplacePhotoDropZone">
+
+
+                                <input asp-for="NewListing.Images"
+                                       type="file"
+                                       id="marketplacePhotos"
+                                       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                       multiple />
+
+
+                                <label for="marketplacePhotos"
+                                       class="marketplace-photo-upload-label">
+
+
+                                    <div class="marketplace-photo-upload-icon">
+
+                                        <svg viewBox="0 0 24 24"
+                                             class="seller-svg">
+
+                                            <rect x="3"
+                                                  y="5"
+                                                  width="18"
+                                                  height="16"
+                                                  rx="2" />
+
+                                            <circle cx="8.5"
+                                                    cy="10"
+                                                    r="2" />
+
+                                            <path d="m21 15-5-5L5 21" />
+
+                                            <path d="M17 3v6" />
+                                            <path d="M14 6h6" />
+
+                                        </svg>
+
+                                    </div>
+
+
+                                    <strong>
+                                        Add Marketplace Photos
+                                    </strong>
+
+
+                                    <span>
+                                        Select up to 8 photos
+                                    </span>
+
+
+                                    <small>
+                                        JPG, PNG or WEBP • Maximum 5 MB each
+                                    </small>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="marketplace-photo-summary">
+
+                                <span id="marketplacePhotoCount">
+                                    0 photos selected
+                                </span>
+
+                                <span>
+                                    First photo becomes the cover image
+                                </span>
+
+                            </div>
+
+
+                            <div class="marketplace-photo-preview-grid"
+                                 id="marketplacePhotoPreview">
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="seller-primary-button wide">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="seller-svg">
+
+                                <path d="M12 5v14" />
+                                <path d="M5 12h14" />
+
+                            </svg>
+
+                            Publish Listing
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                const apiBase =
+                    '@apiBaseUrl';
+
+
+                // ===================================================
+                // MULTIPLE MARKETPLACE PHOTO SELECTOR
+                // ===================================================
+
+                const marketplacePhotos =
+                    document.getElementById(
+                        "marketplacePhotos"
+                    );
+
+                const photoPreview =
+                    document.getElementById(
+                        "marketplacePhotoPreview"
+                    );
+
+                const photoCount =
+                    document.getElementById(
+                        "marketplacePhotoCount"
+                    );
+
+                const photoDropZone =
+                    document.getElementById(
+                        "marketplacePhotoDropZone"
+                    );
+
+
+                const maximumPhotos =
+                    8;
+
+                const maximumPhotoSize =
+                    5 * 1024 * 1024;
+
+                const allowedImageTypes =
+                    [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp"
+                    ];
+
+
+                let selectedMarketplaceFiles =
+                    [];
+
+
+                function updateFileInput() {
+
+                    if (!marketplacePhotos) {
+                        return;
+                    }
+
+
+                    const dataTransfer =
+                        new DataTransfer();
+
+
+                    selectedMarketplaceFiles.forEach(
+                        function(file) {
+
+                            dataTransfer.items.add(
+                                file
+                            );
+                        }
+                    );
+
+
+                    marketplacePhotos.files =
+                        dataTransfer.files;
+                }
+
+
+                function renderPhotoPreview() {
+
+                    if (
+                        !photoPreview ||
+                        !photoCount
+                    ) {
+                        return;
+                    }
+
+
+                    photoPreview.innerHTML =
+                        "";
+
+
+                    const count =
+                        selectedMarketplaceFiles.length;
+
+
+                    photoCount.textContent =
+                        count === 1
+                            ? "1 photo selected"
+                            : count + " photos selected";
+
+
+                    selectedMarketplaceFiles.forEach(
+                        function(file, index) {
+
+                            const wrapper =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            wrapper.className =
+                                "marketplace-photo-preview-item";
+
+
+                            const previewImage =
+                                document.createElement(
+                                    "img"
+                                );
+
+
+                            const objectUrl =
+                                URL.createObjectURL(
+                                    file
+                                );
+
+
+                            previewImage.src =
+                                objectUrl;
+
+
+                            previewImage.alt =
+                                "Marketplace photo " +
+                                (index + 1);
+
+
+                            previewImage.addEventListener(
+                                "load",
+                                function() {
+
+                                    URL.revokeObjectURL(
+                                        objectUrl
+                                    );
+                                }
+                            );
+
+
+                            const number =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            number.className =
+                                "marketplace-photo-number";
+
+
+                            number.textContent =
+                                (index + 1).toString();
+
+
+                            const removeButton =
+                                document.createElement(
+                                    "button"
+                                );
+
+
+                            removeButton.type =
+                                "button";
+
+
+                            removeButton.className =
+                                "marketplace-photo-remove";
+
+
+                            removeButton.textContent =
+                                "×";
+
+
+                            removeButton.title =
+                                "Remove photo";
+
+
+                            removeButton.addEventListener(
+                                "click",
+                                function() {
+
+                                    selectedMarketplaceFiles
+                                        .splice(
+                                            index,
+                                            1
+                                        );
+
+
+                                    updateFileInput();
+
+                                    renderPhotoPreview();
+                                }
+                            );
+
+
+                            wrapper.appendChild(
+                                previewImage
+                            );
+
+
+                            wrapper.appendChild(
+                                number
+                            );
+
+
+                            wrapper.appendChild(
+                                removeButton
+                            );
+
+
+                            if (index === 0) {
+
+                                const primaryBadge =
+                                    document.createElement(
+                                        "span"
+                                    );
+
+
+                                primaryBadge.className =
+                                    "marketplace-photo-primary";
+
+
+                                primaryBadge.textContent =
+                                    "PRIMARY";
+
+
+                                wrapper.appendChild(
+                                    primaryBadge
+                                );
+                            }
+
+
+                            photoPreview.appendChild(
+                                wrapper
+                            );
+                        }
+                    );
+                }
+
+
+                function addPhotos(files) {
+
+                    const incomingFiles =
+                        Array.from(
+                            files || []
+                        );
+
+
+                    for (const file of incomingFiles) {
+
+                        if (
+                            selectedMarketplaceFiles.length >=
+                            maximumPhotos
+                        ) {
+                            window.alert(
+                                "You can upload a maximum of 8 photos."
+                            );
+
+                            break;
+                        }
+
+
+                        if (
+                            !allowedImageTypes.includes(
+                                file.type
+                            )
+                        ) {
+                            window.alert(
+                                file.name +
+                                " is not supported. Please use JPG, PNG or WEBP."
+                            );
+
+                            continue;
+                        }
+
+
+                        if (
+                            file.size >
+                            maximumPhotoSize
+                        ) {
+                            window.alert(
+                                file.name +
+                                " is larger than 5 MB."
+                            );
+
+                            continue;
+                        }
+
+
+                        const duplicate =
+                            selectedMarketplaceFiles.some(
+                                function(existingFile) {
+
+                                    return (
+                                        existingFile.name ===
+                                        file.name
+                                        &&
+                                        existingFile.size ===
+                                        file.size
+                                        &&
+                                        existingFile.lastModified ===
+                                        file.lastModified
+                                    );
+                                }
+                            );
+
+
+                        if (!duplicate) {
+                            selectedMarketplaceFiles.push(
+                                file
+                            );
+                        }
+                    }
+
+
+                    updateFileInput();
+
+                    renderPhotoPreview();
+                }
+
+
+                if (marketplacePhotos) {
+
+                    marketplacePhotos.addEventListener(
+                        "change",
+                        function(event) {
+
+                            addPhotos(
+                                event.target.files
+                            );
+                        }
+                    );
+                }
+
+
+                if (photoDropZone) {
+
+                    photoDropZone.addEventListener(
+                        "dragover",
+                        function(event) {
+
+                            event.preventDefault();
+
+                            photoDropZone.classList.add(
+                                "dragging"
+                            );
+                        }
+                    );
+
+
+                    photoDropZone.addEventListener(
+                        "dragleave",
+                        function() {
+
+                            photoDropZone.classList.remove(
+                                "dragging"
+                            );
+                        }
+                    );
+
+
+                    photoDropZone.addEventListener(
+                        "drop",
+                        function(event) {
+
+                            event.preventDefault();
+
+
+                            photoDropZone.classList.remove(
+                                "dragging"
+                            );
+
+
+                            if (
+                                event.dataTransfer &&
+                                event.dataTransfer.files
+                            ) {
+                                addPhotos(
+                                    event.dataTransfer.files
+                                );
+                            }
+                        }
+                    );
+                }
+
+
+                // ===================================================
+                // LOAD EXISTING LISTING IMAGES
+                // ===================================================
+
+                const listingImages =
+                    document.querySelectorAll(
+                        ".seller-market-image"
+                    );
+
+
+                listingImages.forEach(
+                    async function(imageElement) {
+
+                        const listingId =
+                            imageElement.dataset.listingId;
+
+
+                        if (!listingId) {
+                            return;
+                        }
+
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    apiBase +
+                                    "api/MarketplaceImages/listing/" +
+                                    encodeURIComponent(
+                                        listingId
+                                    ),
+                                    {
+                                        method: "GET",
+                                        cache: "no-store"
+                                    }
+                                );
+
+
+                            if (!response.ok) {
+                                console.warn(
+                                    "Unable to load marketplace images for listing:",
+                                    listingId
+                                );
+
+                                return;
+                            }
+
+
+                            const images =
+                                await response.json();
+
+
+                            if (
+                                !Array.isArray(images) ||
+                                images.length === 0
+                            ) {
+                                return;
+                            }
+
+
+                            const primaryImage =
+                                images.find(
+                                    function(item) {
+
+                                        return (
+                                            item.isPrimary === true ||
+                                            item.IsPrimary === true
+                                        );
+                                    }
+                                )
+                                ||
+                                images[0];
+
+
+                            const imageId =
+                                primaryImage.marketplaceImageId
+                                ||
+                                primaryImage.MarketplaceImageId;
+
+
+                            if (!imageId) {
+                                console.warn(
+                                    "Marketplace image ID is missing.",
+                                    primaryImage
+                                );
+
+                                return;
+                            }
+
+
+                            imageElement.onload =
+                                function() {
+
+                                    imageElement.style.display =
+                                        "block";
+
+
+                                    const placeholder =
+                                        imageElement
+                                            .parentElement
+                                            ?.querySelector(
+                                                ".seller-image-placeholder"
+                                            );
+
+
+                                    if (placeholder) {
+                                        placeholder.style.display =
+                                            "none";
+                                    }
+                                };
+
+
+                            imageElement.onerror =
+                                function() {
+
+                                    imageElement.style.display =
+                                        "none";
+
+
+                                    console.warn(
+                                        "Marketplace image file could not be displayed:",
+                                        imageId
+                                    );
+                                };
+
+
+                            imageElement.src =
+                                apiBase +
+                                "api/MarketplaceImages/" +
+                                imageId +
+                                "/file";
+
+                        }
+                        catch (error) {
+
+                            console.error(
+                                "Marketplace listing image error:",
+                                error
+                            );
+                        }
+                    }
+                );
+
+
+                // ===================================================
+                // MARK SOLD CONFIRMATION
+                // ===================================================
+
+                document
+                    .querySelectorAll(
+                        ".mark-sold-form"
+                    )
+                    .forEach(
+                        function(form) {
+
+                            form.addEventListener(
+                                "submit",
+                                function(event) {
+
+                                    const confirmed =
+                                        window.confirm(
+                                            "Mark this marketplace listing as sold?"
+                                        );
+
+
+                                    if (!confirmed) {
+                                        event.preventDefault();
+                                    }
+                                }
+                            );
+                        }
+                    );
+
+
+                // ===================================================
+                // DELETE CONFIRMATION
+                // ===================================================
+
+                document
+                    .querySelectorAll(
+                        ".delete-listing-form"
+                    )
+                    .forEach(
+                        function(form) {
+
+                            form.addEventListener(
+                                "submit",
+                                function(event) {
+
+                                    const confirmed =
+                                        window.confirm(
+                                            "Delete this marketplace listing permanently?"
+                                        );
+
+
+                                    if (!confirmed) {
+                                        event.preventDefault();
+                                    }
+                                }
+                            );
+                        }
+                    );
+
+            }
+        );
+    </script>
+}

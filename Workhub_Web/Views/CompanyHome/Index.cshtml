@@ -1,0 +1,1784 @@
+﻿@{
+    Layout = "_CompanyLayout";
+    ViewData["Title"] = "Company Home";
+
+    var accountName =
+        ViewBag.CompanyFullName
+        as string
+        ?? "Company";
+
+    var companyEmail =
+        ViewBag.CompanyEmail
+        as string
+        ?? "";
+
+    var accountInitial =
+        string.IsNullOrWhiteSpace(accountName)
+            ? "C"
+            : accountName
+                .Substring(0, 1)
+                .ToUpperInvariant();
+
+    var profileImageUrl =
+        Url.Action(
+            "ProfileImage",
+            "CompanyPortal",
+            new
+            {
+                v = DateTime.UtcNow.Ticks
+            });
+}
+
+
+<style>
+
+    :root {
+        --home-orange: #FD5000;
+        --home-orange-dark: #D94300;
+        --home-orange-light: #FF7A00;
+        --home-orange-soft: #FFF2EB;
+        --home-dark: #0F172A;
+        --home-dark-2: #1E293B;
+        --home-text: #64748B;
+        --home-text-dark: #334155;
+        --home-border: #E2E8F0;
+        --home-bg: #F8FAFC;
+        --home-green: #16A34A;
+        --home-green-soft: #F0FDF4;
+        --home-shadow: 0 12px 35px rgba(15, 23, 42, .07);
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .company-home-page {
+        min-height: calc(100vh - 78px);
+        padding: 48px 26px 95px;
+        background: radial-gradient( circle at top right, rgba(253,80,0,.07), transparent 32% ), radial-gradient( circle at bottom left, rgba(253,80,0,.035), transparent 28% ), var(--home-bg);
+    }
+
+
+    .company-home-container {
+        width: 100%;
+        max-width: 1380px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================
+           HERO
+        ========================================= */
+
+    .company-home-hero {
+        position: relative;
+        margin-bottom: 42px;
+        padding: 58px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+        gap: 50px;
+        align-items: center;
+        border-radius: 27px;
+        background: radial-gradient( circle at 84% 15%, rgba(253,80,0,.55), transparent 31% ), linear-gradient( 135deg, #0B1120, #172033 55%, #431407 );
+        color: #FFFFFF;
+        box-shadow: 0 25px 60px rgba(15,23,42,.20);
+    }
+
+
+        .company-home-hero::before {
+            content: "";
+            position: absolute;
+            width: 370px;
+            height: 370px;
+            right: -130px;
+            bottom: -190px;
+            border-radius: 50%;
+            border: 58px solid rgba(255,255,255,.025);
+        }
+
+
+        .company-home-hero::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            right: 27%;
+            top: -80px;
+            border-radius: 50%;
+            background: rgba(253,80,0,.13);
+        }
+
+
+    .company-home-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .company-home-label {
+        margin-bottom: 19px;
+        padding: 9px 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 30px;
+        background: rgba(255,255,255,.08);
+        color: #FDBA74;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        backdrop-filter: blur(8px);
+    }
+
+
+        .company-home-label svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+    .company-home-hero h1 {
+        max-width: 760px;
+        margin: 0 0 20px;
+        color: #FFFFFF;
+        font-size: 48px;
+        font-weight: 950;
+        line-height: 1.08;
+        letter-spacing: -1.5px;
+    }
+
+
+    .company-home-highlight {
+        color: #FDBA74;
+    }
+
+
+    .company-home-hero-description {
+        max-width: 700px;
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+
+    /* =========================================
+           HERO BUTTONS
+        ========================================= */
+
+    .company-home-buttons {
+        margin-top: 31px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+
+    .company-home-primary,
+    .company-home-secondary {
+        min-height: 50px;
+        padding: 0 21px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border-radius: 11px;
+        font-size: 14px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+
+        .company-home-primary svg,
+        .company-home-secondary svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+
+    .company-home-primary {
+        border: 1px solid var(--home-orange);
+        background: linear-gradient( 135deg, var(--home-orange), var(--home-orange-light) );
+        color: #FFFFFF;
+        box-shadow: 0 10px 25px rgba(253,80,0,.28);
+    }
+
+
+        .company-home-primary:hover {
+            transform: translateY(-3px);
+            color: #FFFFFF;
+            box-shadow: 0 15px 32px rgba(253,80,0,.34);
+        }
+
+
+    .company-home-secondary {
+        border: 1px solid rgba(255,255,255,.23);
+        background: rgba(255,255,255,.08);
+        color: #FFFFFF;
+        backdrop-filter: blur(8px);
+    }
+
+
+        .company-home-secondary:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,.15);
+            color: #FFFFFF;
+        }
+
+
+    /* =========================================
+           HERO ACCOUNT CARD
+        ========================================= */
+
+    .company-home-account {
+        position: relative;
+        z-index: 2;
+        padding: 29px;
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 20px;
+        background: rgba(255,255,255,.08);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 18px 40px rgba(0,0,0,.10);
+    }
+
+
+    .company-home-avatar-shell {
+        position: relative;
+        width: 78px;
+        height: 78px;
+        margin-bottom: 20px;
+    }
+
+
+    .company-home-avatar-fallback {
+        width: 78px;
+        height: 78px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 18px;
+        background: linear-gradient( 135deg, var(--home-orange), var(--home-orange-light) );
+        color: #FFFFFF;
+        font-size: 30px;
+        font-weight: 950;
+        box-shadow: 0 12px 25px rgba(253,80,0,.28);
+    }
+
+
+    .company-home-avatar-image {
+        position: absolute;
+        inset: 0;
+        width: 78px;
+        height: 78px;
+        border: 2px solid rgba(255,255,255,.35);
+        border-radius: 18px;
+        background: #FFFFFF;
+        object-fit: cover;
+    }
+
+
+    .company-home-account-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #94A3B8;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .9px;
+        text-transform: uppercase;
+    }
+
+
+    .company-home-account strong {
+        display: block;
+        margin-bottom: 7px;
+        color: #FFFFFF;
+        font-size: 20px;
+        font-weight: 950;
+    }
+
+
+    .company-home-account-email {
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 13px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+
+    .company-approved {
+        margin-top: 19px;
+        padding: 10px 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(134,239,172,.18);
+        border-radius: 30px;
+        background: rgba(22,163,74,.17);
+        color: #BBF7D0;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+
+    .company-approved-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22C55E;
+        box-shadow: 0 0 0 4px rgba(34,197,94,.11);
+    }
+
+
+    /* =========================================
+           SECTION HEADER
+        ========================================= */
+
+    .company-home-section-header {
+        margin-bottom: 21px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+    }
+
+
+        .company-home-section-header h2 {
+            margin: 0 0 7px;
+            color: var(--home-dark);
+            font-size: 29px;
+            font-weight: 950;
+        }
+
+
+        .company-home-section-header p {
+            margin: 0;
+            color: var(--home-text);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+
+    /* =========================================
+           WORKSPACE CARDS
+        ========================================= */
+
+    .company-home-action-grid {
+        margin-bottom: 42px;
+        display: grid;
+        grid-template-columns: repeat( 4, minmax(0,1fr) );
+        gap: 18px;
+    }
+
+
+    .company-home-card {
+        position: relative;
+        min-height: 245px;
+        padding: 26px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--home-border);
+        border-radius: 18px;
+        background: #FFFFFF;
+        color: inherit;
+        text-decoration: none;
+        box-shadow: var(--home-shadow);
+        transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+
+        .company-home-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient( 90deg, var(--home-orange), var(--home-orange-light) );
+            opacity: 0;
+            transition: opacity .2s ease;
+        }
+
+
+        .company-home-card::after {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            right: -60px;
+            top: -60px;
+            border-radius: 50%;
+            background: var(--home-orange-soft);
+            opacity: .55;
+            transition: transform .25s ease, opacity .25s ease;
+        }
+
+
+        .company-home-card:hover {
+            border-color: #FDBA95;
+            transform: translateY(-6px);
+            box-shadow: 0 18px 38px rgba(15,23,42,.11);
+            color: inherit;
+        }
+
+
+            .company-home-card:hover::before {
+                opacity: 1;
+            }
+
+
+            .company-home-card:hover::after {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+
+
+    /* =========================================
+           CARD ICON
+        ========================================= */
+
+    .company-home-card-icon {
+        position: relative;
+        z-index: 2;
+        width: 55px;
+        height: 55px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: linear-gradient( 135deg, #FFF2EB, #FFE8DB );
+        color: var(--home-orange-dark);
+        box-shadow: inset 0 0 0 1px #FED7C5;
+    }
+
+
+        .company-home-card-icon svg {
+            width: 25px;
+            height: 25px;
+            stroke-width: 2;
+        }
+
+
+    .company-home-card h3 {
+        position: relative;
+        z-index: 2;
+        margin: 0 0 10px;
+        color: var(--home-dark);
+        font-size: 18px;
+        font-weight: 950;
+    }
+
+
+    .company-home-card p {
+        position: relative;
+        z-index: 2;
+        margin: 0;
+        color: var(--home-text);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+
+    .company-card-arrow {
+        position: relative;
+        z-index: 2;
+        margin-top: auto;
+        padding-top: 22px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--home-orange-dark);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+        .company-card-arrow svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+    /* =========================================
+           LOWER GRID
+        ========================================= */
+
+    .company-home-lower-grid {
+        display: grid;
+        grid-template-columns: minmax(0,1.3fr) minmax(320px,.7fr);
+        gap: 23px;
+    }
+
+
+    .company-home-panel {
+        padding: 30px;
+        border: 1px solid var(--home-border);
+        border-radius: 18px;
+        background: #FFFFFF;
+        box-shadow: var(--home-shadow);
+    }
+
+
+        .company-home-panel h3 {
+            margin: 0 0 8px;
+            color: var(--home-dark);
+            font-size: 21px;
+            font-weight: 950;
+        }
+
+
+        .company-home-panel > p {
+            margin: 0 0 24px;
+            color: var(--home-text);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+
+    /* =========================================
+           WORKFLOW
+        ========================================= */
+
+    .company-home-step-list {
+        display: grid;
+        gap: 13px;
+    }
+
+
+    .company-home-step {
+        padding: 17px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        background: #F8FAFC;
+        transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+
+        .company-home-step:hover {
+            background: var(--home-orange-soft);
+            border-color: #FED7C5;
+            transform: translateX(3px);
+        }
+
+
+    .company-home-step-number {
+        width: 41px;
+        height: 41px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: var(--home-orange-soft);
+        color: var(--home-orange-dark);
+    }
+
+
+        .company-home-step-number svg {
+            width: 20px;
+            height: 20px;
+        }
+
+
+    .company-home-step strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--home-text-dark);
+        font-size: 14px;
+        font-weight: 900;
+    }
+
+
+    .company-home-step span {
+        color: #64748B;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+
+    /* =========================================
+           ACCOUNT SHORTCUTS
+        ========================================= */
+
+    .account-shortcut-list {
+        display: grid;
+        gap: 12px;
+    }
+
+
+    .account-shortcut {
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        border: 1px solid #F1F5F9;
+        border-radius: 12px;
+        background: #F8FAFC;
+        text-decoration: none;
+        transition: .2s ease;
+    }
+
+
+        .account-shortcut:hover {
+            border-color: #FDBA95;
+            background: var(--home-orange-soft);
+            transform: translateX(3px);
+        }
+
+
+    .account-shortcut-left {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+
+    .account-shortcut-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #FFFFFF;
+        color: var(--home-orange-dark);
+        box-shadow: 0 4px 12px rgba(15,23,42,.05);
+    }
+
+
+        .account-shortcut-icon svg {
+            width: 21px;
+            height: 21px;
+        }
+
+
+    .account-shortcut strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--home-text-dark);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+    .account-shortcut span {
+        color: #94A3B8;
+        font-size: 11px;
+    }
+
+
+    .account-shortcut-arrow {
+        color: var(--home-orange);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+        .account-shortcut-arrow svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 1050px) {
+
+        .company-home-action-grid {
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
+        }
+    }
+
+
+    @@media (max-width: 850px) {
+
+        .company-home-hero {
+            grid-template-columns: 1fr;
+            padding: 42px;
+        }
+
+
+        .company-home-lower-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .company-home-page {
+            padding: 28px 14px 65px;
+        }
+
+
+        .company-home-hero {
+            padding: 34px 24px;
+            border-radius: 20px;
+        }
+
+
+            .company-home-hero h1 {
+                font-size: 35px;
+            }
+
+
+        .company-home-hero-description {
+            font-size: 14px;
+        }
+
+
+        .company-home-buttons {
+            flex-direction: column;
+        }
+
+
+        .company-home-primary,
+        .company-home-secondary {
+            width: 100%;
+        }
+
+
+        .company-home-action-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .company-home-section-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+            .company-home-section-header h2 {
+                font-size: 25px;
+            }
+
+
+        .company-home-card {
+            min-height: 220px;
+        }
+
+
+        .company-home-panel {
+            padding: 23px;
+        }
+    }
+
+</style>
+
+
+<section class="company-home-page">
+
+
+    <div class="company-home-container">
+
+
+        <!-- =========================================
+             HERO
+        ========================================= -->
+
+        <div class="company-home-hero">
+
+
+            <div class="company-home-hero-content">
+
+
+                <span class="company-home-label">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <path d="M3 21h18" />
+
+                        <path d="M6 21V7l6-4 6 4v14" />
+
+                        <path d="M9 10h6" />
+
+                        <path d="M9 14h6" />
+
+                    </svg>
+
+                    WorkHub Company Portal
+
+                </span>
+
+
+                <h1>
+
+                    Build your team with
+
+                    <span class="company-home-highlight">
+                        WorkHub.
+                    </span>
+
+                </h1>
+
+
+                <p class="company-home-hero-description">
+
+                    Post job opportunities, manage your
+                    vacancies, review candidate applications
+                    and maintain your company account from
+                    one professional recruitment workspace.
+
+                </p>
+
+
+                <div class="company-home-buttons">
+
+
+                    <a asp-controller="CompanyJobs"
+                       asp-action="Create"
+                       class="company-home-primary">
+
+                        <svg viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor">
+
+                            <path d="M12 5v14" />
+                            <path d="M5 12h14" />
+
+                        </svg>
+
+                        Post New Job
+
+                    </a>
+
+
+                    <a asp-controller="CompanyApplications"
+                       asp-action="Index"
+                       class="company-home-secondary">
+
+                        <svg viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor">
+
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                            <circle cx="9"
+                                    cy="7"
+                                    r="4" />
+
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+
+                        </svg>
+
+                        View Applications
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =====================================
+                 ACCOUNT
+            ====================================== -->
+
+            <div class="company-home-account">
+
+
+                <div class="company-home-avatar-shell">
+
+
+                    <div class="company-home-avatar-fallback">
+
+                        @accountInitial
+
+                    </div>
+
+
+                    <img src="@profileImageUrl"
+                         class="company-home-avatar-image"
+                         alt="Company profile picture"
+                         onerror="this.style.display='none';" />
+
+
+                </div>
+
+
+                <span class="company-home-account-label">
+                    Signed in as
+                </span>
+
+
+                <strong>
+                    @accountName
+                </strong>
+
+
+                <p class="company-home-account-email">
+
+                    @companyEmail
+
+                </p>
+
+
+                <div class="company-approved">
+
+                    <span class="company-approved-dot">
+                    </span>
+
+                    Company Account Active
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================================
+             WORKSPACE TITLE
+        ========================================= -->
+
+        <div class="company-home-section-header">
+
+
+            <div>
+
+
+                <h2>
+                    Company Workspace
+                </h2>
+
+
+                <p>
+
+                    Everything you need to manage
+                    recruitment and your company account.
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================================
+             ACTION CARDS
+        ========================================= -->
+
+        <div class="company-home-action-grid">
+
+
+            <!-- DASHBOARD -->
+
+            <a asp-controller="CompanyPortal"
+               asp-action="Dashboard"
+               class="company-home-card">
+
+
+                <div class="company-home-card-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <rect x="3"
+                              y="3"
+                              width="7"
+                              height="7"
+                              rx="1" />
+
+                        <rect x="14"
+                              y="3"
+                              width="7"
+                              height="7"
+                              rx="1" />
+
+                        <rect x="3"
+                              y="14"
+                              width="7"
+                              height="7"
+                              rx="1" />
+
+                        <rect x="14"
+                              y="14"
+                              width="7"
+                              height="7"
+                              rx="1" />
+
+                    </svg>
+
+                </div>
+
+
+                <h3>
+                    Dashboard
+                </h3>
+
+
+                <p>
+
+                    Manage your company profile,
+                    profile picture, account manager,
+                    password and important account settings.
+
+                </p>
+
+
+                <div class="company-card-arrow">
+
+                    Open Dashboard
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+
+                    </svg>
+
+                </div>
+
+
+            </a>
+
+
+            <!-- POST JOB -->
+
+            <a asp-controller="CompanyJobs"
+               asp-action="Create"
+               class="company-home-card">
+
+
+                <div class="company-home-card-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <rect x="3"
+                              y="7"
+                              width="18"
+                              height="13"
+                              rx="2" />
+
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                        <path d="M12 11v5" />
+
+                        <path d="M9.5 13.5h5" />
+
+                    </svg>
+
+                </div>
+
+
+                <h3>
+                    Post New Job
+                </h3>
+
+
+                <p>
+
+                    Publish vacancies using
+                    WorkHub career roles, skills,
+                    requirements and complete job information.
+
+                </p>
+
+
+                <div class="company-card-arrow">
+
+                    Create Job
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+
+                    </svg>
+
+                </div>
+
+
+            </a>
+
+
+            <!-- MY JOBS -->
+
+            <a asp-controller="CompanyJobs"
+               asp-action="Index"
+               class="company-home-card">
+
+
+                <div class="company-home-card-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <rect x="3"
+                              y="7"
+                              width="18"
+                              height="13"
+                              rx="2" />
+
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                        <path d="M3 12h18" />
+
+                        <path d="M10 12v2h4v-2" />
+
+                    </svg>
+
+                </div>
+
+
+                <h3>
+                    My Job Posts
+                </h3>
+
+
+                <p>
+
+                    View your published vacancies,
+                    monitor job status and manage
+                    or close existing job posts.
+
+                </p>
+
+
+                <div class="company-card-arrow">
+
+                    Manage Jobs
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+
+                    </svg>
+
+                </div>
+
+
+            </a>
+
+
+            <!-- APPLICATIONS -->
+
+            <a asp-controller="CompanyApplications"
+               asp-action="Index"
+               class="company-home-card">
+
+
+                <div class="company-home-card-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                        <circle cx="9"
+                                cy="7"
+                                r="4" />
+
+                        <path d="M19 8v6" />
+
+                        <path d="M22 11h-6" />
+
+                    </svg>
+
+                </div>
+
+
+                <h3>
+                    Applications
+                </h3>
+
+
+                <p>
+
+                    Review candidates, profile
+                    information, CV matching results
+                    and update recruitment status.
+
+                </p>
+
+
+                <div class="company-card-arrow">
+
+                    Review Applicants
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor">
+
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+
+                    </svg>
+
+                </div>
+
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =========================================
+             LOWER GRID
+        ========================================= -->
+
+        <div class="company-home-lower-grid">
+
+
+            <!-- =====================================
+                 RECRUITMENT WORKFLOW
+            ====================================== -->
+
+            <div class="company-home-panel">
+
+
+                <h3>
+                    Recruitment Workflow
+                </h3>
+
+
+                <p>
+
+                    Follow the WorkHub recruitment
+                    process from your company profile
+                    to selecting candidates.
+
+                </p>
+
+
+                <div class="company-home-step-list">
+
+
+                    <!-- STEP 1 -->
+
+                    <div class="company-home-step">
+
+
+                        <div class="company-home-step-number">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <circle cx="12"
+                                        cy="8"
+                                        r="4" />
+
+                                <path d="M4 21a8 8 0 0 1 16 0" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+                                Maintain Company Profile
+                            </strong>
+
+
+                            <span>
+
+                                Keep your company details,
+                                branding and account information updated.
+
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- STEP 2 -->
+
+                    <div class="company-home-step">
+
+
+                        <div class="company-home-step-number">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <rect x="3"
+                                      y="6"
+                                      width="18"
+                                      height="15"
+                                      rx="2" />
+
+                                <path d="M8 6V4h8v2" />
+
+                                <path d="M12 10v6" />
+
+                                <path d="M9 13h6" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+                                Publish Job Opportunities
+                            </strong>
+
+
+                            <span>
+
+                                Add vacancy details,
+                                career roles and required skills.
+
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- STEP 3 -->
+
+                    <div class="company-home-step">
+
+
+                        <div class="company-home-step-number">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                                <circle cx="9"
+                                        cy="7"
+                                        r="4" />
+
+                                <path d="M19 8v6" />
+                                <path d="M22 11h-6" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+                                Receive Applications
+                            </strong>
+
+
+                            <span>
+
+                                Registered job seekers
+                                can apply for your published vacancies.
+
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- STEP 4 -->
+
+                    <div class="company-home-step">
+
+
+                        <div class="company-home-step-number">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <path d="M9 11l3 3L22 4" />
+
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+
+                            </svg>
+
+                        </div>
+
+
+                        <div>
+
+
+                            <strong>
+                                Review Candidates
+                            </strong>
+
+
+                            <span>
+
+                                Review applicant information,
+                                CV matching and recruitment status.
+
+                            </span>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =====================================
+                 ACCOUNT SHORTCUTS
+            ====================================== -->
+
+            <div class="company-home-panel">
+
+
+                <h3>
+                    Account & Profile
+                </h3>
+
+
+                <p>
+
+                    Quick access to your company
+                    profile and security settings.
+
+                </p>
+
+
+                <div class="account-shortcut-list">
+
+
+                    <!-- COMPANY PROFILE -->
+
+                    <a asp-controller="CompanyPortal"
+                       asp-action="Dashboard"
+                       asp-fragment="company-profile"
+                       class="account-shortcut">
+
+
+                        <div class="account-shortcut-left">
+
+
+                            <div class="account-shortcut-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor">
+
+                                    <path d="M3 21h18" />
+
+                                    <path d="M6 21V7l6-4 6 4v14" />
+
+                                    <path d="M9 10h6" />
+
+                                    <path d="M9 14h6" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <strong>
+                                    Company Profile
+                                </strong>
+
+
+                                <span>
+                                    Company information
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="account-shortcut-arrow">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <path d="M5 12h14" />
+                                <path d="m13 6 6 6-6 6" />
+
+                            </svg>
+
+                        </div>
+
+
+                    </a>
+
+
+                    <!-- PROFILE PICTURE -->
+
+                    <a asp-controller="CompanyPortal"
+                       asp-action="Dashboard"
+                       asp-fragment="profile-picture"
+                       class="account-shortcut">
+
+
+                        <div class="account-shortcut-left">
+
+
+                            <div class="account-shortcut-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor">
+
+                                    <rect x="3"
+                                          y="5"
+                                          width="18"
+                                          height="16"
+                                          rx="2" />
+
+                                    <circle cx="8.5"
+                                            cy="10"
+                                            r="2" />
+
+                                    <path d="m21 15-5-5L5 21" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <strong>
+                                    Profile Picture
+                                </strong>
+
+
+                                <span>
+                                    Upload or remove logo
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="account-shortcut-arrow">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <path d="M5 12h14" />
+                                <path d="m13 6 6 6-6 6" />
+
+                            </svg>
+
+                        </div>
+
+
+                    </a>
+
+
+                    <!-- ACCOUNT MANAGER -->
+
+                    <a asp-controller="CompanyPortal"
+                       asp-action="Dashboard"
+                       asp-fragment="account-name"
+                       class="account-shortcut">
+
+
+                        <div class="account-shortcut-left">
+
+
+                            <div class="account-shortcut-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor">
+
+                                    <circle cx="12"
+                                            cy="8"
+                                            r="4" />
+
+                                    <path d="M4 21a8 8 0 0 1 16 0" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <strong>
+                                    Account Manager
+                                </strong>
+
+
+                                <span>
+                                    Update account name
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="account-shortcut-arrow">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <path d="M5 12h14" />
+                                <path d="m13 6 6 6-6 6" />
+
+                            </svg>
+
+                        </div>
+
+
+                    </a>
+
+
+                    <!-- PASSWORD -->
+
+                    <a asp-controller="CompanyPortal"
+                       asp-action="Dashboard"
+                       asp-fragment="change-password"
+                       class="account-shortcut">
+
+
+                        <div class="account-shortcut-left">
+
+
+                            <div class="account-shortcut-icon">
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor">
+
+                                    <rect x="4"
+                                          y="10"
+                                          width="16"
+                                          height="11"
+                                          rx="2" />
+
+                                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+
+                                    <circle cx="12"
+                                            cy="15"
+                                            r="1" />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div>
+
+
+                                <strong>
+                                    Change Password
+                                </strong>
+
+
+                                <span>
+                                    Update account security
+                                </span>
+
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="account-shortcut-arrow">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor">
+
+                                <path d="M5 12h14" />
+                                <path d="m13 6 6 6-6 6" />
+
+                            </svg>
+
+                        </div>
+
+
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>

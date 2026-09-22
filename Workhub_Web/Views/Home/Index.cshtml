@@ -1,0 +1,2094 @@
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Home";
+
+    var apiBaseUrl =
+        Configuration["ApiSettings:BaseUrl"]
+        ?? "https://localhost:7015/";
+}
+
+<style>
+    /* =========================================================
+       WORKHUB PREMIUM HOME PAGE
+       ========================================================= */
+
+    :root {
+        --wh-orange: #ff5a1f;
+        --wh-orange-dark: #e8470d;
+        --wh-orange-light: #fff3ed;
+        --wh-orange-soft: #fff8f4;
+        --wh-dark: #111827;
+        --wh-dark-2: #1f2937;
+        --wh-gray: #64748b;
+        --wh-light: #f8fafc;
+        --wh-border: #e5e7eb;
+        --wh-white: #ffffff;
+        --wh-shadow: 0 15px 45px rgba(15, 23, 42, .08);
+        --wh-shadow-hover: 0 25px 65px rgba(15, 23, 42, .14);
+    }
+
+
+    /* =========================================================
+       GLOBAL
+       ========================================================= */
+
+    #workHubHome {
+        background: #ffffff;
+        color: var(--wh-dark);
+        overflow: hidden;
+    }
+
+    #workHubHome * {
+        box-sizing: border-box;
+    }
+
+    .section-container {
+        width: min(1240px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .hero-section {
+        position: relative;
+        min-height: 720px;
+        height: 82vh;
+        max-height: 850px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        isolation: isolate;
+        background: #111827;
+    }
+
+    .hero-slide {
+        position: absolute;
+        inset: 0;
+        background-position: center;
+        background-size: cover;
+        opacity: 0;
+        transform: scale(1.08);
+        transition: opacity 1.2s ease, transform 7s ease;
+        z-index: -3;
+    }
+
+    .hero-slide.active {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background:
+            linear-gradient(
+                90deg,
+                rgba(10, 15, 25, .92) 0%,
+                rgba(10, 15, 25, .78) 35%,
+                rgba(10, 15, 25, .38) 70%,
+                rgba(10, 15, 25, .18) 100%
+            );
+    }
+
+    .hero-overlay::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(
+                circle at 75% 45%,
+                rgba(255, 90, 31, .20),
+                transparent 35%
+            );
+    }
+
+    .hero-content {
+        width: min(1240px, calc(100% - 40px));
+        margin: 0 auto;
+        color: white;
+        position: absolute;
+        z-index: 2;
+        padding: 70px 0;
+        animation: heroEnter .9s ease both;
+        left:-50px;
+        right:-50px;
+    }
+      .hero-content h1{
+        margin: 0 auto;
+        left:-50px;
+        right:-50px;
+        font-size: clamp(38px, 4.8vw, 64px);
+        
+        letter-spacing: -2px;
+        font-weight: 850;
+        color: white;
+    }
+      .hero-content p{
+        margin: 0 auto;
+        left:-50px;
+        right:-50px;
+     
+        
+       
+      
+        color: white;
+    }
+    
+
+    @@keyframes heroEnter {
+        from {
+            opacity: 0;
+            transform: translateY(35px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 20px;
+        padding: 9px 15px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 999px;
+        background: rgba(255,255,255,.10);
+        backdrop-filter: blur(12px);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .hero-label::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--wh-orange);
+        box-shadow: 0 0 14px rgba(255,90,31,.8);
+    }
+
+
+    /* =========================================================
+       HERO H1 — REDUCED SIZE
+       ========================================================= */
+
+   
+
+    .hero-description {
+        max-width: 700px;
+        margin: 25px 0 34px;
+        color: rgba(255,255,255,.82);
+        font-size: 18px;
+        line-height: 1.75;
+    }
+
+
+    /* =========================================================
+       SEARCH
+       ========================================================= */
+
+    .hero-search {
+        display: flex;
+        align-items: stretch;
+        width: min(760px, 100%);
+        min-height: 70px;
+        padding: 7px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 18px;
+        background: rgba(255,255,255,.12);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 55px rgba(0,0,0,.20);
+    }
+
+    .location-input-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 18px;
+        min-width: 0;
+    }
+
+    .location-symbol {
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: rgba(255,255,255,.12);
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .location-input-wrapper input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: white;
+        font-size: 17px;
+        font-weight: 500;
+    }
+
+    .location-input-wrapper input::placeholder {
+        color: rgba(255,255,255,.68);
+    }
+
+    #locationSearchButton {
+        border: none;
+        padding: 0 30px;
+        border-radius: 13px;
+        background:
+            linear-gradient(
+                135deg,
+                var(--wh-orange),
+                #ff7a45
+            );
+        color: white;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(255,90,31,.30);
+        transition: .25s ease;
+    }
+
+    #locationSearchButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(255,90,31,.45);
+    }
+
+    #locationSearchButton:active {
+        transform: translateY(0);
+    }
+
+    .search-message {
+        min-height: 25px;
+        margin: 12px 0 0;
+        color: rgba(255,255,255,.8);
+    }
+
+
+    /* =========================================================
+       HERO DOTS
+       ========================================================= */
+
+    .hero-dots {
+        position: absolute;
+        left: 50%;
+        bottom: 32px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 9px;
+        z-index: 5;
+    }
+
+    .hero-dot {
+        width: 28px;
+        height: 5px;
+        padding: 0;
+        border: none;
+        border-radius: 99px;
+        background: rgba(255,255,255,.35);
+        cursor: pointer;
+        transition: .3s ease;
+    }
+
+    .hero-dot.active {
+        width: 48px;
+        background: var(--wh-orange);
+        box-shadow: 0 0 14px rgba(255,90,31,.55);
+    }
+
+
+    /* =========================================================
+       SEARCH RESULTS
+       ========================================================= */
+
+    .search-results-section {
+        display: none;
+        padding: 75px 0;
+        background: var(--wh-light);
+    }
+
+    .search-results-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        margin-bottom: 35px;
+    }
+
+    .section-label {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: var(--wh-orange);
+        font-size: 13px;
+        font-weight: 850;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       H2 — REDUCED SIZE
+       ========================================================= */
+
+    .search-results-heading h2,
+    .home-section-header h2 {
+        margin: 0;
+
+        font-size: clamp(26px, 3vw, 38px);
+
+        line-height: 1.15;
+        letter-spacing: -1px;
+        font-weight: 850;
+        color: var(--wh-dark);
+    }
+
+    .close-results-button {
+        border: 1px solid var(--wh-border);
+        border-radius: 12px;
+        padding: 11px 18px;
+        background: white;
+        color: var(--wh-dark);
+        font-weight: 700;
+        cursor: pointer;
+        transition: .25s ease;
+    }
+
+    .close-results-button:hover {
+        border-color: var(--wh-orange);
+        color: var(--wh-orange);
+    }
+
+    .search-loading,
+    .home-loading {
+        padding: 30px;
+        border-radius: 18px;
+        background: white;
+        color: var(--wh-gray);
+        text-align: center;
+        box-shadow: var(--wh-shadow);
+    }
+
+    .result-group {
+        margin-top: 35px;
+    }
+
+    .result-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+
+    /* =========================================================
+       RESULT H3 — REDUCED SIZE
+       ========================================================= */
+
+    .result-title h3 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.3;
+        font-weight: 800;
+    }
+
+    .result-title span {
+        min-width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+
+    /* =========================================================
+       HOME SECTIONS
+       ========================================================= */
+
+    .home-section {
+        position: relative;
+        padding: 100px 0;
+    }
+
+    .job-categories-section {
+        background:
+            radial-gradient(
+                circle at 0% 50%,
+                rgba(255,90,31,.055),
+                transparent 30%
+            ),
+            white;
+    }
+
+    .services-home-section {
+        background: #f8fafc;
+    }
+
+    .marketplace-home-section {
+        background: white;
+    }
+
+    .home-section-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 30px;
+        margin-bottom: 45px;
+    }
+
+    .home-section-header p {
+        max-width: 650px;
+        margin: 16px 0 0;
+        color: var(--wh-gray);
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .view-all-link {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--wh-orange);
+        font-size: 15px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: .25s ease;
+    }
+
+    .view-all-link:hover {
+        color: var(--wh-orange-dark);
+        transform: translateX(4px);
+    }
+
+
+    /* =========================================================
+       CARD GRID
+       ========================================================= */
+
+    .home-card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .home-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--wh-border);
+        border-radius: 22px;
+        background: white;
+        box-shadow: 0 8px 30px rgba(15,23,42,.055);
+        transition:
+            transform .35s ease,
+            box-shadow .35s ease,
+            border-color .35s ease;
+    }
+
+    .home-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background:
+            linear-gradient(
+                90deg,
+                var(--wh-orange),
+                #ff9b72
+            );
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .35s ease;
+        z-index: 2;
+    }
+
+    .home-card:hover {
+        transform: translateY(-9px);
+        border-color: #ffd4c4;
+        box-shadow: var(--wh-shadow-hover);
+    }
+
+    .home-card:hover::before {
+        transform: scaleX(1);
+    }
+
+
+    /* =========================================================
+       CARD ICON / IMAGE
+       ========================================================= */
+
+    .card-image-placeholder,
+    .marketplace-card-image {
+        position: relative;
+        height: 190px;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        background:
+            radial-gradient(
+                circle at 50% 30%,
+                rgba(255,90,31,.17),
+                transparent 45%
+            ),
+            linear-gradient(
+                135deg,
+                #fff7f2,
+                #f8fafc
+            );
+    }
+
+    .card-image-placeholder::after {
+        content: "";
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,90,31,.12);
+        box-shadow:
+            0 0 0 25px rgba(255,90,31,.035),
+            0 0 0 50px rgba(255,90,31,.02);
+    }
+
+    .category-icon {
+        font-size: 0;
+    }
+
+    .category-icon::before {
+        content: "✦";
+        position: relative;
+        z-index: 2;
+        width: 72px;
+        height: 72px;
+        display: grid;
+        place-items: center;
+        border-radius: 22px;
+        background:
+            linear-gradient(
+                135deg,
+                var(--wh-orange),
+                #ff8a5b
+            );
+        color: white;
+        font-size: 32px;
+        font-weight: 900;
+        box-shadow: 0 15px 35px rgba(255,90,31,.28);
+    }
+
+    .service-card .card-image-placeholder span,
+    .marketplace-card .card-image-placeholder span {
+        position: relative;
+        z-index: 3;
+        width: 72px;
+        height: 72px;
+        display: grid;
+        place-items: center;
+        border-radius: 22px;
+        background:
+            linear-gradient(
+                135deg,
+                var(--wh-orange),
+                #ff8a5b
+            );
+        color: white;
+        font-size: 30px;
+        box-shadow: 0 15px 35px rgba(255,90,31,.28);
+    }
+
+    .marketplace-card-image {
+        display: block;
+        background: #f1f5f9;
+    }
+
+    .marketplace-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .6s ease;
+    }
+
+    .home-card:hover .marketplace-card-image img {
+        transform: scale(1.06);
+    }
+
+
+    /* =========================================================
+       CARD CONTENT
+       ========================================================= */
+
+    .home-card-content {
+        padding: 24px;
+    }
+
+
+    /* =========================================================
+       CARD H3 — REDUCED SIZE
+       ========================================================= */
+
+    .home-card-content h3 {
+        margin: 8px 0 10px;
+        color: var(--wh-dark);
+        font-size: 18px;
+        line-height: 1.35;
+        font-weight: 800;
+    }
+
+    .home-card-content p {
+        margin: 0;
+        color: var(--wh-gray);
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .card-category {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange-dark);
+        font-size: 11px;
+        font-weight: 850;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .card-provider {
+        margin-top: 8px !important;
+        font-weight: 700;
+        color: #475569 !important;
+    }
+
+    .card-location {
+        margin-top: 10px !important;
+        color: #64748b !important;
+    }
+
+    .card-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid #eef2f7;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .card-price,
+    .marketplace-price {
+        color: var(--wh-orange-dark);
+        font-weight: 850;
+    }
+
+    .marketplace-tags {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .listing-type {
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .marketplace-price {
+        margin: 18px 0;
+        font-size: 22px;
+    }
+
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
+    .card-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        margin-top: 20px;
+        padding: 11px 16px;
+        border-radius: 12px;
+        background: var(--wh-dark);
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 800;
+        transition: .25s ease;
+    }
+
+    .card-button::after {
+        content: " →";
+        margin-left: 6px;
+        transition: transform .25s ease;
+    }
+
+    .card-button:hover {
+        background: var(--wh-orange);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .card-button:hover::after {
+        transform: translateX(4px);
+    }
+
+
+    /* =========================================================
+       EMPTY
+       ========================================================= */
+
+    .home-empty {
+        grid-column: 1 / -1;
+        padding: 45px 25px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 18px;
+        background: #f8fafc;
+        color: var(--wh-gray);
+        text-align: center;
+        font-weight: 600;
+    }
+
+
+    /* =========================================================
+       CTA
+       ========================================================= */
+
+    .home-cta {
+        position: relative;
+        padding: 100px 0;
+        overflow: hidden;
+        background:
+            radial-gradient(
+                circle at 80% 20%,
+                rgba(255,90,31,.25),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #111827,
+                #1f2937
+            );
+        color: white;
+    }
+
+    .home-cta::before {
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        right: -160px;
+        bottom: -220px;
+        border: 1px solid rgba(255,90,31,.3);
+        border-radius: 50%;
+        box-shadow:
+            0 0 0 70px rgba(255,90,31,.04),
+            0 0 0 140px rgba(255,90,31,.025);
+    }
+
+    .home-cta-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 50px;
+    }
+
+    .home-cta .section-label {
+        color: #ff9b72;
+    }
+
+
+    /* =========================================================
+       CTA H2 — REDUCED SIZE
+       ========================================================= */
+
+    .home-cta h2 {
+        max-width: 700px;
+        margin: 0;
+
+        color: white;
+
+        font-size: clamp(30px, 4vw, 48px);
+
+        line-height: 1.08;
+        letter-spacing: -1.5px;
+        font-weight: 850;
+    }
+
+    .home-cta p {
+        max-width: 650px;
+        margin: 20px 0 0;
+        color: rgba(255,255,255,.68);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .home-cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 24px;
+        border-radius: 13px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 800;
+        transition: .25s ease;
+    }
+
+    .cta-primary {
+        background: var(--wh-orange);
+        color: white;
+        box-shadow: 0 12px 30px rgba(255,90,31,.25);
+    }
+
+    .cta-primary:hover {
+        background: #ff713e;
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    .cta-secondary {
+        border: 1px solid rgba(255,255,255,.18);
+        background: rgba(255,255,255,.07);
+        color: white;
+        backdrop-filter: blur(10px);
+    }
+
+    .cta-secondary:hover {
+        border-color: var(--wh-orange);
+        background: rgba(255,90,31,.12);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+
+    /* =========================================================
+       SCROLL ANIMATION
+       ========================================================= */
+
+    .home-card {
+        animation: cardAppear .7s ease both;
+    }
+
+    @@keyframes cardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* =========================================================
+       RESPONSIVE — TABLET
+       ========================================================= */
+
+    @@media (max-width: 1000px) {
+
+        .hero-section {
+            min-height: 680px;
+        }
+
+        .home-card-grid,
+        .result-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .home-cta-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+
+    /* =========================================================
+       RESPONSIVE — MOBILE
+       ========================================================= */
+
+    @@media (max-width: 700px) {
+
+        .section-container,
+        .hero-content {
+            width: min(100% - 28px, 1240px);
+        }
+
+        .hero-section {
+            min-height: 680px;
+            height: auto;
+        }
+
+        .hero-content {
+            padding: 90px 0;
+        }
+
+
+        /* Mobile H1 */
+        .hero-content h1 {
+            font-size: 38px;
+            line-height: 1.08;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-description {
+            font-size: 16px;
+        }
+
+        .hero-search {
+            flex-direction: column;
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .location-input-wrapper {
+            min-height: 58px;
+        }
+
+        #locationSearchButton {
+            min-height: 54px;
+        }
+
+        .home-section {
+            padding: 70px 0;
+        }
+
+        .home-section-header,
+        .search-results-heading {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+
+        /* Mobile H2 */
+        .search-results-heading h2,
+        .home-section-header h2 {
+            font-size: 28px;
+            line-height: 1.15;
+            letter-spacing: -.8px;
+        }
+
+
+        /* Mobile H3 */
+        .home-card-content h3 {
+            font-size: 17px;
+        }
+
+        .result-title h3 {
+            font-size: 19px;
+        }
+
+        .home-card-grid,
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .home-cta {
+            padding: 75px 0;
+        }
+
+
+        /* Mobile CTA H2 */
+        .home-cta h2 {
+            font-size: 32px;
+            line-height: 1.08;
+            letter-spacing: -1px;
+        }
+
+        .home-cta-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .cta-primary,
+        .cta-secondary {
+            width: 100%;
+        }
+    }
+
+
+    /* =========================================================
+       RESPONSIVE — SMALL MOBILE
+       ========================================================= */
+
+    @@media (max-width: 480px) {
+
+        .hero-content h1 {
+            font-size: 34px;
+            line-height: 1.1;
+        }
+
+        .search-results-heading h2,
+        .home-section-header h2 {
+            font-size: 25px;
+        }
+
+        .home-card-content h3 {
+            font-size: 16px;
+        }
+
+        .result-title h3 {
+            font-size: 18px;
+        }
+
+        .home-cta h2 {
+            font-size: 29px;
+        }
+    }
+
+
+    /* =========================================================
+       REDUCED MOTION
+       ========================================================= */
+
+    @@media (prefers-reduced-motion: reduce) {
+
+        .hero-slide,
+        .home-card,
+        .hero-content,
+        * {
+            animation-duration: .01ms !important;
+            transition-duration: .01ms !important;
+        }
+    }
+
+</style>
+
+
+<div id="workHubHome"
+     data-api-base="@apiBaseUrl">
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="hero-section">
+
+        <div class="hero-slide active"
+             style="background-image:url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="hero-slide"
+             style="background-image:url('https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="hero-slide"
+             style="background-image:url('https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+
+            <p class="hero-label">
+                One Platform. More Opportunities.
+            </p>
+
+            <h1>
+                Find Work.<br />
+                Find Services.<br />
+                Find What You Need.
+            </h1>
+
+            <p class="hero-description">
+                Search jobs, professional services and marketplace
+                products available near your location with WorkHub.
+            </p>
+
+            <form class="hero-search"
+                  id="locationSearchForm">
+
+                <div class="location-input-wrapper">
+
+                    <span class="location-symbol">
+                        ◉
+                    </span>
+
+                    <input type="text"
+                           id="locationInput"
+                           placeholder="Enter your location..."
+                           autocomplete="off" />
+
+                </div>
+
+                <button type="submit"
+                        id="locationSearchButton">
+                    Search
+                </button>
+
+            </form>
+
+            <p class="search-message"
+               id="searchMessage">
+            </p>
+
+        </div>
+
+        <div class="hero-dots">
+
+            <button class="hero-dot active"
+                    data-slide="0"
+                    type="button"
+                    aria-label="Slide 1">
+            </button>
+
+            <button class="hero-dot"
+                    data-slide="1"
+                    type="button"
+                    aria-label="Slide 2">
+            </button>
+
+            <button class="hero-dot"
+                    data-slide="2"
+                    type="button"
+                    aria-label="Slide 3">
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SEARCH RESULTS
+    ====================================================== -->
+
+    <section class="search-results-section"
+             id="searchResultsSection">
+
+        <div class="section-container">
+
+            <div class="search-results-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        Search Results
+                    </span>
+
+                    <h2 id="searchResultsTitle">
+                        Opportunities near you
+                    </h2>
+
+                </div>
+
+                <button type="button"
+                        id="closeSearchResults"
+                        class="close-results-button">
+                    Close
+                </button>
+
+            </div>
+
+            <div id="searchLoading"
+                 class="search-loading">
+
+                Searching WorkHub...
+
+            </div>
+
+            <div class="result-group"
+                 id="jobResultGroup">
+
+                <div class="result-title">
+
+                    <h3>Jobs</h3>
+
+                    <span id="jobResultCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div class="result-grid"
+                     id="jobResults">
+                </div>
+
+            </div>
+
+            <div class="result-group"
+                 id="serviceResultGroup">
+
+                <div class="result-title">
+
+                    <h3>Services</h3>
+
+                    <span id="serviceResultCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div class="result-grid"
+                     id="serviceResults">
+                </div>
+
+            </div>
+
+            <div class="result-group"
+                 id="marketplaceResultGroup">
+
+                <div class="result-title">
+
+                    <h3>Marketplace</h3>
+
+                    <span id="marketplaceResultCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div class="result-grid"
+                     id="marketplaceResults">
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         JOB CATEGORIES
+    ====================================================== -->
+
+    <section class="home-section job-categories-section">
+
+        <div class="section-container">
+
+            <div class="home-section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        Find Opportunities
+                    </span>
+
+                    <h5>
+                        Job Categories
+                    </h5>
+
+                    <p>
+                        Explore job opportunities across
+                        different industries and professions.
+                    </p>
+
+                </div>
+
+                <a href="/Jobs"
+                   class="view-all-link">
+                    View All Jobs →
+                </a>
+
+            </div>
+
+            <div id="jobCategoriesLoading"
+                 class="home-loading">
+
+                Loading job categories...
+
+            </div>
+
+            <div class="home-card-grid"
+                 id="jobCategoriesContainer">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SERVICES
+    ====================================================== -->
+
+    <section class="home-section services-home-section">
+
+        <div class="section-container">
+
+            <div class="home-section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        Professional Help
+                    </span>
+
+                    <h5>
+                        Available Services
+                    </h5>
+
+                    <p>
+                        Discover skilled service providers
+                        available through WorkHub.
+                    </p>
+
+                </div>
+
+                <a href="/Services"
+                   class="view-all-link">
+                    View All Services →
+                </a>
+
+            </div>
+
+            <div id="servicesLoading"
+                 class="home-loading">
+
+                Loading services...
+
+            </div>
+
+            <div class="home-card-grid"
+                 id="servicesContainer">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MARKETPLACE
+    ====================================================== -->
+
+    <section class="home-section marketplace-home-section">
+
+        <div class="section-container">
+
+            <div class="home-section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        Buy or Rent
+                    </span>
+
+                    <h5>
+                        Marketplace
+                    </h5>
+
+                    <p>
+                        Browse products available for
+                        sale and rent in the WorkHub marketplace.
+                    </p>
+
+                </div>
+
+                <a href="/Marketplace"
+                   class="view-all-link">
+                    View Marketplace →
+                </a>
+
+            </div>
+
+            <div id="marketplaceLoading"
+                 class="home-loading">
+
+                Loading marketplace...
+
+            </div>
+
+            <div class="home-card-grid"
+                 id="marketplaceContainer">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CTA
+    ====================================================== -->
+
+    <section class="home-cta">
+
+        <div class="section-container">
+
+            <div class="home-cta-content">
+
+                <div>
+
+                    <span class="section-label">
+                        Join WorkHub
+                    </span>
+
+                    <h5>
+                        One account.<br />
+                        More opportunities.
+                    </h5>
+
+                    <p>
+                        Find jobs, provide services or sell
+                        products through one simple platform.
+                    </p>
+
+                </div>
+
+                <div class="home-cta-actions">
+
+                    <a href="/Jobs"
+                       class="cta-secondary">
+                        Explore WorkHub
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function() {
+
+                const home =
+                    document.getElementById("workHubHome");
+
+                if (!home) {
+                    return;
+                }
+
+                const apiBase =
+                    home.dataset.apiBase;
+
+
+                /* =================================================
+                   HERO SLIDESHOW
+                ================================================= */
+
+                const slides =
+                    document.querySelectorAll(".hero-slide");
+
+                const dots =
+                    document.querySelectorAll(".hero-dot");
+
+                let currentSlide = 0;
+
+                function showSlide(index) {
+
+                    slides.forEach(
+                        function(slide, i) {
+
+                            slide.classList.toggle(
+                                "active",
+                                i === index
+                            );
+
+                        }
+                    );
+
+                    dots.forEach(
+                        function(dot, i) {
+
+                            dot.classList.toggle(
+                                "active",
+                                i === index
+                            );
+
+                        }
+                    );
+
+                    currentSlide = index;
+                }
+
+                dots.forEach(
+                    function(dot) {
+
+                        dot.addEventListener(
+                            "click",
+                            function() {
+
+                                showSlide(
+                                    Number(
+                                        dot.dataset.slide
+                                    )
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+                setInterval(
+                    function() {
+
+                        currentSlide =
+                            (currentSlide + 1)
+                            % slides.length;
+
+                        showSlide(currentSlide);
+
+                    },
+                    6000
+                );
+
+
+                /* =================================================
+                   LOAD HOME DATA
+                ================================================= */
+
+                try {
+
+                    const response =
+                        await fetch(
+                            apiBase + "api/Home"
+                        );
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Unable to load homepage data."
+                        );
+
+                    }
+
+                    const data =
+                        await response.json();
+
+
+                    renderJobCategories(
+                        data.jobCategories || []
+                    );
+
+                    renderServices(
+                        data.services || []
+                    );
+
+                    renderMarketplace(
+                        data.marketplace || []
+                    );
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "WorkHub Home Error:",
+                        error
+                    );
+
+                    showHomeError();
+
+                }
+
+
+                /* =================================================
+                   JOB CATEGORIES
+                ================================================= */
+
+                function renderJobCategories(
+                    categories
+                ) {
+
+                    const loading =
+                        document.getElementById(
+                            "jobCategoriesLoading"
+                        );
+
+                    const container =
+                        document.getElementById(
+                            "jobCategoriesContainer"
+                        );
+
+                    loading.style.display = "none";
+
+
+                    if (categories.length === 0) {
+
+                        container.innerHTML =
+                            `
+                                <div class="home-empty">
+                                    No job categories available yet.
+                                </div>
+                                `;
+
+                        return;
+                    }
+
+
+                    const visibleCategories =
+                        categories.slice(0, 6);
+
+
+                    container.innerHTML =
+                        visibleCategories.map(
+                            function(category) {
+
+                                return `
+                                    <div class="home-card category-card">
+
+                                        <div class="card-image-placeholder category-icon">
+                                        </div>
+
+                                        <div class="home-card-content">
+
+                                            <span class="card-category">
+                                                ${escapeHtml(category)}
+                                            </span>
+
+                                            <h3>
+                                                ${escapeHtml(category)}
+                                            </h3>
+
+                                            <p>
+                                                Find available
+                                                ${escapeHtml(category)}
+                                                opportunities through WorkHub.
+                                            </p>
+
+                                            <a
+                                                href="/Jobs?category=${encodeURIComponent(category)}"
+                                                class="card-button">
+
+                                                View Jobs
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+                                    `;
+
+                            }
+                        ).join("");
+
+                }
+
+
+                /* =================================================
+                   SERVICES
+                ================================================= */
+
+                function renderServices(
+                    services
+                ) {
+
+                    const loading =
+                        document.getElementById(
+                            "servicesLoading"
+                        );
+
+                    const container =
+                        document.getElementById(
+                            "servicesContainer"
+                        );
+
+                    loading.style.display = "none";
+
+
+                    if (services.length === 0) {
+
+                        container.innerHTML =
+                            `
+                                <div class="home-empty">
+                                    No services available yet.
+                                </div>
+                                `;
+
+                        return;
+                    }
+
+
+                    const visibleServices =
+                        services.slice(0, 6);
+
+
+                    container.innerHTML =
+                        visibleServices.map(
+                            function(service) {
+
+                                const provider =
+                                    service.provider
+                                        ?.displayName
+                                    ||
+                                    "Service Provider";
+
+
+                                const location =
+                                    service.location
+                                    ||
+                                    service.provider?.location
+                                    ||
+                                    "Location not specified";
+
+
+                                const rating =
+                                    Number(
+                                        service.averageRating || 0
+                                    ).toFixed(1);
+
+
+                                return `
+                                    <div class="home-card service-card">
+
+                                        <div class="card-image-placeholder">
+
+                                            <span>
+                                                ⚒
+                                            </span>
+
+                                        </div>
+
+                                        <div class="home-card-content">
+
+                                            <span class="card-category">
+                                                ${escapeHtml(
+                                    service.category?.categoryName
+                                    || "Service"
+                                )}
+                                            </span>
+
+                                            <h3>
+                                                ${escapeHtml(
+                                    service.title
+                                )}
+                                            </h3>
+
+                                            <p class="card-provider">
+                                                ${escapeHtml(provider)}
+                                            </p>
+
+                                            <p class="card-location">
+                                                ◉
+                                                ${escapeHtml(location)}
+                                            </p>
+
+                                            <div class="card-meta-row">
+
+                                                <span>
+                                                    ★ ${rating}
+                                                </span>
+
+                                                <span class="card-price">
+                                                    From
+                                                    ${formatMoney(
+                                    service.startingPrice
+                                )}
+                                                </span>
+
+                                            </div>
+
+                                            <a
+                                                href="/Services/Details/${service.serviceOfferingId}"
+                                                class="card-button">
+
+                                                Contact Provider
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+                                    `;
+
+                            }
+                        ).join("");
+
+                }
+
+
+                /* =================================================
+                   MARKETPLACE
+                ================================================= */
+
+                function renderMarketplace(
+                    listings
+                ) {
+
+                    const loading =
+                        document.getElementById(
+                            "marketplaceLoading"
+                        );
+
+                    const container =
+                        document.getElementById(
+                            "marketplaceContainer"
+                        );
+
+                    loading.style.display = "none";
+
+
+                    if (listings.length === 0) {
+
+                        container.innerHTML =
+                            `
+                                <div class="home-empty">
+                                    No marketplace listings available yet.
+                                </div>
+                                `;
+
+                        return;
+                    }
+
+
+                    const visibleListings =
+                        listings.slice(0, 6);
+
+
+                    container.innerHTML =
+                        visibleListings.map(
+                            function(listing) {
+
+                                let imageHtml =
+                                    `
+                                        <div class="card-image-placeholder">
+
+                                            <span>
+                                                ◈
+                                            </span>
+
+                                        </div>
+                                        `;
+
+
+                                if (
+                                    listing.primaryImageId
+                                ) {
+
+                                    imageHtml =
+                                        `
+                                            <div class="marketplace-card-image">
+
+                                                <img
+                                                    src="${apiBase}api/MarketplaceImages/${listing.primaryImageId}/file"
+                                                    alt="${escapeHtml(listing.title)}"
+                                                    loading="lazy"
+                                                />
+
+                                            </div>
+                                            `;
+
+                                }
+
+
+                                return `
+                                    <div class="home-card marketplace-card">
+
+                                        ${imageHtml}
+
+                                        <div class="home-card-content">
+
+                                            <div class="marketplace-tags">
+
+                                                <span class="card-category">
+                                                    ${escapeHtml(
+                                    listing.category?.categoryName
+                                    || "Marketplace"
+                                )}
+                                                </span>
+
+                                                <span class="listing-type">
+                                                    ${escapeHtml(
+                                    listing.listingType || ""
+                                )}
+                                                </span>
+
+                                            </div>
+
+                                            <h3>
+                                                ${escapeHtml(
+                                    listing.title
+                                )}
+                                            </h3>
+
+                                            <p class="card-location">
+                                                ◉
+                                                ${escapeHtml(
+                                    listing.location
+                                    || "Location not specified"
+                                )}
+                                            </p>
+
+                                            <div class="marketplace-price">
+                                                ${formatMoney(listing.price)}
+                                            </div>
+
+                                            <a
+                                                href="/Marketplace/Details/${listing.marketplaceListingId}"
+                                                class="card-button">
+
+                                                View Item
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+                                    `;
+
+                            }
+                        ).join("");
+
+                }
+
+
+                /* =================================================
+                   CURRENCY
+                ================================================= */
+
+                function formatMoney(value) {
+
+                    if (
+                        value === null ||
+                        value === undefined
+                    ) {
+
+                        return "Price not specified";
+
+                    }
+
+                    return new Intl.NumberFormat(
+                        "en-LK",
+                        {
+                            style: "currency",
+                            currency: "LKR",
+                            maximumFractionDigits: 0
+                        }
+                    ).format(value);
+
+                }
+
+
+                /* =================================================
+                   HTML SECURITY
+                ================================================= */
+
+                function escapeHtml(value) {
+
+                    const div =
+                        document.createElement("div");
+
+                    div.textContent =
+                        value ?? "";
+
+                    return div.innerHTML;
+
+                }
+
+
+                /* =================================================
+                   ERROR
+                ================================================= */
+
+                function showHomeError() {
+
+                    const containers =
+                        [
+                            "jobCategoriesContainer",
+                            "servicesContainer",
+                            "marketplaceContainer"
+                        ];
+
+
+                    const loading =
+                        [
+                            "jobCategoriesLoading",
+                            "servicesLoading",
+                            "marketplaceLoading"
+                        ];
+
+
+                    loading.forEach(
+                        function(id) {
+
+                            const element =
+                                document.getElementById(id);
+
+                            if (element) {
+
+                                element.style.display =
+                                    "none";
+
+                            }
+
+                        }
+                    );
+
+
+                    containers.forEach(
+                        function(id) {
+
+                            const element =
+                                document.getElementById(id);
+
+                            if (element) {
+
+                                element.innerHTML =
+                                    `
+                                        <div class="home-empty">
+                                            Unable to load WorkHub data.
+                                            Make sure WorkHub API is running.
+                                        </div>
+                                        `;
+
+                            }
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
+}

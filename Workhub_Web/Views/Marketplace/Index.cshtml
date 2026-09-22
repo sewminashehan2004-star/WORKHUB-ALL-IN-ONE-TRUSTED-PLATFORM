@@ -1,0 +1,1957 @@
+
+@model Workhub_Web.Models.MarketplacePageViewModel
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Marketplace";
+
+    var apiBaseUrl =
+        Configuration["ApiSettings:BaseUrl"]
+        ?? "https://localhost:7015/";
+
+    if (!apiBaseUrl.EndsWith("/"))
+    {
+        apiBaseUrl += "/";
+    }
+
+    var listingCount =
+        Model.Listings?.Count
+        ?? 0;
+
+    string GetFallbackImageUrl(string? imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath))
+        {
+            return string.Empty;
+        }
+
+        var path =
+            imagePath
+                .Trim()
+                .Replace("\\", "/");
+
+        if (
+            path.StartsWith(
+                "http://",
+                System.StringComparison.OrdinalIgnoreCase)
+            ||
+            path.StartsWith(
+                "https://",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return path;
+        }
+
+        if (path.StartsWith("~/"))
+        {
+            path = path.Substring(1);
+        }
+
+        if (
+            path.StartsWith(
+                "wwwroot/",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            path =
+                path.Substring("wwwroot/".Length);
+        }
+
+        if (
+            path.StartsWith(
+                "/wwwroot/",
+                System.StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            path =
+                path.Substring("/wwwroot".Length);
+        }
+
+        if (!path.StartsWith("/"))
+        {
+            path = "/" + path;
+        }
+
+        return
+            apiBaseUrl.TrimEnd('/')
+            +
+            path;
+    }
+}
+
+
+<div id="marketplacePage"
+     class="marketplace-page"
+     data-api-base="@apiBaseUrl">
+
+    <style>
+
+            /* =========================================================
+                       WORKHUB MARKETPLACE
+                    ========================================================= */
+
+            :root {
+                --market-orange: #FD5000;
+                --market-orange-dark: #D94300;
+                --market-orange-light: #FFF3EC;
+                --market-orange-soft: #FFF8F4;
+                --market-dark: #111827;
+                --market-dark-2: #1F2937;
+                --market-text: #334155;
+                --market-muted: #64748B;
+                --market-border: #E5E7EB;
+                --market-bg: #F8FAFC;
+                --market-white: #FFFFFF;
+            }
+
+
+            /* =========================================================
+                       PAGE
+                    ========================================================= */
+
+            .marketplace-page {
+                min-height: 100vh;
+                background: radial-gradient( circle at 8% 10%, rgba(253,80,0,.045), transparent 28% ), linear-gradient( 180deg, #ffffff 0%, #f8fafc 100% );
+            }
+
+
+            /* =========================================================
+                       ICON SYSTEM
+                    ========================================================= */
+
+            .market-icon {
+                width: 18px;
+                height: 18px;
+                flex: 0 0 auto;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+                .market-icon svg {
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 1.9;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .market-icon-lg {
+                width: 25px;
+                height: 25px;
+            }
+
+            .market-icon-xl {
+                width: 30px;
+                height: 30px;
+            }
+
+
+            /* =========================================================
+                       HERO
+                    ========================================================= */
+
+            .marketplace-hero {
+                position: relative;
+                overflow: hidden;
+                min-height: 320px;
+                display: flex;
+                align-items: center;
+                background: radial-gradient( circle at 82% 20%, rgba(253,80,0,.30), transparent 28% ), radial-gradient( circle at 15% 100%, rgba(255,255,255,.08), transparent 25% ), linear-gradient( 135deg, #111827 0%, #1F2937 48%, #301407 100% );
+                color: #fff;
+            }
+
+                .marketplace-hero::before {
+                    content: "";
+                    position: absolute;
+                    width: 430px;
+                    height: 430px;
+                    right: -120px;
+                    top: -180px;
+                    border-radius: 50%;
+                    background: rgba(253,80,0,.14);
+                    filter: blur(5px);
+                }
+
+                .marketplace-hero::after {
+                    content: "";
+                    position: absolute;
+                    width: 240px;
+                    height: 240px;
+                    left: -100px;
+                    bottom: -150px;
+                    border-radius: 50%;
+                    border: 1px solid rgba(253,80,0,.20);
+                }
+
+                .marketplace-hero .wh-shell {
+                    position: relative;
+                    z-index: 2;
+                    width: 100%;
+                }
+
+            .marketplace-hero-content {
+                max-width: 760px;
+                padding: 55px 0;
+            }
+
+            .marketplace-kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 9px;
+                margin-bottom: 16px;
+                color: #FF8A5C;
+                font-size: 11px;
+                font-weight: 850;
+                letter-spacing: .12em;
+                text-transform: uppercase;
+            }
+
+            .marketplace-kicker-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--market-orange);
+                box-shadow: 0 0 0 5px rgba(253,80,0,.12), 0 0 20px rgba(253,80,0,.50);
+            }
+
+            .marketplace-hero h1 {
+                margin: 0 0 14px;
+                color: #fff;
+                font-size: clamp(34px, 5vw, 56px);
+                line-height: 1.04;
+                font-weight: 950;
+                letter-spacing: -1.8px;
+            }
+
+            .marketplace-hero p {
+                max-width: 690px;
+                margin: 0;
+                color: rgba(255,255,255,.72);
+                font-size: 15px;
+                line-height: 1.75;
+            }
+
+
+            /* =========================================================
+                       CONTENT
+                    ========================================================= */
+
+            .marketplace-content {
+                position: relative;
+                z-index: 5;
+                margin-top: -34px;
+            }
+
+
+            /* =========================================================
+                       FILTER BAR
+                    ========================================================= */
+
+            .marketplace-filter {
+                position: relative;
+                display: grid;
+                grid-template-columns: minmax(220px, 1.6fr) minmax(150px, .8fr) minmax(140px, .7fr) minmax(170px, .9fr) auto;
+                gap: 14px;
+                align-items: end;
+                padding: 20px;
+                border: 1px solid rgba(255,255,255,.72);
+                border-radius: 22px;
+                background: rgba(255,255,255,.94);
+                box-shadow: 0 20px 55px rgba(15,23,42,.12), 0 3px 12px rgba(15,23,42,.04);
+                backdrop-filter: blur(18px);
+            }
+
+                .marketplace-filter .wh-field {
+                    min-width: 0;
+                }
+
+                .marketplace-filter label {
+                    display: block;
+                    margin: 0 0 7px;
+                    color: var(--market-dark);
+                    font-size: 11px;
+                    font-weight: 800;
+                }
+
+            .marketplace-field-wrap {
+                position: relative;
+            }
+
+            .marketplace-field-icon {
+                position: absolute;
+                left: 13px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 2;
+                color: var(--market-muted);
+                pointer-events: none;
+            }
+
+            .marketplace-filter input,
+            .marketplace-filter select {
+                width: 100%;
+                height: 48px;
+                padding: 0 14px 0 42px;
+                border: 1px solid var(--market-border);
+                border-radius: 13px;
+                outline: none;
+                background: #fff;
+                color: var(--market-dark);
+                font-size: 12px;
+                font-weight: 600;
+                transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+            }
+
+            .marketplace-filter select {
+                cursor: pointer;
+            }
+
+            .marketplace-filter input::placeholder {
+                color: #94A3B8;
+            }
+
+            .marketplace-filter input:focus,
+            .marketplace-filter select:focus {
+                border-color: rgba(253,80,0,.55);
+                box-shadow: 0 0 0 4px rgba(253,80,0,.08);
+                background: #fff;
+            }
+
+            .marketplace-search-button {
+                height: 48px;
+                padding: 0 20px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border: 0;
+                border-radius: 13px;
+                background: linear-gradient( 135deg, var(--market-orange), var(--market-orange-dark) );
+                color: #fff;
+                font-size: 12px;
+                font-weight: 850;
+                cursor: pointer;
+                box-shadow: 0 10px 22px rgba(253,80,0,.22);
+                transition: transform .2s ease, box-shadow .2s ease;
+            }
+
+                .marketplace-search-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 14px 28px rgba(253,80,0,.30);
+                }
+
+
+            /* =========================================================
+                       RESULT HEADER
+                    ========================================================= */
+
+            .marketplace-result-head {
+                margin: 38px 0 22px;
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .marketplace-section-kicker {
+                display: block;
+                margin-bottom: 7px;
+                color: var(--market-orange);
+                font-size: 10px;
+                font-weight: 900;
+                letter-spacing: .12em;
+                text-transform: uppercase;
+            }
+
+            .marketplace-result-head h2 {
+                margin: 0;
+                color: var(--market-dark);
+                font-size: 27px;
+                font-weight: 900;
+                letter-spacing: -.7px;
+            }
+
+            .marketplace-result-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .marketplace-action {
+                min-height: 43px;
+                padding: 0 16px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 11px;
+                text-decoration: none;
+                font-size: 11px;
+                font-weight: 800;
+                transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+            }
+
+                .marketplace-action:hover {
+                    transform: translateY(-2px);
+                }
+
+                .marketplace-action.ghost {
+                    border: 1px solid var(--market-border);
+                    background: #fff;
+                    color: var(--market-dark);
+                }
+
+                    .marketplace-action.ghost:hover {
+                        border-color: #FDBA9A;
+                        box-shadow: 0 8px 20px rgba(15,23,42,.07);
+                    }
+
+                .marketplace-action.dark {
+                    border: 1px solid var(--market-dark);
+                    background: var(--market-dark);
+                    color: #fff;
+                    box-shadow: 0 8px 20px rgba(15,23,42,.13);
+                }
+
+                    .marketplace-action.dark:hover {
+                        background: #000;
+                    }
+
+
+            /* =========================================================
+                       ALERT
+                    ========================================================= */
+
+            .marketplace-alert {
+                margin: 18px 0;
+                padding: 14px 16px;
+                border-radius: 13px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+                .marketplace-alert.danger {
+                    border: 1px solid #FECACA;
+                    background: #FFF7F7;
+                    color: #B91C1C;
+                }
+
+
+            /* =========================================================
+                       GRID
+                    ========================================================= */
+
+            .marketplace-results {
+                margin-top: 26px;
+            }
+
+            .marketplace-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 20px;
+            }
+
+
+            /* =========================================================
+                       CARD
+                    ========================================================= */
+
+            .wh-market-card {
+                position: relative;
+                min-width: 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #E5E7EB;
+                border-radius: 19px;
+                background: #fff;
+                color: inherit;
+                text-decoration: none;
+                box-shadow: 0 7px 25px rgba(15,23,42,.045);
+                transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+            }
+
+                .wh-market-card::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    top: 0;
+                    height: 3px;
+                    background: linear-gradient( 90deg, var(--market-orange), #FF9B73, var(--market-orange) );
+                    transform: scaleX(0);
+                    transform-origin: left;
+                    transition: transform .3s ease;
+                    z-index: 10;
+                }
+
+                .wh-market-card:hover {
+                    transform: translateY(-7px);
+                    border-color: #FED7C5;
+                    box-shadow: 0 20px 42px rgba(15,23,42,.11), 0 5px 18px rgba(253,80,0,.06);
+                    color: inherit;
+                }
+
+                    .wh-market-card:hover::before {
+                        transform: scaleX(1);
+                    }
+
+
+            /* =========================================================
+                       IMAGE
+                    ========================================================= */
+
+            .wh-market-image {
+                position: relative;
+                width: 100%;
+                height: 225px;
+                overflow: hidden;
+                background: linear-gradient( 135deg, #F8FAFC, #E2E8F0 );
+            }
+
+                .wh-market-image::after {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    z-index: 3;
+                    background: linear-gradient( 180deg, rgba(15,23,42,.05) 0%, transparent 45%, rgba(15,23,42,.22) 100% );
+                    pointer-events: none;
+                }
+
+            .marketplace-db-image {
+                position: absolute;
+                inset: 0;
+                z-index: 2;
+                width: 100%;
+                height: 100%;
+                display: none;
+                object-fit: cover;
+                object-position: center;
+                transition: transform .55s cubic-bezier(.2,.8,.2,1), filter .3s ease;
+            }
+
+            .wh-market-card:hover .marketplace-db-image {
+                transform: scale(1.075);
+            }
+
+
+            /* =========================================================
+                       PLACEHOLDER
+                    ========================================================= */
+
+            .marketplace-image-placeholder {
+                position: absolute;
+                inset: 0;
+                z-index: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                background: radial-gradient( circle at 50% 35%, rgba(253,80,0,.08), transparent 30% ), linear-gradient( 135deg, #FFF8F4, #F1F5F9 );
+                color: #94A3B8;
+            }
+
+            .marketplace-placeholder-icon {
+                width: 66px;
+                height: 66px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #FED7C5;
+                border-radius: 18px;
+                background: #fff;
+                color: var(--market-orange);
+                box-shadow: 0 12px 25px rgba(15,23,42,.08);
+            }
+
+                .marketplace-placeholder-icon svg {
+                    width: 30px;
+                    height: 30px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 1.7;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .marketplace-placeholder-text {
+                font-size: 10px;
+                font-weight: 800;
+                color: #94A3B8;
+                letter-spacing: .04em;
+            }
+
+
+            /* =========================================================
+                       TYPE CHIP
+                    ========================================================= */
+
+            .marketplace-type-chip {
+                position: absolute;
+                top: 13px;
+                left: 13px;
+                z-index: 6;
+                min-height: 31px;
+                padding: 0 11px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border: 1px solid rgba(255,255,255,.14);
+                border-radius: 30px;
+                background: rgba(17,24,39,.88);
+                color: #fff;
+                font-size: 9px;
+                font-weight: 850;
+                letter-spacing: .02em;
+                backdrop-filter: blur(9px);
+                box-shadow: 0 6px 15px rgba(15,23,42,.15);
+            }
+
+                .marketplace-type-chip svg {
+                    width: 13px;
+                    height: 13px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 2;
+                }
+
+
+            /* =========================================================
+                       BODY
+                    ========================================================= */
+
+            .wh-market-body {
+                flex: 1;
+                padding: 19px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .marketplace-price-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                margin-bottom: 8px;
+            }
+
+            .wh-market-price {
+                color: var(--market-orange);
+                font-size: 23px;
+                font-weight: 950;
+                letter-spacing: -.5px;
+            }
+
+            .marketplace-price-icon {
+                width: 31px;
+                height: 31px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 9px;
+                background: var(--market-orange-light);
+                color: var(--market-orange);
+            }
+
+                .marketplace-price-icon svg {
+                    width: 16px;
+                    height: 16px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 1.8;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .wh-market-body h3 {
+                margin: 0 0 9px;
+                color: var(--market-dark);
+                font-size: 16px;
+                font-weight: 850;
+                line-height: 1.4;
+                letter-spacing: -.2px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .marketplace-meta {
+                min-height: 35px;
+                margin: 0 0 13px;
+                display: flex;
+                align-items: flex-start;
+                gap: 7px;
+                color: var(--market-muted);
+                font-size: 11px;
+                line-height: 1.5;
+            }
+
+            .marketplace-meta-icon {
+                margin-top: 1px;
+                color: var(--market-orange);
+            }
+
+                .marketplace-meta-icon svg {
+                    width: 14px;
+                    height: 14px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 1.8;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .marketplace-location {
+                margin-top: auto;
+                padding-top: 13px;
+                border-top: 1px solid #F1F5F9;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                color: var(--market-muted);
+                font-size: 11px;
+                font-weight: 700;
+            }
+
+            .marketplace-location-icon {
+                width: 27px;
+                height: 27px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                background: #F8FAFC;
+                color: var(--market-orange);
+            }
+
+                .marketplace-location-icon svg {
+                    width: 14px;
+                    height: 14px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 1.8;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+
+            /* =========================================================
+                       CARD VIEW INDICATOR
+                    ========================================================= */
+
+            .marketplace-view {
+                position: absolute;
+                right: 14px;
+                bottom: 14px;
+                z-index: 8;
+                width: 34px;
+                height: 34px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: rgba(255,255,255,.95);
+                color: var(--market-orange);
+                box-shadow: 0 7px 18px rgba(15,23,42,.12);
+                opacity: 0;
+                transform: translateX(8px);
+                transition: opacity .25s ease, transform .25s ease;
+            }
+
+            .wh-market-card:hover .marketplace-view {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            .marketplace-view svg {
+                width: 15px;
+                height: 15px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+
+            /* =========================================================
+                       EMPTY STATE
+                    ========================================================= */
+
+            .marketplace-empty {
+                margin-top: 26px;
+                padding: 72px 20px;
+                border: 1px dashed #CBD5E1;
+                border-radius: 20px;
+                background: radial-gradient( circle at 50% 20%, rgba(253,80,0,.05), transparent 28% ), #fff;
+                text-align: center;
+            }
+
+            .marketplace-empty-icon {
+                width: 76px;
+                height: 76px;
+                margin: 0 auto 17px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #FED7C5;
+                border-radius: 22px;
+                background: var(--market-orange-light);
+                color: var(--market-orange);
+                box-shadow: 0 12px 25px rgba(253,80,0,.08);
+            }
+
+                .marketplace-empty-icon svg {
+                    width: 34px;
+                    height: 34px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 1.7;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .marketplace-empty h3 {
+                margin: 0 0 8px;
+                color: var(--market-dark);
+                font-size: 20px;
+                font-weight: 900;
+            }
+
+            .marketplace-empty p {
+                max-width: 430px;
+                margin: 0 auto;
+                color: var(--market-muted);
+                font-size: 12px;
+                line-height: 1.6;
+            }
+
+
+            /* =========================================================
+                       RESPONSIVE
+                    ========================================================= */
+
+            @@media (max-width: 1200px) {
+
+                .marketplace-grid {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                }
+
+                .marketplace-filter {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+
+                .marketplace-search-button {
+                    width: 100%;
+                }
+            }
+
+
+            @@media (max-width: 850px) {
+
+                .marketplace-hero {
+                    min-height: 285px;
+                }
+
+                .marketplace-hero-content {
+                    padding: 45px 0 65px;
+                }
+
+                .marketplace-content {
+                    margin-top: -25px;
+                }
+
+                .marketplace-result-head {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .marketplace-result-actions {
+                    width: 100%;
+                }
+
+                .marketplace-action {
+                    flex: 1;
+                }
+
+                .marketplace-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+
+            @@media (max-width: 600px) {
+
+                .marketplace-hero {
+                    min-height: 260px;
+                }
+
+                .marketplace-hero-content {
+                    padding: 40px 0 55px;
+                }
+
+                .marketplace-hero h1 {
+                    font-size: 34px;
+                    letter-spacing: -1px;
+                }
+
+                .marketplace-hero p {
+                    font-size: 13px;
+                }
+
+                .marketplace-filter {
+                    grid-template-columns: 1fr;
+                    padding: 16px;
+                    border-radius: 18px;
+                }
+
+                .marketplace-result-head {
+                    margin-top: 30px;
+                }
+
+                    .marketplace-result-head h2 {
+                        font-size: 23px;
+                    }
+
+                .marketplace-result-actions {
+                    flex-direction: column;
+                }
+
+                .marketplace-action {
+                    width: 100%;
+                }
+
+                .marketplace-grid {
+                    grid-template-columns: 1fr;
+                    gap: 17px;
+                }
+
+                .wh-market-image {
+                    height: 235px;
+                }
+
+                .wh-market-price {
+                    font-size: 21px;
+                }
+
+                .marketplace-view {
+                    opacity: 1;
+                    transform: none;
+                }
+            }
+    </style>
+
+
+    <!-- =========================================================
+         HERO
+    ========================================================= -->
+
+    <section class="marketplace-hero">
+
+        <div class="wh-shell">
+
+            <div class="marketplace-hero-content">
+
+                <span class="marketplace-kicker">
+
+                    <span class="marketplace-kicker-dot"></span>
+
+                    Buy · Sell · Rent
+
+                </span>
+
+                <h1>
+                    WorkHub Marketplace
+                </h1>
+
+                <p>
+                    Discover products, vehicles, property,
+                    rentals and everyday items from people
+                    and businesses around you.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         CONTENT
+    ========================================================= -->
+
+    <section class="wh-shell wh-page-space marketplace-content">
+
+
+        <!-- =====================================================
+             FILTERS
+        ===================================================== -->
+
+        <form method="get"
+              class="marketplace-filter">
+
+
+            <!-- SEARCH -->
+
+            <div class="wh-field">
+
+                <label>
+                    Search marketplace
+                </label>
+
+                <div class="marketplace-field-wrap">
+
+                    <span class="marketplace-field-icon market-icon">
+
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-4-4"></path>
+                        </svg>
+
+                    </span>
+
+                    <input name="search"
+                           value="@Model.Search"
+                           placeholder="What are you looking for?" />
+
+                </div>
+
+            </div>
+
+
+            <!-- CATEGORY -->
+
+            <div class="wh-field">
+
+                <label>
+                    Category
+                </label>
+
+                <div class="marketplace-field-wrap">
+
+                    <span class="marketplace-field-icon market-icon">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 6h16"></path>
+                            <path d="M7 12h10"></path>
+                            <path d="M10 18h4"></path>
+                        </svg>
+
+                    </span>
+
+                    <select name="categoryId">
+
+                        <option value="">
+                            All categories
+                        </option>
+
+                        @foreach (
+                            var category
+                            in Model.Categories)
+                        {
+                            if (
+                                Model.CategoryId ==
+                                category.MarketplaceCategoryId)
+                            {
+                                <option value="@category.MarketplaceCategoryId"
+                                        selected>
+                                    @category.CategoryName
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@category.MarketplaceCategoryId">
+                                    @category.CategoryName
+                                </option>
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- TYPE -->
+
+            <div class="wh-field">
+
+                <label>
+                    Type
+                </label>
+
+                <div class="marketplace-field-wrap">
+
+                    <span class="marketplace-field-icon market-icon">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 7h12"></path>
+                            <path d="M8 4h8"></path>
+                            <path d="M5 7l1 13h12l1-13"></path>
+                            <path d="M9 11v5"></path>
+                            <path d="M15 11v5"></path>
+                        </svg>
+
+                    </span>
+
+                    <select name="listingType">
+
+                        <option value="">
+                            Buy or rent
+                        </option>
+
+                        @if (
+                            string.Equals(
+                                Model.ListingType,
+                                "Sale",
+                                System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="Sale"
+                                    selected>
+                                For sale
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Sale">
+                                For sale
+                            </option>
+                        }
+
+                        @if (
+                            string.Equals(
+                                Model.ListingType,
+                                "Rent",
+                                System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="Rent"
+                                    selected>
+                                For rent
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Rent">
+                                For rent
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="wh-field">
+
+                <label>
+                    Location
+                </label>
+
+                <div class="marketplace-field-wrap">
+
+                    <span class="marketplace-field-icon market-icon">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                            <circle cx="12" cy="10" r="2.5"></circle>
+                        </svg>
+
+                    </span>
+
+                    <input name="location"
+                           value="@Model.Location"
+                           placeholder="Suburb or city" />
+
+                </div>
+
+            </div>
+
+
+            <!-- SEARCH BUTTON -->
+
+            <button class="marketplace-search-button"
+                    type="submit">
+
+                <span class="market-icon">
+
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-4-4"></path>
+                    </svg>
+
+                </span>
+
+                Search
+
+            </button>
+
+        </form>
+
+
+        <!-- =====================================================
+             RESULT HEADER
+        ===================================================== -->
+
+        <div class="marketplace-result-head">
+
+            <div>
+
+                <span class="marketplace-section-kicker">
+                    Fresh listings
+                </span>
+
+                <h2>
+                    @listingCount
+                    listing@(listingCount == 1 ? "" : "s")
+                </h2>
+
+            </div>
+
+
+            <div class="marketplace-result-actions">
+
+                <a class="marketplace-action ghost"
+                   href="/Marketplace/Messages">
+
+                    <span class="market-icon">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2v-4.5A7.5 7.5 0 1 1 20 11.5Z"></path>
+                        </svg>
+
+                    </span>
+
+                    Messages
+
+                </a>
+
+
+                <a class="marketplace-action dark"
+                   asp-controller="Account"
+                   asp-action="Profile">
+
+                    <span class="market-icon">
+
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 3v18"></path>
+                            <path d="M17 7H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+
+                    </span>
+
+                    Sell something
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             ERROR
+        ===================================================== -->
+        @if (
+                    !string.IsNullOrWhiteSpace(
+                        Model.ErrorMessage))
+        {
+            <div class="marketplace-alert danger">
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        <!-- =====================================================
+             EMPTY
+        ===================================================== -->
+        @if (
+                    Model.Listings == null
+                    ||
+                    !Model.Listings.Any())
+        {
+            <div class="marketplace-empty">
+
+                <div class="marketplace-empty-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M3 9h18"></path>
+
+                        <path d="M5 9l1-5h12l1 5"></path>
+
+                        <path d="M4 9v10h16V9"></path>
+
+                        <path d="M9 19v-6h6v6"></path>
+
+                        <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
+
+                    </svg>
+
+                </div>
+
+                <h3>
+                    No listings found
+                </h3>
+
+                <p>
+                    Adjust your search or be the first
+                    seller in this category.
+                </p>
+
+            </div>
+        }
+        else
+        {
+
+            <!-- =================================================
+                 LISTING CARDS
+            ================================================= -->
+
+            <div class="marketplace-grid marketplace-results">
+
+
+                @foreach (
+                    var item
+                    in Model.Listings)
+                {
+
+                    var fallbackImage =
+                        GetFallbackImageUrl(
+                            item.PrimaryImage);
+
+                    var primaryImageUrl =
+                        item.PrimaryImageId.HasValue
+                            && item.PrimaryImageId.Value > 0
+                            ? apiBaseUrl
+                                + "api/MarketplaceImages/"
+                                + item.PrimaryImageId.Value
+                                + "/file"
+                            : fallbackImage;
+
+
+                    <a class="wh-market-card marketplace-listing-card"
+                       asp-controller="Marketplace"
+                       asp-action="Details"
+                       asp-route-id="@item.MarketplaceListingId"
+                       data-listing-id="@item.MarketplaceListingId">
+
+
+                        <!-- =================================================
+                             IMAGE
+                        ================================================= -->
+
+                        <div class="wh-market-image">
+
+
+                            <!-- PLACEHOLDER -->
+
+                            <div class="marketplace-image-placeholder">
+
+                                <div class="marketplace-placeholder-icon">
+
+                                    <svg viewBox="0 0 24 24">
+
+                                        <path d="M3 9h18"></path>
+
+                                        <path d="M5 9l1-5h12l1 5"></path>
+
+                                        <path d="M4 9v10h16V9"></path>
+
+                                        <path d="M9 19v-6h6v6"></path>
+
+                                        <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
+
+                                    </svg>
+
+                                </div>
+
+                                <div class="marketplace-placeholder-text">
+                                    WorkHub Marketplace
+                                </div>
+
+                            </div>
+
+
+                            <!-- REAL IMAGE -->
+
+                            <img class="marketplace-db-image"
+                                 src="@primaryImageUrl"
+                                 alt="@item.Title"
+                                 loading="lazy"
+                                 data-fallback-image="@fallbackImage"
+                                 style="@(string.IsNullOrWhiteSpace(primaryImageUrl) ? "display:none" : "display:block")" />
+
+
+                            <!-- TYPE -->
+
+                            <span class="marketplace-type-chip">
+
+                                @if (
+                                    string.Equals(
+                                        item.ListingType,
+                                        "Rent",
+                                        System.StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M4 10h16"></path>
+                                        <path d="M6 10l1-5h10l1 5"></path>
+                                        <path d="M5 10v9h14v-9"></path>
+                                        <path d="M9 19v-5h6v5"></path>
+                                    </svg>
+
+                                    <span>For Rent</span>
+                                }
+                                else
+                                {
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 3v18"></path>
+                                        <path d="M17 7H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+
+                                    <span>For Sale</span>
+                                }
+
+                            </span>
+
+
+                            <!-- VIEW ICON -->
+
+                            <span class="marketplace-view">
+
+                                <svg viewBox="0 0 24 24">
+
+                                    <path d="M5 12h14"></path>
+
+                                    <path d="m13 6 6 6-6 6"></path>
+
+                                </svg>
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             DETAILS
+                        ================================================= -->
+
+                        <div class="wh-market-body">
+
+
+                            <div class="marketplace-price-row">
+
+                                <div class="wh-market-price">
+                                    $@item.Price.ToString("N0")
+                                </div>
+
+                                <span class="marketplace-price-icon">
+
+                                    <svg viewBox="0 0 24 24">
+
+                                        <path d="M12 3v18"></path>
+
+                                        <path d="M17 7H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+
+                                    </svg>
+
+                                </span>
+
+                            </div>
+
+
+                            <h3>
+                                @item.Title
+                            </h3>
+
+
+                            <p class="marketplace-meta">
+
+                                <span class="marketplace-meta-icon">
+
+                                    <svg viewBox="0 0 24 24">
+
+                                        <path d="M4 6h16"></path>
+
+                                        <path d="M4 12h16"></path>
+
+                                        <path d="M4 18h10"></path>
+
+                                    </svg>
+
+                                </span>
+
+                                <span>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        item.Category)
+                                        ? "Marketplace"
+                                        : item.Category)
+
+                                    ·
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        item.Condition)
+                                        ? "Not specified"
+                                        : item.Condition)
+
+                                </span>
+
+                            </p>
+
+
+                            <div class="marketplace-location">
+
+                                <span class="marketplace-location-icon">
+
+                                    <svg viewBox="0 0 24 24">
+
+                                        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+
+                                        <circle cx="12"
+                                                cy="10"
+                                                r="2.5"></circle>
+
+                                    </svg>
+
+                                </span>
+
+                                <span>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        item.Location)
+                                        ? "Location not set"
+                                        : item.Location)
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+        }
+
+    </section>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function() {
+
+                const page =
+                    document.getElementById(
+                        "marketplacePage"
+                    );
+
+                if (!page) {
+                    return;
+                }
+
+
+                let apiBase =
+                    page.dataset.apiBase
+                    ||
+                    "https://localhost:7015/";
+
+
+                if (!apiBase.endsWith("/")) {
+                    apiBase += "/";
+                }
+
+
+                const cards =
+                    document.querySelectorAll(
+                        ".marketplace-listing-card"
+                    );
+
+
+                // =========================================
+                // SHOW IMAGE
+                // =========================================
+
+                function showImage(
+                    image,
+                    url) {
+
+                    if (
+                        !image
+                        ||
+                        !url
+                    ) {
+                        return;
+                    }
+
+
+                    image.onload =
+                        function() {
+
+                            image.style.display =
+                                "block";
+
+
+                            const container =
+                                image.closest(
+                                    ".wh-market-image"
+                                );
+
+
+                            const placeholder =
+                                container
+                                    ?.querySelector(
+                                        ".marketplace-image-placeholder"
+                                    );
+
+
+                            if (placeholder) {
+
+                                placeholder.style.display =
+                                    "none";
+
+                            }
+
+                        };
+
+
+                    image.onerror =
+                        function() {
+
+                            // =================================
+                            // TRY FALLBACK ONCE
+                            // =================================
+
+                            const fallback =
+                                image.dataset
+                                    .fallbackImage;
+
+
+                            const fallbackAlreadyUsed =
+                                image.dataset
+                                    .fallbackUsed
+                                ===
+                                "true";
+
+
+                            if (
+                                !fallbackAlreadyUsed
+                                &&
+                                fallback
+                                &&
+                                fallback.trim() !== ""
+                            ) {
+
+                                image.dataset
+                                    .fallbackUsed =
+                                    "true";
+
+
+                                image.src =
+                                    fallback;
+
+                                return;
+                            }
+
+
+                            image.style.display =
+                                "none";
+
+
+                            const container =
+                                image.closest(
+                                    ".wh-market-image"
+                                );
+
+
+                            const placeholder =
+                                container
+                                    ?.querySelector(
+                                        ".marketplace-image-placeholder"
+                                    );
+
+
+                            if (placeholder) {
+
+                                placeholder.style.display =
+                                    "flex";
+
+                            }
+
+
+                            console.log(
+                                "Marketplace image failed:",
+                                image.src
+                            );
+
+                        };
+
+
+                    image.src =
+                        url;
+
+                }
+
+
+                // =========================================
+                // LOAD HOME API IMAGE DATA
+                // =========================================
+
+                try {
+
+                    const response =
+                        await fetch(
+                            apiBase
+                            +
+                            "api/Home",
+                            {
+                                method: "GET",
+                                cache: "no-store",
+                                headers: {
+                                    "Accept":
+                                        "application/json"
+                                }
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Unable to load marketplace image data."
+                        );
+
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    const marketplaceItems =
+                        Array.isArray(
+                            data.marketplace
+                        )
+                            ? data.marketplace
+                            : [];
+
+
+                    // =========================================
+                    // MAP LISTING ID -> IMAGE ID
+                    // =========================================
+
+                    const imageMap =
+                        new Map();
+
+
+                    marketplaceItems.forEach(
+                        function(listing) {
+
+                            const listingId =
+                                Number(
+                                    listing.marketplaceListingId
+                                );
+
+
+                            const imageId =
+                                Number(
+                                    listing.primaryImageId
+                                );
+
+
+                            if (
+                                Number.isFinite(
+                                    listingId
+                                )
+                                &&
+                                listingId > 0
+                                &&
+                                Number.isFinite(
+                                    imageId
+                                )
+                                &&
+                                imageId > 0
+                            ) {
+
+                                imageMap.set(
+                                    listingId,
+                                    imageId
+                                );
+
+                            }
+
+                        }
+                    );
+
+
+                    // =========================================
+                    // APPLY IMAGES
+                    // =========================================
+
+                    cards.forEach(
+                        function(card) {
+
+                            const listingId =
+                                Number(
+                                    card.dataset
+                                        .listingId
+                                );
+
+
+                            const image =
+                                card.querySelector(
+                                    ".marketplace-db-image"
+                                );
+
+
+                            if (!image) {
+                                return;
+                            }
+
+
+                            const imageId =
+                                imageMap.get(
+                                    listingId
+                                );
+
+
+                            if (
+                                imageId
+                                &&
+                                imageId > 0
+                            ) {
+
+                                const imageUrl =
+                                    apiBase
+                                    +
+                                    "api/MarketplaceImages/"
+                                    +
+                                    imageId
+                                    +
+                                    "/file";
+
+
+                                showImage(
+                                    image,
+                                    imageUrl
+                                );
+
+                                return;
+                            }
+
+
+                            // =================================
+                            // FALLBACK IMAGE
+                            // =================================
+
+                            const fallback =
+                                image.dataset
+                                    .fallbackImage;
+
+
+                            if (
+                                fallback
+                                &&
+                                fallback.trim() !== ""
+                            ) {
+
+                                image.dataset
+                                    .fallbackUsed =
+                                    "true";
+
+
+                                showImage(
+                                    image,
+                                    fallback
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Marketplace image loading error:",
+                        error
+                    );
+
+
+                    // =========================================
+                    // API FAILED — USE FALLBACK
+                    // =========================================
+
+                    cards.forEach(
+                        function(card) {
+
+                            const image =
+                                card.querySelector(
+                                    ".marketplace-db-image"
+                                );
+
+
+                            if (!image) {
+                                return;
+                            }
+
+
+                            const fallback =
+                                image.dataset
+                                    .fallbackImage;
+
+
+                            if (
+                                fallback
+                                &&
+                                fallback.trim() !== ""
+                            ) {
+
+                                image.dataset
+                                    .fallbackUsed =
+                                    "true";
+
+
+                                showImage(
+                                    image,
+                                    fallback
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+            }
+
+        );
+
+    </script>
+}
+

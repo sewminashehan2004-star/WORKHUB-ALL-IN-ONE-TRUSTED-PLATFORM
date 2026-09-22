@@ -1,0 +1,1508 @@
+@model WorkHub_Admin.Models.AdminOperationsViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Admin Operations";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>WorkHub Admin Operations</title>
+    <style>
+
+            /* =========================================================
+                   WORKHUB ADMIN - GLOBAL THEME
+                ========================================================== */
+
+            :root {
+                --workhub-orange: #fd5000;
+                --workhub-orange-dark: #df4700;
+                --workhub-orange-light: #fff4ee;
+                --workhub-orange-border: #ffd8c5;
+                --workhub-dark: #101828;
+                --workhub-navy: #172033;
+                --workhub-text: #344054;
+                --workhub-muted: #667085;
+                --workhub-light-text: #98a2b3;
+                --workhub-border: #e4e7ec;
+                --workhub-soft-border: #f0f2f5;
+                --workhub-bg: #f7f8fa;
+                --workhub-card: #ffffff;
+                --workhub-success: #067647;
+                --workhub-success-bg: #ecfdf3;
+                --workhub-danger: #b42318;
+                --workhub-danger-bg: #fff1f0;
+                --workhub-warning: #b54708;
+                --workhub-warning-bg: #fffaeb;
+                --shadow-small: 0 2px 8px rgba(16, 24, 40, 0.04);
+                --shadow-card: 0 8px 28px rgba(16, 24, 40, 0.07);
+                --shadow-hover: 0 14px 35px rgba(16, 24, 40, 0.10);
+            }
+
+
+            /* =========================================================
+                   RESET
+                ========================================================== */
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+                font-size: 16px;
+            }
+
+            body {
+                margin: 0;
+                font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                font-size: 16px;
+                line-height: 1.6;
+                background: linear-gradient( 180deg, #ffffff 0, var(--workhub-bg) 260px );
+                color: var(--workhub-text);
+                -webkit-font-smoothing: antialiased;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
+            button,
+            select,
+            input,
+            textarea {
+                font: inherit;
+            }
+
+
+            /* =========================================================
+                   PAGE CONTAINER
+                ========================================================== */
+
+            .shell {
+                width: min(1450px, calc(100% - 48px));
+                margin: 0 auto;
+            }
+
+
+            /* =========================================================
+                   ADMIN TOP NAVBAR
+                ========================================================== */
+
+            .top {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.97);
+                border-bottom: 1px solid var(--workhub-soft-border);
+                box-shadow: 0 2px 14px rgba(15, 23, 42, 0.05);
+                backdrop-filter: blur(14px);
+                color: var(--workhub-dark);
+            }
+
+                .top .shell {
+                    min-height: 78px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 30px;
+                }
+
+
+            /* =========================================================
+                   ADMIN BRAND
+                ========================================================== */
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                flex-shrink: 0;
+                color: var(--workhub-dark);
+                font-size: 20px;
+                font-weight: 850;
+                letter-spacing: -0.4px;
+            }
+
+            .logo {
+                width: 42px;
+                height: 42px;
+                display: grid;
+                place-items: center;
+                border-radius: 12px;
+                background: linear-gradient( 135deg, #ff6a21, var(--workhub-orange) );
+                color: #ffffff;
+                font-size: 20px;
+                font-weight: 900;
+                box-shadow: 0 6px 16px rgba(253, 80, 0, 0.24);
+            }
+
+
+            /* =========================================================
+                   ADMIN NAVIGATION
+                ========================================================== */
+
+            .nav {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+                .nav a {
+                    position: relative;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 43px;
+                    padding: 0 15px;
+                    border-radius: 9px;
+                    color: #475467;
+                    font-size: 14px;
+                    font-weight: 700;
+                    transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+                }
+
+                    .nav a:hover {
+                        color: var(--workhub-orange);
+                        background: var(--workhub-orange-light);
+                    }
+
+                    .nav a.active {
+                        color: var(--workhub-orange);
+                        background: var(--workhub-orange-light);
+                    }
+
+                        .nav a.active::after {
+                            content: "";
+                            position: absolute;
+                            left: 50%;
+                            bottom: 3px;
+                            width: 24px;
+                            height: 2px;
+                            border-radius: 999px;
+                            background: var(--workhub-orange);
+                            transform: translateX(-50%);
+                        }
+
+
+            /* =========================================================
+                   MAIN PAGE
+                ========================================================== */
+
+            .page {
+                padding: 34px 0 80px;
+            }
+
+
+            /* =========================================================
+                   HERO
+                ========================================================== */
+
+            .hero {
+                position: relative;
+                overflow: hidden;
+                margin-bottom: 24px;
+                padding: 32px 34px;
+                border: 1px solid var(--workhub-orange-border);
+                border-radius: 20px;
+                background: linear-gradient( 135deg, #ffffff 0%, #fff8f4 60%, #fff1e9 100% );
+                box-shadow: var(--shadow-small);
+            }
+
+                .hero::after {
+                    content: "";
+                    position: absolute;
+                    width: 220px;
+                    height: 220px;
+                    right: -70px;
+                    top: -90px;
+                    border-radius: 50%;
+                    background: rgba(253, 80, 0, 0.07);
+                    pointer-events: none;
+                }
+
+                .hero span {
+                    position: relative;
+                    z-index: 1;
+                    display: inline-block;
+                    color: var(--workhub-orange);
+                    font-size: 12px;
+                    font-weight: 850;
+                    text-transform: uppercase;
+                    letter-spacing: 0.12em;
+                }
+
+                .hero h1 {
+                    position: relative;
+                    z-index: 1;
+                    margin: 8px 0 10px;
+                    color: var(--workhub-dark);
+                    font-size: clamp(30px, 3vw, 42px);
+                    line-height: 1.12;
+                    font-weight: 850;
+                    letter-spacing: -1.2px;
+                }
+
+                .hero p {
+                    position: relative;
+                    z-index: 1;
+                    max-width: 760px;
+                    margin: 0;
+                    color: var(--workhub-muted);
+                    font-size: 16px;
+                    line-height: 1.7;
+                }
+
+
+            /* =========================================================
+                   ALERTS
+                ========================================================== */
+
+            .alert {
+                display: flex;
+                align-items: center;
+                min-height: 50px;
+                padding: 13px 16px;
+                margin-bottom: 18px;
+                border-radius: 11px;
+                font-size: 14px;
+                font-weight: 650;
+            }
+
+            .success {
+                color: var(--workhub-success);
+                background: var(--workhub-success-bg);
+                border: 1px solid #abefc6;
+            }
+
+            .danger {
+                color: var(--workhub-danger);
+                background: var(--workhub-danger-bg);
+                border: 1px solid #fecdca;
+            }
+
+
+            /* =========================================================
+                   QUICK SECTION LINKS
+                ========================================================== */
+
+            .jump {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 9px;
+                margin-bottom: 25px;
+                padding: 5px 0;
+            }
+
+                .jump a {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 41px;
+                    padding: 0 15px;
+                    border: 1px solid var(--workhub-border);
+                    border-radius: 9px;
+                    background: #ffffff;
+                    color: #475467;
+                    font-size: 13px;
+                    font-weight: 750;
+                    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+                    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+                }
+
+                    .jump a:hover {
+                        color: var(--workhub-orange);
+                        border-color: var(--workhub-orange-border);
+                        background: var(--workhub-orange-light);
+                        transform: translateY(-1px);
+                        box-shadow: 0 5px 13px rgba(253, 80, 0, 0.08);
+                    }
+
+
+            /* =========================================================
+                   PANELS
+                ========================================================== */
+
+            .panel {
+                overflow: hidden;
+                margin: 22px 0;
+                border: 1px solid var(--workhub-border);
+                border-radius: 16px;
+                background: var(--workhub-card);
+                box-shadow: var(--shadow-card);
+                transition: box-shadow 0.25s ease, transform 0.25s ease;
+            }
+
+                .panel:hover {
+                    box-shadow: var(--shadow-hover);
+                }
+
+
+            /* =========================================================
+                   PANEL HEADER
+                ========================================================== */
+
+            .panel-head {
+                min-height: 72px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                padding: 18px 22px;
+                border-bottom: 1px solid var(--workhub-soft-border);
+                background: linear-gradient( 180deg, #ffffff, #fcfcfd );
+            }
+
+                .panel-head h2 {
+                    margin: 0;
+                    color: var(--workhub-dark);
+                    font-size: 20px;
+                    font-weight: 800;
+                    letter-spacing: -0.35px;
+                }
+
+
+            /* =========================================================
+                   ITEM COUNTER
+                ========================================================== */
+
+            .count {
+                min-width: 30px;
+                min-height: 28px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 4px 10px;
+                border: 1px solid #ffd5c2;
+                border-radius: 999px;
+                background: #fff2eb;
+                color: #c2410c;
+                font-size: 12px;
+                font-weight: 850;
+            }
+
+
+            /* =========================================================
+                   TABLE SCROLL WRAPPER
+                ========================================================== */
+
+            .scroll {
+                width: 100%;
+                overflow-x: auto;
+                scrollbar-width: thin;
+            }
+
+
+            /* =========================================================
+                   TABLE
+                ========================================================== */
+
+            table {
+                width: 100%;
+                min-width: 950px;
+                border-collapse: collapse;
+                background: #ffffff;
+            }
+
+            th,
+            td {
+                padding: 15px 17px;
+                border-bottom: 1px solid var(--workhub-soft-border);
+                text-align: left;
+                vertical-align: middle;
+            }
+
+            th {
+                background: #f9fafb;
+                color: var(--workhub-muted);
+                font-size: 12px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.055em;
+                white-space: nowrap;
+            }
+
+            td {
+                color: var(--workhub-text);
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 1.5;
+            }
+
+            tbody tr {
+                transition: background 0.18s ease;
+            }
+
+                tbody tr:hover {
+                    background: #fffaf7;
+                }
+
+                tbody tr:last-child td {
+                    border-bottom: none;
+                }
+
+            td strong {
+                color: var(--workhub-dark);
+                font-size: 14px;
+                font-weight: 750;
+            }
+
+            td small {
+                display: block;
+                margin-top: 4px;
+                color: var(--workhub-muted);
+                font-size: 12px;
+                line-height: 1.45;
+            }
+
+
+            /* =========================================================
+                   STATUS PILL
+                ========================================================== */
+
+            .pill {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 27px;
+                padding: 4px 10px;
+                border: 1px solid #e4e7ec;
+                border-radius: 999px;
+                background: #f8fafc;
+                color: #475467;
+                font-size: 11px;
+                font-weight: 800;
+                white-space: nowrap;
+            }
+
+
+            /* =========================================================
+                   MANAGEMENT FORM
+                ========================================================== */
+
+            .manage {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0;
+            }
+
+                .manage select {
+                    min-width: 110px;
+                    min-height: 38px;
+                    padding: 7px 30px 7px 10px;
+                    border: 1px solid #d0d5dd;
+                    border-radius: 8px;
+                    outline: none;
+                    background-color: #ffffff;
+                    color: var(--workhub-text);
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+                }
+
+                    .manage select:hover {
+                        border-color: #f9a77f;
+                    }
+
+                    .manage select:focus {
+                        border-color: var(--workhub-orange);
+                        box-shadow: 0 0 0 3px rgba(253, 80, 0, 0.10);
+                    }
+
+
+                /* =========================================================
+                   ADMIN ACTION BUTTON
+                ========================================================== */
+
+                .manage button {
+                    min-height: 38px;
+                    padding: 0 14px;
+                    border: none;
+                    border-radius: 8px;
+                    background: var(--workhub-orange);
+                    color: #ffffff;
+                    font-size: 12px;
+                    font-weight: 800;
+                    cursor: pointer;
+                    box-shadow: 0 3px 9px rgba(253, 80, 0, 0.18);
+                    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+                }
+
+                    .manage button:hover {
+                        background: var(--workhub-orange-dark);
+                        transform: translateY(-1px);
+                        box-shadow: 0 5px 14px rgba(253, 80, 0, 0.25);
+                    }
+
+                    .manage button:active {
+                        transform: translateY(0);
+                    }
+
+
+            /* =========================================================
+                   EMPTY STATE
+                ========================================================== */
+
+            .empty {
+                padding: 45px 25px;
+                color: var(--workhub-muted);
+                text-align: center;
+                font-size: 14px;
+                font-weight: 600;
+                background: #fcfcfd;
+            }
+
+
+            /* =========================================================
+                   SELECTION
+                ========================================================== */
+
+            ::selection {
+                background: rgba(253, 80, 0, 0.18);
+                color: var(--workhub-dark);
+            }
+
+
+            /* =========================================================
+                   TABLET
+                ========================================================== */
+
+            @@media (max-width: 900px) {
+
+                .shell {
+                    width: min(100% - 30px, 1450px);
+                }
+
+                .top .shell {
+                    min-height: 72px;
+                    gap: 15px;
+                }
+
+                .brand {
+                    font-size: 18px;
+                }
+
+                .logo {
+                    width: 39px;
+                    height: 39px;
+                }
+
+                .nav a {
+                    min-height: 39px;
+                    padding: 0 10px;
+                    font-size: 13px;
+                }
+
+                .page {
+                    padding-top: 25px;
+                }
+
+                .hero {
+                    padding: 26px;
+                }
+            }
+
+
+            /* =========================================================
+                   MOBILE
+                ========================================================== */
+
+            @@media (max-width: 700px) {
+
+                .shell {
+                    width: calc(100% - 22px);
+                }
+
+                .top {
+                    position: relative;
+                }
+
+                    .top .shell {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        padding: 14px 0;
+                    }
+
+                .nav {
+                    width: 100%;
+                    overflow-x: auto;
+                    flex-wrap: nowrap;
+                    padding-bottom: 3px;
+                }
+
+                    .nav a {
+                        flex-shrink: 0;
+                    }
+
+                .page {
+                    padding: 20px 0 55px;
+                }
+
+                .hero {
+                    padding: 23px 20px;
+                    border-radius: 15px;
+                    margin-bottom: 18px;
+                }
+
+                    .hero h1 {
+                        font-size: 29px;
+                    }
+
+                    .hero p {
+                        font-size: 14px;
+                    }
+
+                .jump {
+                    gap: 7px;
+                }
+
+                    .jump a {
+                        min-height: 38px;
+                        padding: 0 11px;
+                        font-size: 12px;
+                    }
+
+                .panel {
+                    margin: 17px 0;
+                    border-radius: 13px;
+                }
+
+                .panel-head {
+                    min-height: 62px;
+                    padding: 15px;
+                }
+
+                    .panel-head h2 {
+                        font-size: 18px;
+                    }
+
+                th,
+                td {
+                    padding: 13px 14px;
+                }
+
+                td {
+                    font-size: 13px;
+                }
+
+                .manage {
+                    flex-direction: column;
+                    align-items: stretch;
+                    min-width: 120px;
+                }
+
+                    .manage select,
+                    .manage button {
+                        width: 100%;
+                    }
+            }
+
+
+            /* =========================================================
+                   VERY SMALL MOBILE
+                ========================================================== */
+
+            @@media (max-width: 480px) {
+
+                .shell {
+                    width: calc(100% - 16px);
+                }
+
+                .brand {
+                    font-size: 17px;
+                }
+
+                .hero h1 {
+                    font-size: 26px;
+                }
+
+                .hero {
+                    padding: 20px 17px;
+                }
+
+                .panel-head {
+                    padding: 14px;
+                }
+            }
+    </style>
+</head>
+
+<body>
+
+    <header class="top">
+        <div class="shell">
+
+            <div class="brand">
+                <div class="logo">W</div>
+                <div>WorkHub Admin</div>
+            </div>
+
+            <nav class="nav">
+                <a href="/AdminDashboard/Index">
+                    Dashboard
+                </a>
+
+                <a class="active"
+                   href="/AdminOperations">
+                    System Control
+                </a>
+
+                <a href="/AdminInquiries/Index">
+                    Inquiries
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="shell page">
+
+        <section class="hero">
+            <span>Live administration</span>
+
+            <h1>System Control Centre</h1>
+
+            <p>
+                Moderate users, companies, providers, sellers,
+                jobs and marketplace listings from one place.
+            </p>
+        </section>
+
+
+        @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+        {
+            <div class="alert success">
+                @Model.SuccessMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="alert danger">
+                @Model.ErrorMessage
+            </div>
+        }
+
+
+        <nav class="jump">
+            <a href="#users">Users</a>
+            <a href="#companies">Companies</a>
+            <a href="#providers">Service Providers</a>
+            <a href="#sellers">Marketplace Sellers</a>
+            <a href="#jobs">Jobs</a>
+            <a href="#listings">Listings</a>
+        </nav>
+
+
+        <!-- USERS -->
+        <section class="panel" id="users">
+
+            <div class="panel-head">
+                <h2>Users</h2>
+                <span class="count">@Model.Users.Count</span>
+            </div>
+
+            @if (Model.Users.Count == 0)
+            {
+                <div class="empty">
+                    No users found.
+                </div>
+            }
+            else
+            {
+                <div class="scroll">
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Control</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>@user.FullName</strong>
+                                        <small>@user.Email</small>
+                                    </td>
+
+                                    <td>
+                                        @user.Role
+                                    </td>
+
+                                    <td>
+                                        @(user.Location ?? "—")
+                                    </td>
+
+                                    <td>
+                                        <span class="pill">
+                                            @user.AccountStatus
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @user.CreatedAt
+                                        
+                                    </td>
+
+                                    <td>
+
+                                        @if (!string.Equals(
+                                            user.Role,
+                                            "Admin",
+                                            StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <form class="manage"
+                                                  asp-controller="AdminOperations"
+                                                  asp-action="UpdateUserStatus"
+                                                  asp-route-id="@user.UserId"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <select name="status">
+
+                                                    <option value="Active"
+                                                            selected="@(user.AccountStatus == "Active")">
+                                                        Active
+                                                    </option>
+
+                                                    <option value="Suspended"
+                                                            selected="@(user.AccountStatus == "Suspended")">
+                                                        Suspended
+                                                    </option>
+
+                                                </select>
+
+                                                <button type="submit">
+                                                    Update
+                                                </button>
+
+                                            </form>
+                                        }
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </section>
+
+
+        <!-- COMPANIES -->
+        <section class="panel" id="companies">
+
+            <div class="panel-head">
+                <h2>Companies & Employers</h2>
+                <span class="count">@Model.Companies.Count</span>
+            </div>
+
+            @if (Model.Companies.Count == 0)
+            {
+                <div class="empty">
+                    No companies found.
+                </div>
+            }
+            else
+            {
+                <div class="scroll">
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Owner</th>
+                                <th>Industry</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Verification</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var company in Model.Companies)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @company.CompanyName
+                                        </strong>
+
+                                        <small>
+                                            @(company.Website ?? "")
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @company.User.FullName
+
+                                        <small>
+                                            @company.User.Email
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @(company.Industry ?? "—")
+                                    </td>
+
+                                    <td>
+                                        <span class="pill">
+                                            @company.VerificationStatus
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @company.CreatedAt
+                                      
+                                    </td>
+
+                                    <td>
+
+                                        <form class="manage"
+                                              asp-controller="AdminOperations"
+                                              asp-action="UpdateCompanyVerification"
+                                              asp-route-id="@company.CompanyProfileId"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <select name="status">
+
+                                                <option value="Pending"
+                                                        selected="@(company.VerificationStatus == "Pending")">
+                                                    Pending
+                                                </option>
+
+                                                <option value="Approved"
+                                                        selected="@(company.VerificationStatus == "Approved")">
+                                                    Approved
+                                                </option>
+
+                                                <option value="Rejected"
+                                                        selected="@(company.VerificationStatus == "Rejected")">
+                                                    Rejected
+                                                </option>
+
+                                            </select>
+
+                                            <button type="submit">
+                                                Save
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </section>
+
+
+        <!-- SERVICE PROVIDERS -->
+        <section class="panel" id="providers">
+
+            <div class="panel-head">
+                <h2>Service Providers</h2>
+                <span class="count">
+                    @Model.ServiceProviders.Count
+                </span>
+            </div>
+
+            @if (Model.ServiceProviders.Count == 0)
+            {
+                <div class="empty">
+                    No providers found.
+                </div>
+            }
+            else
+            {
+                <div class="scroll">
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Provider</th>
+                                <th>User</th>
+                                <th>Experience</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Verification</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var provider in Model.ServiceProviders)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @(provider.DisplayName ?? "Provider")
+                                        </strong>
+
+                                        @if (provider.StartingPrice.HasValue)
+                                        {
+                                            <small>
+                                                $@provider.StartingPrice.Value.ToString("0.00") starting
+                                            </small>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @provider.User.FullName
+
+                                        <small>
+                                            @provider.User.Email
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @provider.YearsOfExperience yr
+                                    </td>
+
+                                    <td>
+                                        @(provider.Location ?? "—")
+                                    </td>
+
+                                    <td>
+                                        <span class="pill">
+                                            @provider.VerificationStatus
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <form class="manage"
+                                              asp-controller="AdminOperations"
+                                              asp-action="UpdateProviderVerification"
+                                              asp-route-id="@provider.ServiceProviderProfileId"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <select name="status">
+
+                                                <option value="Pending"
+                                                        selected="@(provider.VerificationStatus == "Pending")">
+                                                    Pending
+                                                </option>
+
+                                                <option value="Approved"
+                                                        selected="@(provider.VerificationStatus == "Approved")">
+                                                    Approved
+                                                </option>
+
+                                                <option value="Rejected"
+                                                        selected="@(provider.VerificationStatus == "Rejected")">
+                                                    Rejected
+                                                </option>
+
+                                            </select>
+
+                                            <button type="submit">
+                                                Save
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </section>
+
+
+        <!-- MARKETPLACE SELLERS -->
+        <section class="panel" id="sellers">
+
+            <div class="panel-head">
+                <h2>Marketplace Sellers</h2>
+                <span class="count">
+                    @Model.MarketplaceSellers.Count
+                </span>
+            </div>
+
+            @if (Model.MarketplaceSellers.Count == 0)
+            {
+                <div class="empty">
+                    No sellers found.
+                </div>
+            }
+            else
+            {
+                <div class="scroll">
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Seller</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Verification</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var seller in Model.MarketplaceSellers)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @(seller.BusinessName ?? "Individual seller")
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        @seller.User.FullName
+
+                                        <small>
+                                            @seller.User.Email
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @(seller.IsBusinessSeller
+                                            ? "Business"
+                                            : "Individual")
+                                    </td>
+
+                                    <td>
+                                        @(seller.Location ?? "—")
+                                    </td>
+
+                                    <td>
+                                        <span class="pill">
+                                            @seller.VerificationStatus
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <form class="manage"
+                                              asp-controller="AdminOperations"
+                                              asp-action="UpdateSellerVerification"
+                                              asp-route-id="@seller.MarketplaceSellerProfileId"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <select name="status">
+
+                                                <option value="Pending"
+                                                        selected="@(seller.VerificationStatus == "Pending")">
+                                                    Pending
+                                                </option>
+
+                                                <option value="Approved"
+                                                        selected="@(seller.VerificationStatus == "Approved")">
+                                                    Approved
+                                                </option>
+
+                                                <option value="Rejected"
+                                                        selected="@(seller.VerificationStatus == "Rejected")">
+                                                    Rejected
+                                                </option>
+
+                                            </select>
+
+                                            <button type="submit">
+                                                Save
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </section>
+
+
+        <!-- JOBS -->
+        <section class="panel" id="jobs">
+
+            <div class="panel-head">
+                <h2>Jobs</h2>
+                <span class="count">
+                    @Model.Jobs.Count
+                </span>
+            </div>
+
+            @if (Model.Jobs.Count == 0)
+            {
+                <div class="empty">
+                    No jobs found.
+                </div>
+            }
+            else
+            {
+                <div class="scroll">
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Job</th>
+                                <th>Company</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Moderation</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var job in Model.Jobs)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @job.Title
+                                        </strong>
+
+                                        <small>
+                                            @(job.Category ?? "")
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @job.Company.CompanyName
+                                    </td>
+
+                                    <td>
+                                        @(job.JobType ?? "—")
+                                    </td>
+
+                                    <td>
+                                        @(job.Location ?? "—")
+                                    </td>
+
+                                    <td>
+                                        <span class="pill">
+                                            @job.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <form class="manage"
+                                              asp-controller="AdminOperations"
+                                              asp-action="UpdateJobStatus"
+                                              asp-route-id="@job.JobId"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <select name="status">
+
+                                                <option value="Active"
+                                                        selected="@(job.Status == "Active")">
+                                                    Active
+                                                </option>
+
+                                                <option value="Closed"
+                                                        selected="@(job.Status == "Closed")">
+                                                    Closed
+                                                </option>
+
+                                                <option value="Removed"
+                                                        selected="@(job.Status == "Removed")">
+                                                    Removed
+                                                </option>
+
+                                            </select>
+
+                                            <button type="submit">
+                                                Save
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </section>
+
+
+        <!-- MARKETPLACE LISTINGS -->
+        <section class="panel" id="listings">
+
+            <div class="panel-head">
+                <h2>Marketplace Listings</h2>
+                <span class="count">
+                    @Model.MarketplaceListings.Count
+                </span>
+            </div>
+
+            @if (Model.MarketplaceListings.Count == 0)
+            {
+                <div class="empty">
+                    No listings found.
+                </div>
+            }
+            else
+            {
+                <div class="scroll">
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Listing</th>
+                                <th>Seller</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Moderation</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var listing in Model.MarketplaceListings)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @listing.Title
+                                        </strong>
+
+                                        <small>
+                                            @listing.Condition · @(listing.Location ?? "—")
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        @(listing.Seller.BusinessName
+                                          ?? listing.Seller.FullName
+                                          ?? "Seller")
+                                    </td>
+
+                                    <td>
+                                        @listing.ListingType
+                                    </td>
+
+                                    <td>
+                                        $@listing.Price.ToString("0.00")
+                                    </td>
+
+                                    <td>
+                                        <span class="pill">
+                                            @listing.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <form class="manage"
+                                              asp-controller="AdminOperations"
+                                              asp-action="UpdateListingStatus"
+                                              asp-route-id="@listing.MarketplaceListingId"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <select name="status">
+
+                                                <option value="Active"
+                                                        selected="@(listing.Status == "Active")">
+                                                    Active
+                                                </option>
+
+                                                <option value="Sold"
+                                                        selected="@(listing.Status == "Sold")">
+                                                    Sold
+                                                </option>
+
+                                                <option value="Removed"
+                                                        selected="@(listing.Status == "Removed")">
+                                                    Removed
+                                                </option>
+
+                                            </select>
+
+                                            <button type="submit">
+                                                Save
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+        </section>
+
+    </main>
+
+</body>
+</html>

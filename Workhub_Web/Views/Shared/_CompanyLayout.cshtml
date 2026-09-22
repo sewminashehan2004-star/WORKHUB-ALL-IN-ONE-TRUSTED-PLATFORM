@@ -1,0 +1,1501 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    var companyFullName =
+        Context.Session.GetString("FullName")
+        ?? "Company";
+
+    var companyEmail =
+        Context.Session.GetString("Email")
+        ?? "";
+
+
+    var currentController =
+        ViewContext.RouteData.Values["controller"]
+            ?.ToString()
+        ?? "";
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]
+            ?.ToString()
+        ?? "";
+
+
+    var companyInitial =
+        string.IsNullOrWhiteSpace(companyFullName)
+            ? "C"
+            : companyFullName
+                .Substring(0, 1)
+                .ToUpperInvariant();
+
+
+    // =============================================
+    // COMPANY PROFILE IMAGE
+    // =============================================
+
+    var companyProfileImageUrl =
+        Url.Action(
+            "ProfileImage",
+            "CompanyPortal",
+            new
+            {
+                v = DateTime.UtcNow.Ticks
+            });
+
+
+    // =============================================
+    // ACTIVE NAVIGATION
+    // =============================================
+
+    var isHome =
+        currentController.Equals(
+            "CompanyHome",
+            StringComparison.OrdinalIgnoreCase)
+        &&
+        currentAction.Equals(
+            "Index",
+            StringComparison.OrdinalIgnoreCase);
+
+
+    var isDashboard =
+        currentController.Equals(
+            "CompanyPortal",
+            StringComparison.OrdinalIgnoreCase)
+        &&
+        currentAction.Equals(
+            "Dashboard",
+            StringComparison.OrdinalIgnoreCase);
+
+
+    var isCompanyJobs =
+        currentController.Equals(
+            "CompanyJobs",
+            StringComparison.OrdinalIgnoreCase);
+
+
+    var isCreateJob =
+        isCompanyJobs
+        &&
+        currentAction.Equals(
+            "Create",
+            StringComparison.OrdinalIgnoreCase);
+
+
+    var isMyJobs =
+        isCompanyJobs
+        &&
+        currentAction.Equals(
+            "Index",
+            StringComparison.OrdinalIgnoreCase);
+
+
+    var isApplications =
+        currentController.Equals(
+            "CompanyApplications",
+            StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+
+    <title>
+        @ViewData["Title"] - WorkHub Company
+    </title>
+
+
+    <style>
+
+        :root {
+            --company-orange: #FD5000;
+            --company-orange-dark: #D94300;
+            --company-orange-light: #FF7A00;
+            --company-orange-soft: #FFF3EC;
+
+            --company-dark: #0F172A;
+            --company-text: #64748B;
+
+            --company-border: #E2E8F0;
+            --company-bg: #F8FAFC;
+
+            --company-white: #FFFFFF;
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
+            background:
+                var(--company-bg);
+
+            color:
+                var(--company-dark);
+        }
+
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        .company-navbar {
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            width: 100%;
+
+            border-bottom:
+                1px solid
+                rgba(226,232,240,.9);
+
+            background:
+                rgba(255,255,255,.96);
+
+            backdrop-filter:
+                blur(18px);
+
+            box-shadow:
+                0 3px 18px
+                rgba(15,23,42,.035);
+        }
+
+
+        .company-navbar-container {
+            width: 100%;
+
+            max-width: 1420px;
+
+            min-height: 78px;
+
+            margin: 0 auto;
+
+            padding: 0 28px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 25px;
+        }
+
+
+        /* =========================================
+           BRAND
+        ========================================= */
+
+        .company-navbar-brand {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            flex-shrink: 0;
+
+            text-decoration: none;
+        }
+
+
+        .company-navbar-logo {
+            width: 44px;
+            height: 44px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--company-orange),
+                    var(--company-orange-light)
+                );
+
+            color: #FFFFFF;
+
+            font-size: 21px;
+
+            font-weight: 950;
+
+            box-shadow:
+                0 8px 20px
+                rgba(253,80,0,.24);
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease;
+        }
+
+
+        .company-navbar-brand:hover
+        .company-navbar-logo {
+            transform:
+                translateY(-2px)
+                rotate(-3deg);
+
+            box-shadow:
+                0 12px 24px
+                rgba(253,80,0,.30);
+        }
+
+
+        .company-navbar-brand-text strong {
+            display: block;
+
+            color:
+                var(--company-dark);
+
+            font-size: 19px;
+
+            font-weight: 950;
+
+            letter-spacing: -.3px;
+
+            line-height: 1.05;
+        }
+
+
+        .company-navbar-brand-text span {
+            display: block;
+
+            margin-top: 4px;
+
+            color:
+                var(--company-orange);
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.2px;
+
+            text-transform: uppercase;
+        }
+
+
+        /* =========================================
+           DESKTOP NAV
+        ========================================= */
+
+        .company-navbar-center {
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 5px;
+
+            border-radius: 12px;
+
+            background: #F8FAFC;
+        }
+
+
+        .company-nav-link {
+            min-height: 43px;
+
+            padding: 0 15px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 9px;
+
+            color: #475569;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+
+            transition:
+                background .2s ease,
+                color .2s ease,
+                transform .2s ease,
+                box-shadow .2s ease;
+        }
+
+
+        .company-nav-link:hover {
+            background: #FFFFFF;
+
+            color:
+                var(--company-orange-dark);
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 4px 12px
+                rgba(15,23,42,.06);
+        }
+
+
+        .company-nav-link.active {
+            background:
+                var(--company-orange);
+
+            color: #FFFFFF;
+
+            box-shadow:
+                0 7px 17px
+                rgba(253,80,0,.20);
+        }
+
+
+        .company-nav-link.active:hover {
+            background:
+                var(--company-orange-dark);
+
+            color: #FFFFFF;
+        }
+
+
+        /* =========================================
+           ACCOUNT
+        ========================================= */
+
+        .company-navbar-account {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex-shrink: 0;
+        }
+
+
+        .company-account-box {
+            padding: 6px 11px 6px 6px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            border:
+                1px solid
+                var(--company-border);
+
+            border-radius: 13px;
+
+            background: #FFFFFF;
+
+            box-shadow:
+                0 3px 10px
+                rgba(15,23,42,.025);
+        }
+
+
+        /* =========================================
+           DESKTOP PROFILE PICTURE
+        ========================================= */
+
+        .company-account-avatar-shell {
+            position: relative;
+
+            width: 42px;
+            height: 42px;
+
+            flex-shrink: 0;
+        }
+
+
+        .company-account-avatar-fallback {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--company-dark),
+                    #334155
+                );
+
+            color: #FFFFFF;
+
+            font-size: 15px;
+
+            font-weight: 950;
+        }
+
+
+        .company-account-avatar-image {
+            position: absolute;
+
+            inset: 0;
+
+            width: 42px;
+            height: 42px;
+
+            border:
+                2px solid
+                var(--company-orange-soft);
+
+            border-radius: 11px;
+
+            background: #FFFFFF;
+
+            object-fit: cover;
+        }
+
+
+        .company-account-details {
+            max-width: 165px;
+        }
+
+
+        .company-account-details strong {
+            display: block;
+
+            overflow: hidden;
+
+            color:
+                var(--company-dark);
+
+            font-size: 11px;
+
+            font-weight: 900;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+        }
+
+
+        .company-account-details span {
+            display: block;
+
+            margin-top: 3px;
+
+            overflow: hidden;
+
+            color:
+                var(--company-text);
+
+            font-size: 9px;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+        }
+
+
+        .company-nav-logout {
+            min-height: 42px;
+
+            padding: 0 14px;
+
+            border:
+                1px solid #CBD5E1;
+
+            border-radius: 9px;
+
+            background: #FFFFFF;
+
+            color: #475569;
+
+            font-size: 11px;
+
+            font-weight: 850;
+
+            cursor: pointer;
+
+            transition:
+                border-color .2s ease,
+                background .2s ease,
+                color .2s ease;
+        }
+
+
+        .company-nav-logout:hover {
+            border-color:
+                var(--company-orange);
+
+            background:
+                var(--company-orange-soft);
+
+            color:
+                var(--company-orange-dark);
+        }
+
+
+        /* =========================================
+           MOBILE BUTTON
+        ========================================= */
+
+        .company-mobile-toggle {
+            display: none;
+
+            width: 44px;
+            height: 44px;
+
+            border:
+                1px solid
+                var(--company-border);
+
+            border-radius: 10px;
+
+            background: #FFFFFF;
+
+            color:
+                var(--company-dark);
+
+            font-size: 20px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================================
+           MOBILE MENU
+        ========================================= */
+
+        .company-mobile-menu {
+            display: none;
+
+            padding:
+                12px 18px 20px;
+
+            border-top:
+                1px solid #F1F5F9;
+
+            background: #FFFFFF;
+
+            box-shadow:
+                0 15px 30px
+                rgba(15,23,42,.06);
+        }
+
+
+        .company-mobile-menu.open {
+            display: block;
+        }
+
+
+        .company-mobile-navigation {
+            display: grid;
+
+            gap: 5px;
+        }
+
+
+        .company-mobile-link {
+            width: 100%;
+
+            min-height: 48px;
+
+            padding: 0 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            border-radius: 9px;
+
+            color: #475569;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            text-decoration: none;
+        }
+
+
+        .company-mobile-link:hover {
+            background:
+                var(--company-orange-soft);
+
+            color:
+                var(--company-orange-dark);
+        }
+
+
+        .company-mobile-link.active {
+            background:
+                var(--company-orange);
+
+            color: #FFFFFF;
+        }
+
+
+        /* =========================================
+           MOBILE ACCOUNT
+        ========================================= */
+
+        .company-mobile-account {
+            margin-top: 14px;
+
+            padding-top: 15px;
+
+            border-top:
+                1px solid #F1F5F9;
+        }
+
+
+        .company-mobile-account-box {
+            margin-bottom: 12px;
+
+            padding: 11px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            border-radius: 11px;
+
+            background:
+                #F8FAFC;
+        }
+
+
+        .company-mobile-avatar-shell {
+            position: relative;
+
+            width: 48px;
+            height: 48px;
+
+            flex-shrink: 0;
+        }
+
+
+        .company-mobile-avatar-fallback {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--company-dark),
+                    #334155
+                );
+
+            color: #FFFFFF;
+
+            font-size: 16px;
+
+            font-weight: 950;
+        }
+
+
+        .company-mobile-avatar-image {
+            position: absolute;
+
+            inset: 0;
+
+            width: 48px;
+            height: 48px;
+
+            border:
+                2px solid
+                var(--company-orange-soft);
+
+            border-radius: 12px;
+
+            background: #FFFFFF;
+
+            object-fit: cover;
+        }
+
+
+        .company-mobile-account strong {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color:
+                var(--company-dark);
+
+            font-size: 12px;
+
+            font-weight: 900;
+        }
+
+
+        .company-mobile-account span {
+            display: block;
+
+            color:
+                var(--company-text);
+
+            font-size: 10px;
+
+            overflow-wrap: anywhere;
+        }
+
+
+        .company-mobile-logout {
+            width: 100%;
+
+            min-height: 44px;
+
+            border:
+                1px solid #CBD5E1;
+
+            border-radius: 9px;
+
+            background: #FFFFFF;
+
+            color: #475569;
+
+            font-size: 12px;
+
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+
+        .company-mobile-logout:hover {
+            border-color:
+                var(--company-orange);
+
+            background:
+                var(--company-orange-soft);
+
+            color:
+                var(--company-orange-dark);
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        .company-layout-body {
+            width: 100%;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @@media (max-width: 1150px) {
+
+            .company-nav-link {
+                padding: 0 11px;
+
+                font-size: 11px;
+            }
+
+
+            .company-account-details {
+                display: none;
+            }
+        }
+
+
+        @@media (max-width: 980px) {
+
+            .company-navbar-center {
+                display: none;
+            }
+
+
+            .company-navbar-account {
+                display: none;
+            }
+
+
+            .company-mobile-toggle {
+                display: block;
+            }
+        }
+
+
+        @@media (max-width: 600px) {
+
+            .company-navbar-container {
+                min-height: 70px;
+
+                padding: 0 15px;
+            }
+
+
+            .company-navbar-logo {
+                width: 39px;
+                height: 39px;
+
+                font-size: 18px;
+            }
+
+
+            .company-navbar-brand-text strong {
+                font-size: 17px;
+            }
+
+
+            .company-navbar-brand-text span {
+                font-size: 8px;
+            }
+
+
+            .company-mobile-menu {
+                padding:
+                    10px 14px 18px;
+            }
+        }
+
+
+
+            /* =========================================================
+               FIXED WHATSAPP BUTTON
+            ========================================================== */
+
+            .workhub-whatsapp {
+                position: fixed;
+                right: 25px;
+                bottom: 25px;
+                width: 58px;
+                height: 58px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: #25D366;
+                color: #ffffff;
+                text-decoration: none;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+                z-index: 9999;
+                transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+            }
+
+
+                .workhub-whatsapp:hover {
+                    background: #20bd5a;
+                    color: #ffffff;
+                    transform: translateY(-4px) scale(1.05);
+                    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+                    text-decoration: none;
+                }
+
+
+            /* =========================================================
+               WHATSAPP ICON
+            ========================================================== */
+
+            .whatsapp-icon {
+                width: 31px;
+                height: 31px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+
+                .whatsapp-icon svg {
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }
+
+
+            /* =========================================================
+               WHATSAPP TOOLTIP
+            ========================================================== */
+
+            .whatsapp-tooltip {
+                position: absolute;
+                right: 70px;
+                top: 50%;
+                transform: translateY(-50%) translateX(8px);
+                padding: 8px 12px;
+                border-radius: 8px;
+                background: #111827;
+                color: #ffffff;
+                font-size: 13px;
+                font-weight: 600;
+                white-space: nowrap;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+                transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+            }
+
+
+                .whatsapp-tooltip::after {
+                    content: "";
+                    position: absolute;
+                    right: -5px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    border-width: 5px 0 5px 5px;
+                    border-style: solid;
+                    border-color: transparent transparent transparent #111827;
+                }
+
+
+            .workhub-whatsapp:hover .whatsapp-tooltip {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(-50%) translateX(0);
+            }
+
+
+            /* =========================================================
+               WHATSAPP MOBILE
+            ========================================================== */
+
+            @@media (max-width: 576px) {
+
+                .workhub-whatsapp {
+                    width: 54px;
+                    height: 54px;
+                    right: 16px;
+                    bottom: 18px;
+                }
+
+
+                .whatsapp-icon {
+                    width: 29px;
+                    height: 29px;
+                }
+
+
+                .whatsapp-tooltip {
+                    display: none;
+                }
+            }
+
+    </style>
+
+
+    @await RenderSectionAsync(
+        "Styles",
+        required: false)
+
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+     FIXED WHATSAPP BUTTON
+========================================================== -->
+
+    <a href="https://whatsapp.com/channel/0029VbE3xn62P59fZ63OIN2K"
+       class="workhub-whatsapp"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Open WorkHub WhatsApp Channel"
+       title="Join our WhatsApp Channel">
+
+        <span class="whatsapp-tooltip">
+            Join our Channel
+        </span>
+
+        <span class="whatsapp-icon">
+
+            <svg viewBox="0 0 32 32"
+                 xmlns="http://www.w3.org/2000/svg"
+                 aria-hidden="true">
+
+                <path fill="currentColor"
+                      d="M16.04 2.003c-7.72 0-13.99 6.27-13.99 13.99 0 2.47.64 4.88 1.86 7L1.93 30.22l7.39-1.94a13.92 13.92 0 0 0 6.71 1.71h.01c7.72 0 13.99-6.27 13.99-13.99 0-3.74-1.46-7.25-4.1-9.89a13.9 13.9 0 0 0-9.89-4.11Zm0 25.62h-.01a11.6 11.6 0 0 1-5.91-1.62l-.42-.25-4.39 1.15 1.17-4.28-.28-.44a11.56 11.56 0 0 1-1.78-6.18c0-6.4 5.21-11.61 11.62-11.61 3.1 0 6.02 1.21 8.21 3.4a11.53 11.53 0 0 1 3.4 8.21c0 6.41-5.21 11.62-11.61 11.62Zm6.37-8.7c-.35-.18-2.07-1.02-2.39-1.14-.32-.12-.55-.18-.79.18-.23.35-.91 1.14-1.11 1.37-.2.23-.41.26-.76.09-.35-.18-1.48-.55-2.82-1.74a10.55 10.55 0 0 1-1.95-2.43c-.2-.35-.02-.54.15-.71.16-.16.35-.41.52-.61.18-.2.23-.35.35-.58.12-.23.06-.44-.03-.61-.09-.18-.79-1.9-1.08-2.6-.28-.68-.57-.59-.79-.6h-.67c-.23 0-.61.09-.93.44-.32.35-1.22 1.19-1.22 2.91 0 1.72 1.25 3.38 1.43 3.61.18.23 2.46 3.76 5.96 5.27.83.36 1.48.57 1.99.73.84.27 1.6.23 2.2.14.67-.1 2.07-.85 2.36-1.66.29-.81.29-1.51.2-1.66-.08-.15-.32-.23-.67-.41Z" />
+
+            </svg>
+
+        </span>
+
+    </a>
+
+
+    <!-- =============================================
+         NAVBAR
+    ============================================== -->
+
+    <header class="company-navbar">
+
+
+        <div class="company-navbar-container">
+
+
+            <!-- BRAND -->
+
+            <a asp-controller="CompanyHome"
+               asp-action="Index"
+               class="company-navbar-brand">
+
+
+                <div class="company-navbar-logo">
+                    W
+                </div>
+
+
+                <div class="company-navbar-brand-text">
+
+                    <strong>
+                        WorkHub
+                    </strong>
+
+                    <span>
+                        Company Portal
+                    </span>
+
+                </div>
+
+
+            </a>
+
+
+            <!-- =====================================
+                 DESKTOP NAVIGATION
+            ====================================== -->
+
+            <nav class="company-navbar-center">
+
+
+                <a asp-controller="CompanyHome"
+                   asp-action="Index"
+                   class="company-nav-link @(isHome ? "active" : "")">
+
+                    Home
+
+                </a>
+
+
+                <a asp-controller="CompanyPortal"
+                   asp-action="Dashboard"
+                   class="company-nav-link @(isDashboard ? "active" : "")">
+
+                    Dashboard
+
+                </a>
+
+
+                <a asp-controller="CompanyJobs"
+                   asp-action="Create"
+                   class="company-nav-link @(isCreateJob ? "active" : "")">
+
+                    Post Job
+
+                </a>
+
+
+                <a asp-controller="CompanyJobs"
+                   asp-action="Index"
+                   class="company-nav-link @(isMyJobs ? "active" : "")">
+
+                    My Jobs
+
+                </a>
+
+
+                <a asp-controller="CompanyApplications"
+                   asp-action="Index"
+                   class="company-nav-link @(isApplications ? "active" : "")">
+
+                    Applications
+
+                </a>
+
+
+            </nav>
+
+
+            <!-- =====================================
+                 DESKTOP ACCOUNT
+            ====================================== -->
+
+            <div class="company-navbar-account">
+
+
+                <div class="company-account-box">
+
+
+                    <div class="company-account-avatar-shell">
+
+
+                        <div class="company-account-avatar-fallback">
+                            @companyInitial
+                        </div>
+
+
+                        <img src="@companyProfileImageUrl"
+                             class="company-account-avatar-image"
+                             alt="Company profile picture"
+                             onerror="this.style.display='none';" />
+
+
+                    </div>
+
+
+                    <div class="company-account-details">
+
+                        <strong>
+                            @companyFullName
+                        </strong>
+
+                        <span>
+                            @companyEmail
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <form asp-controller="CompanyPortal"
+                      asp-action="Logout"
+                      method="post">
+
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="company-nav-logout">
+
+                        Sign Out
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+            <!-- MOBILE BUTTON -->
+
+            <button type="button"
+                    class="company-mobile-toggle"
+                    id="companyMobileToggle"
+                    aria-label="Open company navigation"
+                    aria-expanded="false">
+
+                ☰
+
+            </button>
+
+
+        </div>
+
+
+        <!-- =========================================
+             MOBILE MENU
+        ========================================= -->
+
+        <div class="company-mobile-menu"
+             id="companyMobileMenu">
+
+
+            <div class="company-mobile-navigation">
+
+
+                <a asp-controller="CompanyHome"
+                   asp-action="Index"
+                   class="company-mobile-link @(isHome ? "active" : "")">
+
+                    Home
+
+                </a>
+
+
+                <a asp-controller="CompanyPortal"
+                   asp-action="Dashboard"
+                   class="company-mobile-link @(isDashboard ? "active" : "")">
+
+                    Dashboard
+
+                </a>
+
+
+                <a asp-controller="CompanyJobs"
+                   asp-action="Create"
+                   class="company-mobile-link @(isCreateJob ? "active" : "")">
+
+                    Post Job
+
+                </a>
+
+
+                <a asp-controller="CompanyJobs"
+                   asp-action="Index"
+                   class="company-mobile-link @(isMyJobs ? "active" : "")">
+
+                    My Jobs
+
+                </a>
+
+
+                <a asp-controller="CompanyApplications"
+                   asp-action="Index"
+                   class="company-mobile-link @(isApplications ? "active" : "")">
+
+                    Applications
+
+                </a>
+
+
+            </div>
+
+
+            <!-- =====================================
+                 MOBILE ACCOUNT
+            ====================================== -->
+
+            <div class="company-mobile-account">
+
+
+                <div class="company-mobile-account-box">
+
+
+                    <div class="company-mobile-avatar-shell">
+
+
+                        <div class="company-mobile-avatar-fallback">
+                            @companyInitial
+                        </div>
+
+
+                        <img src="@companyProfileImageUrl"
+                             class="company-mobile-avatar-image"
+                             alt="Company profile picture"
+                             onerror="this.style.display='none';" />
+
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            @companyFullName
+                        </strong>
+
+                        <span>
+                            @companyEmail
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <form asp-controller="CompanyPortal"
+                      asp-action="Logout"
+                      method="post">
+
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="company-mobile-logout">
+
+                        Sign Out
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =============================================
+         PAGE BODY
+    ============================================== -->
+
+    <main class="company-layout-body">
+
+        @RenderBody()
+
+    </main>
+
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                const toggle =
+                    document.getElementById(
+                        "companyMobileToggle"
+                    );
+
+
+                const menu =
+                    document.getElementById(
+                        "companyMobileMenu"
+                    );
+
+
+                if (!toggle || !menu) {
+                    return;
+                }
+
+
+                // =================================
+                // OPEN / CLOSE MOBILE MENU
+                // =================================
+
+                toggle.addEventListener(
+                    "click",
+                    function () {
+
+
+                        const isOpen =
+                            menu.classList.toggle(
+                                "open"
+                            );
+
+
+                        toggle.setAttribute(
+                            "aria-expanded",
+                            isOpen
+                                ? "true"
+                                : "false"
+                        );
+
+
+                        toggle.textContent =
+                            isOpen
+                                ? "✕"
+                                : "☰";
+
+
+                    }
+                );
+
+
+                // =================================
+                // CLOSE AFTER LINK CLICK
+                // =================================
+
+                const links =
+                    menu.querySelectorAll(
+                        "a"
+                    );
+
+
+                links.forEach(
+                    function (
+                        link
+                    ) {
+
+
+                        link.addEventListener(
+                            "click",
+                            function () {
+
+
+                                menu.classList.remove(
+                                    "open"
+                                );
+
+
+                                toggle.setAttribute(
+                                    "aria-expanded",
+                                    "false"
+                                );
+
+
+                                toggle.textContent =
+                                    "☰";
+
+
+                            }
+                        );
+
+
+                    }
+                );
+
+
+            }
+        );
+
+    </script>
+
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false)
+
+
+</body>
+
+</html>

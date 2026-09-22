@@ -1,0 +1,2266 @@
+@model Workhub_Web.Models.CompanyApplicationsViewModel
+
+@{
+    Layout = "_CompanyLayout";
+    ViewData["Title"] = "Applications";
+}
+
+<style>
+
+    :root {
+        --app-orange: #FD5000;
+        --app-orange-dark: #D94300;
+        --app-orange-light: #FF7A00;
+        --app-orange-soft: #FFF2EB;
+        --app-dark: #0F172A;
+        --app-dark-2: #1E293B;
+        --app-text: #64748B;
+        --app-text-dark: #334155;
+        --app-border: #E2E8F0;
+        --app-bg: #F8FAFC;
+        --app-green: #16A34A;
+        --app-green-soft: #F0FDF4;
+        --app-blue: #2563EB;
+        --app-blue-soft: #EFF6FF;
+        --app-yellow: #D97706;
+        --app-yellow-soft: #FFFBEB;
+        --app-purple: #7C3AED;
+        --app-purple-soft: #F5F3FF;
+        --app-red: #DC2626;
+        --app-red-soft: #FEF2F2;
+        --app-gray-soft: #F1F5F9;
+        --app-shadow: 0 12px 32px rgba(15, 23, 42, .07);
+    }
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    .app-svg {
+        width: 21px;
+        height: 21px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .applications-page {
+        min-height: calc(100vh - 72px);
+        padding: 48px 24px 90px;
+        background: radial-gradient( circle at top right, rgba(253,80,0,.07), transparent 30% ), radial-gradient( circle at bottom left, rgba(253,80,0,.035), transparent 28% ), var(--app-bg);
+    }
+
+
+    .applications-container {
+        width: 100%;
+        max-width: 1320px;
+        margin: 0 auto;
+    }
+
+
+    /* =========================================
+           HEADER
+        ========================================= */
+
+    .applications-header {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+
+    .applications-label {
+        margin-bottom: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--app-orange);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+    }
+
+
+        .applications-label svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+    .applications-header h1 {
+        margin: 0 0 9px;
+        color: var(--app-dark);
+        font-size: 42px;
+        font-weight: 950;
+        letter-spacing: -1px;
+    }
+
+
+    .applications-header p {
+        margin: 0;
+        color: var(--app-text);
+        font-size: 15px;
+        line-height: 1.65;
+    }
+
+
+    .applications-jobs-link {
+        min-height: 44px;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid var(--app-border);
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 850;
+        text-decoration: none;
+        box-shadow: 0 5px 14px rgba(15,23,42,.04);
+        transition: .2s ease;
+    }
+
+
+        .applications-jobs-link svg {
+            width: 17px;
+            height: 17px;
+        }
+
+
+        .applications-jobs-link:hover {
+            transform: translateY(-1px);
+            border-color: var(--app-orange);
+            background: var(--app-orange-soft);
+            color: var(--app-orange-dark);
+        }
+
+
+    /* =========================================
+           MESSAGES
+        ========================================= */
+
+    .applications-message {
+        margin-bottom: 21px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 11px;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+    .applications-message-success {
+        border: 1px solid #BBF7D0;
+        background: var(--app-green-soft);
+        color: #15803D;
+    }
+
+
+    .applications-message-error {
+        border: 1px solid #FECACA;
+        background: var(--app-red-soft);
+        color: #B91C1C;
+    }
+
+
+    /* =========================================
+           JOB SELECTOR
+        ========================================= */
+
+    .application-job-selector {
+        margin-bottom: 23px;
+        padding: 22px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 15px;
+        background: #FFFFFF;
+        box-shadow: var(--app-shadow);
+    }
+
+
+    .application-job-selector-left {
+        width: 100%;
+        max-width: 680px;
+    }
+
+
+    .application-job-selector label {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--app-text-dark);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+        .application-job-selector label svg {
+            width: 17px;
+            height: 17px;
+            color: var(--app-orange-dark);
+        }
+
+
+    .application-job-select {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: var(--app-dark);
+        font-size: 13px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+
+        .application-job-select:hover {
+            border-color: #94A3B8;
+        }
+
+
+        .application-job-select:focus {
+            border-color: var(--app-orange);
+            box-shadow: 0 0 0 4px rgba(253,80,0,.09);
+        }
+
+
+    .selected-job-info {
+        flex-shrink: 0;
+        padding: 11px 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid #FED7C5;
+        border-radius: 10px;
+        background: var(--app-orange-soft);
+        color: var(--app-orange-dark);
+        font-size: 11px;
+        font-weight: 850;
+    }
+
+
+        .selected-job-info svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+    /* =========================================
+           STATS
+        ========================================= */
+
+    .applications-stat-grid {
+        margin-bottom: 24px;
+        display: grid;
+        grid-template-columns: repeat( 4, minmax(0,1fr) );
+        gap: 16px;
+    }
+
+
+    .application-stat-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 125px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid var(--app-border);
+        border-radius: 15px;
+        background: #FFFFFF;
+        box-shadow: var(--app-shadow);
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+
+        .application-stat-card::after {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            right: -45px;
+            top: -45px;
+            border-radius: 50%;
+            background: var(--app-orange-soft);
+        }
+
+
+        .application-stat-card:hover {
+            transform: translateY(-4px);
+            border-color: #FED7C5;
+            box-shadow: 0 16px 34px rgba(15,23,42,.10);
+        }
+
+
+    .application-stat-icon {
+        position: relative;
+        z-index: 2;
+        width: 50px;
+        height: 50px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        background: var(--app-orange-soft);
+        color: var(--app-orange-dark);
+    }
+
+
+        .application-stat-icon.blue {
+            background: var(--app-blue-soft);
+            color: var(--app-blue);
+        }
+
+
+        .application-stat-icon.purple {
+            background: var(--app-purple-soft);
+            color: var(--app-purple);
+        }
+
+
+        .application-stat-icon.green {
+            background: var(--app-green-soft);
+            color: var(--app-green);
+        }
+
+
+        .application-stat-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+
+    .application-stat-content {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .application-stat-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--app-dark);
+        font-size: 29px;
+        font-weight: 950;
+        line-height: 1;
+    }
+
+
+    .application-stat-card span {
+        color: var(--app-text);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================
+           TOOLBAR
+        ========================================= */
+
+    .applications-toolbar {
+        margin-bottom: 19px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 14px;
+        background: #FFFFFF;
+        box-shadow: 0 6px 20px rgba(15,23,42,.04);
+    }
+
+
+    .applications-search-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 430px;
+    }
+
+
+    .applications-search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        display: flex;
+        pointer-events: none;
+    }
+
+
+        .applications-search-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+
+    .applications-search {
+        width: 100%;
+        min-height: 45px;
+        padding: 0 14px 0 43px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: var(--app-dark);
+        font-size: 12px;
+        outline: none;
+        transition: .2s ease;
+    }
+
+
+        .applications-search:focus {
+            border-color: var(--app-orange);
+            box-shadow: 0 0 0 4px rgba(253,80,0,.09);
+        }
+
+
+    .application-filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+
+    .application-filter-button {
+        min-height: 39px;
+        padding: 0 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: #FFFFFF;
+        color: #64748B;
+        font-size: 10px;
+        font-weight: 850;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+
+        .application-filter-button svg {
+            width: 14px;
+            height: 14px;
+        }
+
+
+        .application-filter-button:hover {
+            border-color: #FDBA95;
+            background: #FFF9F5;
+            color: var(--app-orange-dark);
+        }
+
+
+        .application-filter-button.active {
+            border-color: var(--app-orange);
+            background: var(--app-orange-soft);
+            color: var(--app-orange-dark);
+        }
+
+
+    /* =========================================
+           APPLICANT LIST
+        ========================================= */
+
+    .applicant-list {
+        display: grid;
+        gap: 16px;
+    }
+
+
+    .applicant-card {
+        padding: 22px;
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 190px 165px;
+        gap: 22px;
+        align-items: center;
+        border: 1px solid var(--app-border);
+        border-radius: 15px;
+        background: #FFFFFF;
+        box-shadow: var(--app-shadow);
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+
+        .applicant-card:hover {
+            transform: translateY(-3px);
+            border-color: #FDBA95;
+            box-shadow: 0 16px 34px rgba(15,23,42,.10);
+        }
+
+
+    /* =========================================
+           CANDIDATE
+        ========================================= */
+
+    .applicant-main {
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+    }
+
+
+    .candidate-rank-badge {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 8px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #FED7C2;
+        border-radius: 10px;
+        background: #FFF0E9;
+        color: #C2410C;
+        font-size: 11px;
+        font-weight: 950;
+    }
+
+
+    .applicant-avatar {
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: linear-gradient( 135deg, var(--app-orange), var(--app-orange-light) );
+        color: #FFFFFF;
+        font-size: 19px;
+        font-weight: 950;
+        box-shadow: 0 8px 18px rgba(253,80,0,.20);
+    }
+
+
+    .applicant-information {
+        min-width: 0;
+    }
+
+
+        .applicant-information h2 {
+            margin: 0 0 6px;
+            color: var(--app-dark);
+            font-size: 17px;
+            font-weight: 950;
+            line-height: 1.3;
+        }
+
+
+    .applicant-location {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #64748B;
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+
+        .applicant-location svg {
+            width: 14px;
+            height: 14px;
+            color: var(--app-orange-dark);
+        }
+
+
+    .applicant-summary {
+        max-width: 580px;
+        margin: 0;
+        overflow: hidden;
+        color: #64748B;
+        font-size: 11px;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+
+    .applicant-applied-date {
+        margin-top: 9px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #94A3B8;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+
+        .applicant-applied-date svg {
+            width: 13px;
+            height: 13px;
+        }
+
+
+    /* =========================================
+           MATCH SCORE
+        ========================================= */
+
+    .applicant-match {
+        padding: 16px;
+        border: 1px solid #E2E8F0;
+        border-radius: 11px;
+        background: linear-gradient( 135deg, #F8FAFC, #FFFFFF );
+    }
+
+
+    .applicant-match-label {
+        margin-bottom: 9px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #64748B;
+        font-size: 9px;
+        font-weight: 850;
+        text-transform: uppercase;
+    }
+
+
+        .applicant-match-label svg {
+            width: 14px;
+            height: 14px;
+            color: var(--app-orange-dark);
+        }
+
+
+    .applicant-match-value {
+        margin-bottom: 9px;
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+
+
+        .applicant-match-value strong {
+            color: var(--app-dark);
+            font-size: 25px;
+            font-weight: 950;
+        }
+
+
+        .applicant-match-value span {
+            color: #94A3B8;
+            font-size: 10px;
+        }
+
+
+    .match-bar {
+        width: 100%;
+        height: 7px;
+        overflow: hidden;
+        border-radius: 20px;
+        background: #E2E8F0;
+    }
+
+
+    .match-bar-fill {
+        height: 100%;
+        border-radius: 20px;
+        background: linear-gradient( 90deg, var(--app-orange), var(--app-orange-light) );
+    }
+
+
+    .match-not-calculated {
+        color: #94A3B8;
+        font-size: 10px;
+        font-weight: 750;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================
+           ACTION AREA
+        ========================================= */
+
+    .applicant-action-area {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+
+    .application-status {
+        width: 100%;
+        min-height: 32px;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 30px;
+        font-size: 9px;
+        font-weight: 900;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+
+    .status-received {
+        background: var(--app-blue-soft);
+        color: var(--app-blue);
+    }
+
+
+    .status-under-review {
+        background: var(--app-yellow-soft);
+        color: var(--app-yellow);
+    }
+
+
+    .status-shortlisted {
+        background: var(--app-purple-soft);
+        color: var(--app-purple);
+    }
+
+
+    .status-interview {
+        background: #ECFEFF;
+        color: #0E7490;
+    }
+
+
+    .status-offered {
+        background: #ECFDF5;
+        color: #047857;
+    }
+
+
+    .status-hired {
+        background: var(--app-green-soft);
+        color: var(--app-green);
+    }
+
+
+    .status-rejected {
+        background: var(--app-red-soft);
+        color: var(--app-red);
+    }
+
+
+    .view-application-button {
+        width: 100%;
+        min-height: 43px;
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, var(--app-orange), var(--app-orange-light) );
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 900;
+        text-decoration: none;
+        box-shadow: 0 7px 17px rgba(253,80,0,.20);
+        transition: .2s ease;
+    }
+
+
+        .view-application-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+        .view-application-button:hover {
+            transform: translateY(-1px);
+            color: #FFFFFF;
+            box-shadow: 0 10px 22px rgba(253,80,0,.27);
+        }
+
+
+    /* =========================================
+           EMPTY
+        ========================================= */
+
+    .applications-empty {
+        padding: 70px 28px;
+        border: 1px solid var(--app-border);
+        border-radius: 16px;
+        background: #FFFFFF;
+        text-align: center;
+        box-shadow: var(--app-shadow);
+    }
+
+
+    .applications-empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 18px;
+        background: var(--app-orange-soft);
+        color: var(--app-orange-dark);
+    }
+
+
+        .applications-empty-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+
+    .applications-empty h2 {
+        margin: 0 0 8px;
+        color: var(--app-dark);
+        font-size: 22px;
+        font-weight: 950;
+    }
+
+
+    .applications-empty p {
+        max-width: 500px;
+        margin: 0 auto 20px;
+        color: var(--app-text);
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+
+    .applications-empty-button {
+        min-height: 44px;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border-radius: 9px;
+        background: var(--app-orange);
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 900;
+        text-decoration: none;
+        box-shadow: 0 7px 17px rgba(253,80,0,.18);
+    }
+
+
+        .applications-empty-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+    /* =========================================
+           NO RESULTS
+        ========================================= */
+
+    .application-no-result {
+        display: none;
+        margin-top: 15px;
+        padding: 40px;
+        border: 1px dashed #CBD5E1;
+        border-radius: 12px;
+        background: #FFFFFF;
+        color: #64748B;
+        font-size: 12px;
+        text-align: center;
+    }
+
+
+        .application-no-result.visible {
+            display: block;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 1050px) {
+
+        .applications-stat-grid {
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
+        }
+
+
+        .applicant-card {
+            grid-template-columns: minmax(0,1fr) 180px;
+        }
+
+
+        .applicant-action-area {
+            grid-column: 1 / -1;
+            flex-direction: row;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid #F1F5F9;
+        }
+
+
+        .application-status,
+        .view-application-button {
+            flex: 1;
+        }
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .applications-header {
+            flex-direction: column;
+        }
+
+
+        .applications-jobs-link {
+            width: 100%;
+        }
+
+
+        .application-job-selector {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+
+        .application-job-selector-left {
+            max-width: none;
+        }
+
+
+        .selected-job-info {
+            align-self: flex-start;
+        }
+
+
+        .applications-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+
+        .applications-search-wrapper {
+            max-width: none;
+        }
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .applications-page {
+            padding: 30px 14px 65px;
+        }
+
+
+        .applications-header h1 {
+            font-size: 34px;
+        }
+
+
+        .applications-header p {
+            font-size: 13px;
+        }
+
+
+        .applications-stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .applicant-card {
+            grid-template-columns: 1fr;
+        }
+
+
+        .applicant-main {
+            flex-wrap: wrap;
+        }
+
+
+        .applicant-information {
+            flex: 1 1 200px;
+        }
+
+
+        .applicant-match {
+            width: 100%;
+        }
+
+
+        .applicant-action-area {
+            grid-column: auto;
+            flex-direction: column;
+        }
+
+
+        .application-filter-group {
+            display: grid;
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
+        }
+    }
+</style>
+
+
+<section class="applications-page">
+
+    <div class="applications-container">
+
+
+        <!-- =========================================
+             HEADER
+        ========================================= -->
+
+        <div class="applications-header">
+
+
+            <div>
+
+
+                <span class="applications-label">
+
+                    <svg viewBox="0 0 24 24"
+                         class="app-svg">
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                        <circle cx="9"
+                                cy="7"
+                                r="4" />
+
+                        <path d="M19 8v6" />
+
+                        <path d="M22 11h-6" />
+
+                    </svg>
+
+                    WorkHub Recruitment
+
+                </span>
+
+
+                <h1>
+                    Applications
+                </h1>
+
+
+                <p>
+
+                    Review candidates who applied for
+                    your company's WorkHub job opportunities.
+
+                </p>
+
+
+            </div>
+
+
+            <a asp-controller="CompanyJobs"
+               asp-action="Index"
+               class="applications-jobs-link">
+
+                <svg viewBox="0 0 24 24"
+                     class="app-svg">
+
+                    <rect x="3"
+                          y="7"
+                          width="18"
+                          height="13"
+                          rx="2" />
+
+                    <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                </svg>
+
+                My Job Posts
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =========================================
+             MESSAGES
+        ========================================= -->
+        @if (
+                    !string.IsNullOrWhiteSpace(
+                        Model.SuccessMessage))
+        {
+            <div class="applications-message applications-message-success">
+
+                <svg viewBox="0 0 24 24"
+                     class="app-svg">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="9" />
+
+                    <path d="m8 12 3 3 5-6" />
+
+                </svg>
+
+                @Model.SuccessMessage
+
+            </div>
+        }
+
+
+        @if (
+            !string.IsNullOrWhiteSpace(
+                Model.ErrorMessage))
+        {
+            <div class="applications-message applications-message-error">
+
+                <svg viewBox="0 0 24 24"
+                     class="app-svg">
+
+                    <circle cx="12"
+                            cy="12"
+                            r="9" />
+
+                    <path d="M12 8v5" />
+
+                    <path d="M12 17h.01" />
+
+                </svg>
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        @if (Model.Jobs.Any())
+        {
+
+            <!-- =====================================
+                 JOB SELECTOR
+            ====================================== -->
+
+            <div class="application-job-selector">
+
+
+                <div class="application-job-selector-left">
+
+
+                    <form asp-controller="CompanyApplications"
+                          asp-action="Index"
+                          method="get"
+                          id="jobSelectorForm">
+
+
+                        <label for="jobSelector">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <rect x="3"
+                                      y="7"
+                                      width="18"
+                                      height="13"
+                                      rx="2" />
+
+                                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                            </svg>
+
+                            Select Job
+
+                        </label>
+
+
+                        <select name="jobId"
+                                id="jobSelector"
+                                class="application-job-select">
+
+
+                            @foreach (var job in Model.Jobs)
+                            {
+                                @if (
+                                    Model.SelectedJobId ==
+                                    job.JobId)
+                                {
+                                    <option value="@job.JobId"
+                                            selected>
+
+                                        @job.Title (@job.Status)
+
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@job.JobId">
+
+                                        @job.Title (@job.Status)
+
+                                    </option>
+                                }
+                            }
+
+
+                        </select>
+
+
+                    </form>
+
+
+                </div>
+
+
+                @if (
+                    !string.IsNullOrWhiteSpace(
+                        Model.SelectedJobTitle))
+                {
+                    <div class="selected-job-info">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <circle cx="12"
+                                    cy="12"
+                                    r="9" />
+
+                            <path d="m8 12 3 3 5-6" />
+
+                        </svg>
+
+                        Viewing:
+                        @Model.SelectedJobTitle
+
+                    </div>
+                }
+
+
+            </div>
+
+
+            <!-- =====================================
+                 STATISTICS
+            ====================================== -->
+
+            <div class="applications-stat-grid">
+
+
+                <div class="application-stat-card">
+
+
+                    <div class="application-stat-icon">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                            <circle cx="9"
+                                    cy="7"
+                                    r="4" />
+
+                            <path d="M19 8v6" />
+
+                            <path d="M22 11h-6" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="application-stat-content">
+
+                        <strong>
+                            @Model.TotalApplicants
+                        </strong>
+
+                        <span>
+                            Total Applicants
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="application-stat-card">
+
+
+                    <div class="application-stat-icon blue">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <circle cx="12"
+                                    cy="12"
+                                    r="9" />
+
+                            <path d="M12 7v5l3 2" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="application-stat-content">
+
+                        <strong>
+                            @(Model.ReceivedCount + Model.UnderReviewCount)
+                        </strong>
+
+                        <span>
+                            New / Under Review
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="application-stat-card">
+
+
+                    <div class="application-stat-icon purple">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <path d="m12 2 2.2 6.8H21l-5.5 4 2.1 6.7-5.6-4.1-5.6 4.1 2.1-6.7-5.5-4h6.8z" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="application-stat-content">
+
+                        <strong>
+                            @(Model.ShortlistedCount + Model.InterviewCount)
+                        </strong>
+
+                        <span>
+                            Shortlisted / Interview
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="application-stat-card">
+
+
+                    <div class="application-stat-icon green">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <circle cx="12"
+                                    cy="12"
+                                    r="9" />
+
+                            <path d="m8 12 3 3 5-6" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="application-stat-content">
+
+                        <strong>
+                            @Model.HiredCount
+                        </strong>
+
+                        <span>
+                            Hired
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            @if (Model.Applicants.Any())
+            {
+
+                <!-- =================================
+                     SEARCH + FILTER
+                ================================== -->
+
+                <div class="applications-toolbar">
+
+
+                    <div class="applications-search-wrapper">
+
+
+                        <span class="applications-search-icon">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <circle cx="11"
+                                        cy="11"
+                                        r="7" />
+
+                                <path d="m20 20-4-4" />
+
+                            </svg>
+
+                        </span>
+
+
+                        <input type="text"
+                               id="applicationSearch"
+                               class="applications-search"
+                               placeholder="Search candidates by name or location..." />
+
+
+                    </div>
+
+
+                    <div class="application-filter-group">
+
+
+                        <button type="button"
+                                class="application-filter-button active"
+                                data-status="all">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <path d="M4 6h16" />
+
+                                <path d="M4 12h16" />
+
+                                <path d="M4 18h16" />
+
+                            </svg>
+
+                            All
+
+                        </button>
+
+
+                        <button type="button"
+                                class="application-filter-button"
+                                data-status="received">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <path d="M4 4h16v16H4z" />
+
+                                <path d="m4 7 8 6 8-6" />
+
+                            </svg>
+
+                            Received
+
+                        </button>
+
+
+                        <button type="button"
+                                class="application-filter-button"
+                                data-status="under review">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <circle cx="11"
+                                        cy="11"
+                                        r="7" />
+
+                                <path d="m20 20-4-4" />
+
+                            </svg>
+
+                            Review
+
+                        </button>
+
+
+                        <button type="button"
+                                class="application-filter-button"
+                                data-status="shortlisted">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <path d="m12 2 2.2 6.8H21l-5.5 4 2.1 6.7-5.6-4.1-5.6 4.1 2.1-6.7-5.5-4h6.8z" />
+
+                            </svg>
+
+                            Shortlisted
+
+                        </button>
+
+
+                        <button type="button"
+                                class="application-filter-button"
+                                data-status="interview">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+
+                            </svg>
+
+                            Interview
+
+                        </button>
+
+
+                        <button type="button"
+                                class="application-filter-button"
+                                data-status="hired">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <circle cx="12"
+                                        cy="12"
+                                        r="9" />
+
+                                <path d="m8 12 3 3 5-6" />
+
+                            </svg>
+
+                            Hired
+
+                        </button>
+
+
+                        <button type="button"
+                                class="application-filter-button"
+                                data-status="rejected">
+
+                            <svg viewBox="0 0 24 24"
+                                 class="app-svg">
+
+                                <circle cx="12"
+                                        cy="12"
+                                        r="9" />
+
+                                <path d="m9 9 6 6" />
+
+                                <path d="m15 9-6 6" />
+
+                            </svg>
+
+                            Rejected
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================
+                     APPLICANT LIST
+                ================================== -->
+
+                <div class="applicant-list"
+                     id="applicantList">
+
+
+                    @{
+                        var candidateRank = 0;
+                    }
+
+
+                    @foreach (
+                        var applicant
+                        in Model.Applicants)
+                    {
+                        candidateRank++;
+
+
+                        var status =
+                            applicant.Status
+                                ?.Trim()
+                                ??
+                                "Received";
+
+
+                        var statusKey =
+                            status.ToLowerInvariant();
+
+
+                        var statusCss =
+                            statusKey switch
+                            {
+                                "received" =>
+                                    "status-received",
+
+                                "under review" =>
+                                    "status-under-review",
+
+                                "shortlisted" =>
+                                    "status-shortlisted",
+
+                                "interview" =>
+                                    "status-interview",
+
+                                "offered" =>
+                                    "status-offered",
+
+                                "hired" =>
+                                    "status-hired",
+
+                                "rejected" =>
+                                    "status-rejected",
+
+                                _ =>
+                                    "status-received"
+                            };
+
+
+                        var searchableText =
+                            $"{applicant.Candidate.FullName} " +
+                            $"{applicant.Candidate.CurrentLocation} " +
+                            $"{applicant.Candidate.ProfessionalSummary} " +
+                            $"{status}";
+
+
+                        var matchWidth =
+                            applicant.MatchScore.HasValue
+                                ? Math.Clamp(
+                                    applicant.MatchScore.Value,
+                                    0m,
+                                    100m)
+                                : 0m;
+
+
+                        <article class="applicant-card"
+                                 data-status="@statusKey"
+                                 data-search="@searchableText.ToLowerInvariant()">
+
+
+                            <!-- CANDIDATE -->
+
+                            <div class="applicant-main">
+
+
+                                <div class="candidate-rank-badge"
+                                     title="Ranked by WorkHub CV-job match">
+
+                                    #@candidateRank
+
+                                </div>
+
+
+                                <div class="applicant-avatar">
+
+                                    @applicant.ApplicantInitial
+
+                                </div>
+
+
+                                <div class="applicant-information">
+
+
+                                    <h2>
+
+                                        @applicant.Candidate.FullName
+
+                                    </h2>
+
+
+                                    <div class="applicant-location">
+
+
+                                        <svg viewBox="0 0 24 24"
+                                             class="app-svg">
+
+                                            <path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11z" />
+
+                                            <circle cx="12"
+                                                    cy="10"
+                                                    r="2" />
+
+                                        </svg>
+
+
+                                        @if (
+                                            !string.IsNullOrWhiteSpace(
+                                                applicant.Candidate.CurrentLocation))
+                                        {
+                                            <span>
+
+                                                @applicant.Candidate.CurrentLocation
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>
+
+                                                Location not provided
+
+                                            </span>
+                                        }
+
+
+                                    </div>
+
+
+                                    @if (
+                                        !string.IsNullOrWhiteSpace(
+                                            applicant.Candidate.ProfessionalSummary))
+                                    {
+                                        <p class="applicant-summary">
+
+                                            @applicant.Candidate.ProfessionalSummary
+
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="applicant-summary">
+
+                                            No professional summary
+                                            has been provided.
+
+                                        </p>
+                                    }
+
+
+                                    <div class="applicant-applied-date">
+
+                                        <svg viewBox="0 0 24 24"
+                                             class="app-svg">
+
+                                            <rect x="3"
+                                                  y="5"
+                                                  width="18"
+                                                  height="16"
+                                                  rx="2" />
+
+                                            <path d="M8 3v4" />
+
+                                            <path d="M16 3v4" />
+
+                                            <path d="M3 10h18" />
+
+                                        </svg>
+
+                                        Applied:
+                                        @applicant.AppliedDateText
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                            <!-- MATCH -->
+
+                            <div class="applicant-match">
+
+
+                                <span class="applicant-match-label">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="app-svg">
+
+                                        <path d="M4 19v-6" />
+
+                                        <path d="M10 19V9" />
+
+                                        <path d="M16 19V5" />
+
+                                        <path d="M22 19H2" />
+
+                                    </svg>
+
+                                    CV Job Match
+
+                                </span>
+
+
+                                @if (applicant.MatchScore.HasValue)
+                                {
+                                    <div class="applicant-match-value">
+
+                                        <strong>
+
+                                            @applicant.MatchScore.Value.ToString("0.#")
+
+                                        </strong>
+
+                                        <span>
+                                            / 100
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="match-bar">
+
+                                        <div class="match-bar-fill"
+                                             style="width:@matchWidth.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)%;">
+                                        </div>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="match-not-calculated">
+
+                                        Match score not calculated
+
+                                    </div>
+                                }
+
+
+                            </div>
+
+
+                            <!-- ACTION -->
+
+                            <div class="applicant-action-area">
+
+
+                                <div class="application-status @statusCss">
+
+                                    <span class="status-dot">
+                                    </span>
+
+                                    @status
+
+                                </div>
+
+
+                                <a asp-controller="CompanyApplications"
+                                   asp-action="Details"
+                                   asp-route-applicationId="@applicant.JobApplicationId"
+                                   class="view-application-button">
+
+                                    <svg viewBox="0 0 24 24"
+                                         class="app-svg">
+
+                                        <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
+
+                                        <circle cx="12"
+                                                cy="12"
+                                                r="3" />
+
+                                    </svg>
+
+                                    View Application
+
+                                </a>
+
+
+                            </div>
+
+
+                        </article>
+                    }
+
+
+                </div>
+
+
+                <div class="application-no-result"
+                     id="applicationNoResult">
+
+                    No candidates match your current
+                    search or status filter.
+
+                </div>
+
+            }
+            else
+            {
+
+                <!-- =================================
+                     NO APPLICATIONS
+                ================================== -->
+
+                <div class="applications-empty">
+
+
+                    <div class="applications-empty-icon">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                            <circle cx="9"
+                                    cy="7"
+                                    r="4" />
+
+                            <path d="M19 8v6" />
+
+                            <path d="M22 11h-6" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <h2>
+                        No Applications Yet
+                    </h2>
+
+
+                    <p>
+
+                        No job seekers have applied for
+                        @Model.SelectedJobTitle yet.
+                        Applications will appear here when
+                        candidates submit them.
+
+                    </p>
+
+
+                    <a asp-controller="CompanyJobs"
+                       asp-action="Index"
+                       class="applications-empty-button">
+
+                        <svg viewBox="0 0 24 24"
+                             class="app-svg">
+
+                            <rect x="3"
+                                  y="7"
+                                  width="18"
+                                  height="13"
+                                  rx="2" />
+
+                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                        </svg>
+
+                        View My Jobs
+
+                    </a>
+
+
+                </div>
+
+            }
+
+        }
+        else
+        {
+
+            <!-- =====================================
+                 NO JOB POSTS
+            ====================================== -->
+
+            <div class="applications-empty">
+
+
+                <div class="applications-empty-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         class="app-svg">
+
+                        <rect x="3"
+                              y="7"
+                              width="18"
+                              height="13"
+                              rx="2" />
+
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+
+                        <path d="M12 11v5" />
+
+                        <path d="M9.5 13.5h5" />
+
+                    </svg>
+
+                </div>
+
+
+                <h2>
+                    No Jobs Available
+                </h2>
+
+
+                <p>
+
+                    You need to publish a job before
+                    candidates can submit applications.
+
+                </p>
+
+
+                <a asp-controller="CompanyJobs"
+                   asp-action="Create"
+                   class="applications-empty-button">
+
+                    <svg viewBox="0 0 24 24"
+                         class="app-svg">
+
+                        <path d="M12 5v14" />
+
+                        <path d="M5 12h14" />
+
+                    </svg>
+
+                    Post New Job
+
+                </a>
+
+
+            </div>
+
+        }
+
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+
+                // =================================
+                // JOB SELECTOR
+                // =================================
+
+                const jobSelector =
+                    document.getElementById(
+                        "jobSelector"
+                    );
+
+
+                const jobSelectorForm =
+                    document.getElementById(
+                        "jobSelectorForm"
+                    );
+
+
+                if (
+                    jobSelector
+                    &&
+                    jobSelectorForm
+                ) {
+                    jobSelector.addEventListener(
+                        "change",
+                        function() {
+                            jobSelectorForm.submit();
+                        }
+                    );
+                }
+
+
+                // =================================
+                // SEARCH
+                // =================================
+
+                const searchInput =
+                    document.getElementById(
+                        "applicationSearch"
+                    );
+
+
+                const applicantCards =
+                    document.querySelectorAll(
+                        ".applicant-card"
+                    );
+
+
+                const filterButtons =
+                    document.querySelectorAll(
+                        ".application-filter-button"
+                    );
+
+
+                const noResult =
+                    document.getElementById(
+                        "applicationNoResult"
+                    );
+
+
+                let currentStatus =
+                    "all";
+
+
+                function filterApplications() {
+                    const searchValue =
+                        searchInput
+                            ? searchInput.value
+                                .trim()
+                                .toLowerCase()
+                            : "";
+
+
+                    let visibleCount =
+                        0;
+
+
+                    applicantCards.forEach(
+                        function(card) {
+                            const status =
+                                (
+                                    card.dataset.status
+                                    ||
+                                    ""
+                                )
+                                    .toLowerCase();
+
+
+                            const searchable =
+                                (
+                                    card.dataset.search
+                                    ||
+                                    ""
+                                )
+                                    .toLowerCase();
+
+
+                            const matchesStatus =
+                                currentStatus === "all"
+                                ||
+                                status === currentStatus;
+
+
+                            const matchesSearch =
+                                !searchValue
+                                ||
+                                searchable.includes(
+                                    searchValue
+                                );
+
+
+                            const visible =
+                                matchesStatus
+                                &&
+                                matchesSearch;
+
+
+                            card.style.display =
+                                visible
+                                    ? ""
+                                    : "none";
+
+
+                            if (visible) {
+                                visibleCount++;
+                            }
+                        }
+                    );
+
+
+                    if (noResult) {
+                        if (
+                            applicantCards.length > 0
+                            &&
+                            visibleCount === 0
+                        ) {
+                            noResult.classList.add(
+                                "visible"
+                            );
+                        }
+                        else {
+                            noResult.classList.remove(
+                                "visible"
+                            );
+                        }
+                    }
+                }
+
+
+                if (searchInput) {
+                    searchInput.addEventListener(
+                        "input",
+                        filterApplications
+                    );
+                }
+
+
+                // =================================
+                // STATUS FILTER
+                // =================================
+
+                filterButtons.forEach(
+                    function(button) {
+                        button.addEventListener(
+                            "click",
+                            function() {
+                                filterButtons.forEach(
+                                    function(item) {
+                                        item.classList.remove(
+                                            "active"
+                                        );
+                                    }
+                                );
+
+
+                                this.classList.add(
+                                    "active"
+                                );
+
+
+                                currentStatus =
+                                    (
+                                        this.dataset.status
+                                        ||
+                                        "all"
+                                    )
+                                        .toLowerCase();
+
+
+                                filterApplications();
+                            }
+                        );
+                    }
+                );
+
+
+            }
+        );
+
+    </script>
+}

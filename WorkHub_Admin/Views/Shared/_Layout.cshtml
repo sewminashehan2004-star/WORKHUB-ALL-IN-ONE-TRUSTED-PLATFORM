@@ -1,0 +1,587 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - WorkHub Admin
+    </title>
+
+
+    <script type="importmap"></script>
+
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/WorkHub_Admin.styles.css"
+          asp-append-version="true" />
+
+
+    <style>
+
+            :root {
+                --wh-orange: #FD5000;
+                --wh-orange-dark: #D94300;
+                --wh-orange-soft: #FFF3EC;
+
+                --wh-dark: #0F172A;
+                --wh-dark-soft: #1E293B;
+
+                --wh-text: #64748B;
+                --wh-border: #E2E8F0;
+
+                --wh-bg: #F8FAFC;
+            }
+
+
+            * {
+                box-sizing: border-box;
+            }
+
+
+            html {
+                min-height: 100%;
+            }
+
+
+            body {
+                min-height: 100vh;
+
+                margin: 0;
+
+                display: flex;
+
+                flex-direction: column;
+
+                background:
+                    var(--wh-bg);
+
+                color:
+                    var(--wh-dark);
+
+                font-family:
+                    Inter,
+                    Arial,
+                    sans-serif;
+            }
+
+
+            /* =========================================
+               HEADER
+            ========================================= */
+
+            .workhub-admin-header {
+                position: relative;
+
+                z-index: 100;
+
+                min-height: 76px;
+
+                display: flex;
+
+                align-items: center;
+
+                border-bottom:
+                    1px solid
+                    var(--wh-border);
+
+                background:
+                    rgba(255,255,255,.96);
+
+                box-shadow:
+                    0 6px 24px
+                    rgba(15,23,42,.045);
+            }
+
+
+            .workhub-admin-header-inner {
+                width: 100%;
+
+                max-width: 1500px;
+
+                margin: 0 auto;
+
+                padding:
+                    0 28px;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                gap: 20px;
+            }
+
+
+            /* =========================================
+               BRAND
+            ========================================= */
+
+            .workhub-admin-brand {
+                display: flex;
+
+                align-items: center;
+
+                gap: 12px;
+            }
+
+
+            .workhub-admin-logo {
+                position: relative;
+
+                width: 43px;
+                height: 43px;
+
+                flex-shrink: 0;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                overflow: hidden;
+
+                border-radius: 12px;
+
+                background:
+                    linear-gradient(
+                        135deg,
+                        #FD5000,
+                        #D94300
+                    );
+
+                color: #FFFFFF;
+
+                font-size: 20px;
+
+                font-weight: 950;
+
+                box-shadow:
+                    0 8px 18px
+                    rgba(253,80,0,.22);
+            }
+
+
+            .workhub-admin-logo::after {
+                content: "";
+
+                position: absolute;
+
+                width: 20px;
+                height: 20px;
+
+                top: -7px;
+                right: -7px;
+
+                border-radius: 50%;
+
+                background:
+                    rgba(255,255,255,.22);
+            }
+
+
+            .workhub-admin-brand-text {
+                line-height: 1.15;
+            }
+
+
+            .workhub-admin-brand-title {
+                display: flex;
+
+                align-items: center;
+
+                gap: 7px;
+
+                color:
+                    var(--wh-dark);
+
+                font-size: 19px;
+
+                font-weight: 950;
+
+                letter-spacing: -.3px;
+            }
+
+
+            .workhub-brand-highlight {
+                color:
+                    var(--wh-orange);
+            }
+
+
+            .workhub-admin-brand-subtitle {
+                display: block;
+
+                margin-top: 4px;
+
+                color:
+                    var(--wh-text);
+
+                font-size: 9px;
+
+                font-weight: 800;
+
+                letter-spacing: 1.2px;
+
+                text-transform: uppercase;
+            }
+
+
+            /* =========================================
+               HEADER RIGHT
+            ========================================= */
+
+            .workhub-admin-header-status {
+                display: flex;
+
+                align-items: center;
+
+                gap: 10px;
+            }
+
+
+            .admin-portal-badge {
+                min-height: 32px;
+
+                padding:
+                    0 12px;
+
+                display: inline-flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                gap: 7px;
+
+                border:
+                    1px solid
+                    #FED7C5;
+
+                border-radius: 30px;
+
+                background:
+                    var(--wh-orange-soft);
+
+                color:
+                    var(--wh-orange-dark);
+
+                font-size: 10px;
+
+                font-weight: 850;
+            }
+
+
+            .admin-portal-dot {
+                width: 7px;
+                height: 7px;
+
+                border-radius: 50%;
+
+                background:
+                    #22C55E;
+
+                box-shadow:
+                    0 0 0 3px
+                    rgba(34,197,94,.12);
+            }
+
+
+            /* =========================================
+               MAIN
+            ========================================= */
+
+            .workhub-admin-main {
+                width: 100%;
+
+                flex: 1;
+
+                display: flex;
+
+                flex-direction: column;
+            }
+
+
+            .workhub-admin-content {
+                width: 100%;
+
+                flex: 1;
+            }
+
+
+            /* =========================================
+               FOOTER
+            ========================================= */
+
+            .workhub-admin-footer {
+                margin-top: auto;
+
+                border-top:
+                    1px solid
+                    var(--wh-border);
+
+                background:
+                    #FFFFFF;
+            }
+
+
+            .workhub-admin-footer-inner {
+                width: 100%;
+
+                max-width: 1500px;
+
+                margin: 0 auto;
+
+                padding:
+                    18px 28px;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: space-between;
+
+                gap: 20px;
+            }
+
+
+            .workhub-admin-footer-brand {
+                color:
+                    #475569;
+
+                font-size: 10px;
+
+                font-weight: 800;
+            }
+
+
+            .workhub-admin-footer-brand strong {
+                color:
+                    var(--wh-orange);
+            }
+
+
+            .workhub-admin-footer-text {
+                color:
+                    #94A3B8;
+
+                font-size: 9px;
+
+                font-weight: 600;
+            }
+
+
+            /* =========================================
+               RESPONSIVE
+            ========================================= */
+
+            @@media (max-width: 650px) {
+
+                .workhub-admin-header-inner {
+                    padding:
+                        0 17px;
+                }
+
+
+                .workhub-admin-header-status {
+                    display: none;
+                }
+
+
+                .workhub-admin-brand-title {
+                    font-size: 17px;
+                }
+
+
+                .workhub-admin-logo {
+                    width: 39px;
+                    height: 39px;
+
+                    font-size: 18px;
+                }
+
+
+                .workhub-admin-footer-inner {
+                    padding:
+                        16px 17px;
+
+                    align-items: flex-start;
+
+                    flex-direction: column;
+
+                    gap: 5px;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="workhub-admin-header">
+
+
+        <div class="workhub-admin-header-inner">
+
+
+            <div class="workhub-admin-brand">
+
+
+                <div class="workhub-admin-logo">
+                    W
+                </div>
+
+
+                <div class="workhub-admin-brand-text">
+
+
+                    <div class="workhub-admin-brand-title">
+
+                        <span>
+                            Work
+                        </span>
+
+                        <span class="workhub-brand-highlight">
+                            Hub
+                        </span>
+
+                        <span>
+                            Admin
+                        </span>
+
+                    </div>
+
+
+                    <span class="workhub-admin-brand-subtitle">
+
+                        Administration System
+
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+            <div class="workhub-admin-header-status">
+
+
+                <div class="admin-portal-badge">
+
+                    <span class="admin-portal-dot">
+                    </span>
+
+                    Administration Portal
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =========================================
+         MAIN BODY
+    ========================================== -->
+
+    <main class="workhub-admin-main">
+
+
+        <div class="workhub-admin-content">
+
+            @RenderBody()
+
+        </div>
+
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="workhub-admin-footer">
+
+
+        <div class="workhub-admin-footer-inner">
+
+
+            <div class="workhub-admin-footer-brand">
+
+                © 2026
+                <strong>
+                    WorkHub
+                </strong>
+                Administration
+
+            </div>
+
+
+            <div class="workhub-admin-footer-text">
+
+                Secure WorkHub Management Portal
+
+            </div>
+
+
+        </div>
+
+
+    </footer>
+
+
+    <!-- =========================================
+         SCRIPTS
+    ========================================== -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js">
+    </script>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
+
+
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+@model Workhub_Web.Models.CvAnalysisCheckoutViewModel
+@{
+    ViewData["Title"] = "CV Match";
+    var isPlus = string.Equals(Model.PlanCode, "MATCH_PLUS", StringComparison.OrdinalIgnoreCase);
+}
+<section class="wh-page-hero cv compact">
+    <div class="wh-shell">
+        <span class="wh-kicker">WorkHub CV Intelligence</span>
+        <h1>Know your fit before you apply</h1>
+        <p>Compare your CV against the selected job and see how your skills, experience and education line up.</p>
+    </div>
+</section>
+
+<section class="wh-shell wh-page-space">
+    @if (Model.Report != null)
+    {
+        <div class="wh-report-layout">
+            <div class="wh-score-card">
+                <span>CV match</span>
+                <div class="wh-score-ring" style="--score:@Model.Report.MatchPercentage">
+                    <strong>@Model.Report.MatchPercentage.ToString("0")%</strong>
+                </div>
+                <h2>@Model.Report.ReadinessLevel</h2>
+                <p>@Model.JobTitle</p>
+            </div>
+            <div class="wh-content-card">
+                <span class="wh-kicker">Analysis complete</span>
+                <h2>Your result</h2>
+                <div class="wh-score-grid">
+                    <div><span>Skills</span><strong>@Model.Report.ScoreBreakdown.SkillsScore</strong></div>
+                    <div><span>Experience</span><strong>@Model.Report.ScoreBreakdown.ExperienceScore</strong></div>
+                    <div><span>Education</span><strong>@Model.Report.ScoreBreakdown.EducationScore</strong></div>
+                    <div><span>CV quality</span><strong>@Model.Report.ScoreBreakdown.CvQualityScore</strong></div>
+                    <div><span>Relevance</span><strong>@Model.Report.ScoreBreakdown.CareerRelevanceScore</strong></div>
+                </div>
+
+                @if (Model.Report.MissingSkills != null)
+                {
+                    <h3>Missing skills</h3>
+                    <div class="wh-chip-list">@foreach (var skill in Model.Report.MissingSkills) { <span class="wh-chip red">@skill</span> }</div>
+                    <h3>Recommendations</h3>
+                    <ul class="wh-recommend-list">@foreach (var item in Model.Report.Recommendations ?? new List<string>()) { <li>@item</li> }</ul>
+                }
+
+                @if (Model.Payment != null)
+                {
+                    <div class="wh-receipt">Payment @Model.Payment.Status • @Model.Payment.Currency @Model.Payment.Amount.ToString("0.00") • Card •••• @Model.Payment.Last4 • Ref @Model.Payment.Reference</div>
+                }
+            </div>
+        </div>
+        <div class="wh-actions-inline top-gap"><a class="wh-btn primary" href="/Jobs">Back to jobs</a><a class="wh-btn ghost" asp-controller="JobSeeker" asp-action="Application">My applications</a></div>
+    }
+    else
+    {
+        <div class="wh-checkout-layout">
+            <div>
+                <span class="wh-kicker">Selected job</span>
+                <h2>@(string.IsNullOrWhiteSpace(Model.JobTitle) ? $"Job #{Model.JobId}" : Model.JobTitle)</h2>
+                <div class="wh-plan-grid">
+                    <label class="wh-plan-card @(Model.PlanCode == "MATCH_ONLY" ? "selected" : "")">
+                        <input type="radio" form="cvCheckoutForm" name="PlanCode" value="MATCH_ONLY" checked="@(Model.PlanCode == "MATCH_ONLY")" />
+                        <span class="wh-plan-price">$2</span>
+                        <h3>CV Match</h3>
+                        <p>Job-specific match percentage and readiness score.</p>
+                    </label>
+                    <label class="wh-plan-card @(isPlus ? "selected" : "")">
+                        <input type="radio" form="cvCheckoutForm" name="PlanCode" value="MATCH_PLUS" checked="@isPlus" />
+                        <span class="wh-plan-price">$5</span>
+                        <h3>Match + Insights</h3>
+                        <p>Match score, missing skills, CV issues and improvement recommendations.</p>
+                        <span class="wh-popular">Best value</span>
+                    </label>
+                </div>
+                <div class="wh-info-note"><strong>How it works:</strong> WorkHub analyses your primary CV against the role requirements. Your full card number and CVV are never saved.</div>
+            </div>
+
+            <form id="cvCheckoutForm" method="post" class="wh-payment-card">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="JobId" />
+                <h2>Payment</h2>
+                <p class="wh-muted">Campus demo checkout. Replace the demo processor with Stripe/PayPal before production deployment.</p>
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage)) { <div class="wh-alert danger">@Model.ErrorMessage</div> }
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="wh-field"><label asp-for="CardHolderName"></label><input asp-for="CardHolderName" autocomplete="cc-name" /><span asp-validation-for="CardHolderName"></span></div>
+                <div class="wh-field"><label asp-for="CardNumber"></label><input asp-for="CardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" /><span asp-validation-for="CardNumber"></span></div>
+                <div class="wh-payment-row">
+                    <div class="wh-field"><label>Month</label><input asp-for="ExpiryMonth" type="number" min="1" max="12" /></div>
+                    <div class="wh-field"><label>Year</label><input asp-for="ExpiryYear" type="number" min="2026" max="2100" /></div>
+                    <div class="wh-field"><label>CVV</label><input asp-for="Cvv" inputmode="numeric" maxlength="4" autocomplete="cc-csc" /></div>
+                </div>
+                <button class="wh-btn primary wide" type="submit">Pay securely & analyse CV</button>
+                <div class="wh-secure-line">🔒 TLS transport • No card number stored • Payment reference generated</div>
+            </form>
+        </div>
+    }
+</section>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

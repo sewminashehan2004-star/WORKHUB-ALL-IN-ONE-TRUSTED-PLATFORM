@@ -1,0 +1,1887 @@
+﻿@model Workhub_Web.Models.JobsPageViewModel
+
+@{
+    ViewData["Title"] = "Jobs";
+
+    var hasFilter =
+        Model.SelectedCareerCategoryId.HasValue
+        ||
+        Model.SelectedCareerRoleId.HasValue
+        ||
+        !string.IsNullOrWhiteSpace(Model.Search);
+}
+
+<style>
+    :root {
+        --wh-orange: #ff5a1f;
+        --wh-orange-dark: #e8470d;
+        --wh-orange-light: #fff1ea;
+        --wh-orange-soft: #fff8f4;
+        --wh-dark: #111827;
+        --wh-dark-2: #1f2937;
+        --wh-text: #1f2937;
+        --wh-muted: #64748b;
+        --wh-border: #e5e7eb;
+        --wh-bg: #f8fafc;
+        --wh-white: #ffffff;
+        --wh-green: #16a34a;
+        --wh-red: #dc2626;
+        --wh-shadow: 0 18px 45px rgba(15, 23, 42, .09);
+        --wh-shadow-hover: 0 28px 65px rgba(255, 90, 31, .16);
+    }
+
+    /* =========================================================
+           PAGE
+           ========================================================= */
+
+    .jobs-page {
+        min-height: 100vh;
+        background: radial-gradient(circle at 10% 10%, rgba(255, 90, 31, .05), transparent 25%), radial-gradient(circle at 90% 45%, rgba(255, 90, 31, .04), transparent 25%), var(--wh-bg);
+        color: var(--wh-text);
+        overflow-x: hidden;
+    }
+
+    /* =========================================================
+           HERO
+           ========================================================= */
+
+    .jobs-hero {
+        position: relative;
+        min-height: 430px;
+        overflow: hidden;
+        background: #111827;
+        display: flex;
+        align-items: center;
+    }
+
+        .jobs-hero::before {
+            content: "";
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: rgba(255, 90, 31, .16);
+            top: -280px;
+            right: -150px;
+            filter: blur(3px);
+        }
+
+        .jobs-hero::after {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(255, 90, 31, .10);
+            bottom: -260px;
+            left: -130px;
+        }
+
+    .jobs-hero-slides {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+    }
+
+    .jobs-hero-slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform: scale(1.04);
+        transition: opacity 1s ease, transform 7s ease;
+        background: linear-gradient( 115deg, #111827 0%, #161d2b 42%, #2b1710 100% );
+    }
+
+        .jobs-hero-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .jobs-hero-slide:nth-child(2) {
+            background: radial-gradient( circle at 80% 35%, rgba(255, 90, 31, .28), transparent 32% ), linear-gradient( 115deg, #0f172a 0%, #21150f 55%, #3a1709 100% );
+        }
+
+        .jobs-hero-slide:nth-child(3) {
+            background: radial-gradient( circle at 20% 25%, rgba(255, 90, 31, .22), transparent 30% ), linear-gradient( 115deg, #171717 0%, #20130d 48%, #30150a 100% );
+        }
+
+    .jobs-hero-grid {
+        position: absolute;
+        inset: 0;
+        opacity: .08;
+        background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+        background-size: 50px 50px;
+        mask-image: linear-gradient(to bottom, black, transparent);
+    }
+
+    .jobs-hero-container {
+        position: relative;
+        z-index: 5;
+        width: min(1180px, calc(100% - 40px));
+        margin: auto;
+        padding: 70px 0 125px;
+    }
+
+    .jobs-hero-content {
+        max-width: 760px;
+    }
+
+    .jobs-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 14px;
+        border: 1px solid rgba(255,255,255,.16);
+        background: rgba(255,255,255,.07);
+        backdrop-filter: blur(12px);
+        border-radius: 999px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+
+    .jobs-eyebrow-icon {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--wh-orange);
+        box-shadow: 0 0 15px rgba(255,90,31,.8);
+    }
+
+    .jobs-hero h1 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(40px, 6vw, 68px);
+        line-height: 1.02;
+        font-weight: 900;
+        letter-spacing: -2.5px;
+    }
+
+        .jobs-hero h1 span {
+            color: var(--wh-orange);
+            position: relative;
+        }
+
+    .jobs-hero-description {
+        max-width: 650px;
+        margin: 22px 0 0;
+        color: rgba(255,255,255,.72);
+        font-size: 17px;
+        line-height: 1.75;
+    }
+
+    /* =========================================================
+           HERO DECORATION
+           ========================================================= */
+
+    .hero-orb {
+        position: absolute;
+        z-index: 2;
+        border-radius: 50%;
+        border: 1px solid rgba(255,90,31,.25);
+        pointer-events: none;
+    }
+
+        .hero-orb.one {
+            width: 220px;
+            height: 220px;
+            right: 9%;
+            top: 18%;
+        }
+
+        .hero-orb.two {
+            width: 150px;
+            height: 150px;
+            right: 17%;
+            top: 32%;
+        }
+
+        .hero-orb.three {
+            width: 70px;
+            height: 70px;
+            right: 12%;
+            top: 55%;
+            background: rgba(255,90,31,.12);
+            box-shadow: 0 0 60px rgba(255,90,31,.25);
+        }
+
+    /* =========================================================
+           HERO DOTS
+           ========================================================= */
+
+    .jobs-hero-dots {
+        position: absolute;
+        z-index: 10;
+        bottom: 82px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+    }
+
+    .hero-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 0;
+        padding: 0;
+        background: rgba(255,255,255,.3);
+        cursor: pointer;
+        transition: .3s ease;
+    }
+
+        .hero-dot.active {
+            width: 28px;
+            border-radius: 999px;
+            background: var(--wh-orange);
+            box-shadow: 0 0 14px rgba(255,90,31,.5);
+        }
+
+    /* =========================================================
+           SEARCH PANEL
+           ========================================================= */
+
+    .jobs-search-wrap {
+        position: relative;
+        z-index: 20;
+        width: min(1100px, calc(100% - 40px));
+        margin: -76px auto 0;
+    }
+
+    .jobs-search-panel {
+        background: rgba(255,255,255,.94);
+        backdrop-filter: blur(22px);
+        border: 1px solid rgba(255,255,255,.8);
+        border-radius: 25px;
+        padding: 18px;
+        box-shadow: 0 28px 70px rgba(15,23,42,.18);
+    }
+
+    .jobs-search-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.35fr auto auto;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .jobs-field {
+        min-width: 0;
+    }
+
+    .jobs-field-label {
+        display: block;
+        margin: 0 0 7px 3px;
+        color: var(--wh-muted);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+    }
+
+    .jobs-input,
+    .jobs-select {
+        width: 100%;
+        height: 54px;
+        border: 1px solid var(--wh-border);
+        border-radius: 14px;
+        background: #fff;
+        padding: 0 15px;
+        color: var(--wh-dark);
+        font-size: 14px;
+        font-weight: 600;
+        outline: none;
+        transition: .25s ease;
+    }
+
+        .jobs-input:focus,
+        .jobs-select:focus {
+            border-color: var(--wh-orange);
+            box-shadow: 0 0 0 4px rgba(255,90,31,.10);
+        }
+
+    .jobs-search-button,
+    .jobs-clear-button {
+        height: 54px;
+        border-radius: 14px;
+        padding: 0 19px;
+        border: 0;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: .25s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        white-space: nowrap;
+    }
+
+    .jobs-search-button {
+        background: linear-gradient( 135deg, var(--wh-orange), var(--wh-orange-dark) );
+        color: #fff;
+        box-shadow: 0 10px 25px rgba(255,90,31,.25);
+    }
+
+        .jobs-search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(255,90,31,.32);
+        }
+
+    .jobs-clear-button {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+        .jobs-clear-button:hover {
+            background: var(--wh-orange-light);
+            color: var(--wh-orange-dark);
+        }
+
+    /* =========================================================
+           SVG ICONS
+           ========================================================= */
+
+    .wh-icon {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .wh-icon-lg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .wh-icon-xl {
+        width: 42px;
+        height: 42px;
+    }
+
+    /* =========================================================
+           CONTENT
+           ========================================================= */
+
+    .jobs-content {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 65px 0 90px;
+    }
+
+    .jobs-section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .jobs-section-title-wrap {
+        position: relative;
+    }
+
+    .jobs-section-kicker {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--wh-orange);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .09em;
+        margin-bottom: 8px;
+    }
+
+        .jobs-section-kicker::before {
+            content: "";
+            width: 25px;
+            height: 3px;
+            border-radius: 99px;
+            background: var(--wh-orange);
+        }
+
+    .jobs-section-header h2 {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 32px;
+        font-weight: 900;
+        letter-spacing: -1px;
+    }
+
+    .jobs-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 14px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange-dark);
+        border: 1px solid rgba(255,90,31,.13);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    /* =========================================================
+           ALERT
+           ========================================================= */
+
+    .jobs-alert {
+        margin-bottom: 25px;
+        padding: 16px 18px;
+        border-radius: 15px;
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+    }
+
+    /* =========================================================
+           JOB GRID
+           ========================================================= */
+
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    /* =========================================================
+           JOB CARD
+           ========================================================= */
+
+    .job-card {
+        position: relative;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--wh-border);
+        border-radius: 23px;
+        box-shadow: var(--wh-shadow);
+        transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+    }
+
+        .job-card::before {
+            content: "";
+            position: absolute;
+            z-index: 20;
+            top: 0;
+            left: 12%;
+            right: 12%;
+            height: 3px;
+            border-radius: 0 0 999px 999px;
+            background: linear-gradient( 90deg, transparent, var(--wh-orange), transparent );
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform .35s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-9px);
+            border-color: rgba(255,90,31,.28);
+            box-shadow: var(--wh-shadow-hover);
+        }
+
+            .job-card:hover::before {
+                transform: scaleX(1);
+            }
+
+    /* =========================================================
+           IMAGE
+           ========================================================= */
+
+    .job-image-wrap {
+        position: relative;
+        height: 190px;
+        overflow: hidden;
+        background: radial-gradient( circle at 30% 20%, rgba(255,90,31,.18), transparent 30% ), linear-gradient(135deg, #111827, #2a160d);
+    }
+
+        .job-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .6s ease;
+        }
+
+    .job-card:hover .job-image-wrap img {
+        transform: scale(1.07);
+    }
+
+    .job-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to bottom, rgba(0,0,0,.02), rgba(0,0,0,.35) );
+        pointer-events: none;
+    }
+
+    .job-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--wh-orange);
+    }
+
+    .job-fallback-box {
+        width: 76px;
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.14);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 45px rgba(0,0,0,.18);
+    }
+
+    /* =========================================================
+           BADGES
+           ========================================================= */
+
+    .job-category-badge {
+        position: absolute;
+        z-index: 5;
+        top: 14px;
+        left: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.92);
+        color: var(--wh-orange-dark);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 7px 18px rgba(0,0,0,.10);
+        font-size: 11px;
+        font-weight: 900;
+        max-width: 70%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .job-new-badge {
+        position: absolute;
+        z-index: 5;
+        top: 14px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: var(--wh-orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: .05em;
+        box-shadow: 0 8px 20px rgba(255,90,31,.28);
+    }
+
+    /* =========================================================
+           JOB BODY
+           ========================================================= */
+
+    .job-body {
+        padding: 22px;
+    }
+
+    .job-role {
+        color: var(--wh-orange);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin-bottom: 7px;
+    }
+
+    .job-title {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 21px;
+        line-height: 1.25;
+        font-weight: 900;
+        letter-spacing: -.4px;
+    }
+
+    .job-company {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 9px;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+        .job-company .wh-icon {
+            color: var(--wh-orange);
+            width: 17px;
+            height: 17px;
+        }
+
+    /* =========================================================
+           META
+           ========================================================= */
+
+    .job-meta {
+        display: grid;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .job-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--wh-muted);
+        font-size: 13px;
+        line-height: 1.35;
+    }
+
+    .job-meta-icon {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: var(--wh-orange-soft);
+        color: var(--wh-orange);
+    }
+
+        .job-meta-icon .wh-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+    .job-meta-text {
+        min-width: 0;
+    }
+
+    .job-meta-label {
+        display: block;
+        color: #94a3b8;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 2px;
+    }
+
+    .job-meta-value {
+        display: block;
+        color: #475569;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    /* =========================================================
+           FOOTER
+           ========================================================= */
+
+    .job-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 21px;
+        padding-top: 18px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .job-dates {
+        min-width: 0;
+    }
+
+    .job-posted {
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .job-closing {
+        margin-top: 4px;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .job-view-button {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 0 15px;
+        border-radius: 12px;
+        background: var(--wh-dark);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: .25s ease;
+    }
+
+        .job-view-button:hover {
+            background: var(--wh-orange);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(255,90,31,.22);
+        }
+
+    /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+    .jobs-empty {
+        padding: 70px 25px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid var(--wh-border);
+        border-radius: 24px;
+        box-shadow: var(--wh-shadow);
+    }
+
+    .jobs-empty-icon {
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 25px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+    }
+
+    .jobs-empty h3 {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 25px;
+        font-weight: 900;
+    }
+
+    .jobs-empty p {
+        max-width: 520px;
+        margin: 10px auto 0;
+        color: var(--wh-muted);
+        line-height: 1.7;
+    }
+
+    .jobs-empty-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 23px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: var(--wh-orange);
+        color: #fff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 900;
+        transition: .25s ease;
+    }
+
+        .jobs-empty-button:hover {
+            background: var(--wh-orange-dark);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+    /* =========================================================
+           ANIMATIONS
+           ========================================================= */
+
+
+    /* =========================================================
+           TABLET
+           ========================================================= */
+
+    @@media (max-width: 1050px) {
+
+        .jobs-search-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .jobs-search-button,
+        .jobs-clear-button {
+            width: 100%;
+        }
+
+        .jobs-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .jobs-hero-container {
+            padding-bottom: 135px;
+        }
+
+
+
+    }
+
+    /* =========================================================
+           MOBILE
+           ========================================================= */
+
+    @@media (max-width: 700px) {
+
+        .jobs-hero {
+            min-height: 520px;
+        }
+
+        .jobs-hero-container {
+            width: min(100% - 28px, 1180px);
+            padding: 65px 0 155px;
+        }
+
+        .jobs-hero h1 {
+            font-size: 42px;
+            letter-spacing: -1.7px;
+        }
+
+        .jobs-hero-description {
+            font-size: 15px;
+        }
+
+        .hero-orb {
+            opacity: .45;
+        }
+
+            .hero-orb.one {
+                right: -70px;
+            }
+
+            .hero-orb.two {
+                right: -10px;
+            }
+
+        .jobs-search-wrap {
+            width: calc(100% - 28px);
+            margin-top: -110px;
+        }
+
+        .jobs-search-panel {
+            border-radius: 21px;
+            padding: 15px;
+        }
+
+        .jobs-search-grid {
+            grid-template-columns: 1fr;
+            gap: 11px;
+        }
+
+        .jobs-content {
+            width: calc(100% - 28px);
+            padding-top: 48px;
+        }
+
+        .jobs-section-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+            .jobs-section-header h2 {
+                font-size: 28px;
+            }
+
+        .jobs-grid {
+            grid-template-columns: 1fr;
+            gap: 18px;
+        }
+
+        .job-image-wrap {
+            height: 205px;
+        }
+
+        .job-body {
+            padding: 20px;
+        }
+    }
+
+    @@media (max-width: 420px) {
+
+        .jobs-hero h1 {
+            font-size: 37px;
+        }
+
+        .job-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .job-view-button {
+            width: 100%;
+        }
+
+        .job-dates {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="jobs-page">
+
+    <!-- =====================================================
+         HERO
+         ====================================================== -->
+
+    <section class="jobs-hero">
+
+        <div class="jobs-hero-slides">
+
+            <div class="jobs-hero-slide active"></div>
+            <div class="jobs-hero-slide"></div>
+            <div class="jobs-hero-slide"></div>
+
+        </div>
+
+        <div class="jobs-hero-grid"></div>
+
+        <div class="hero-orb one"></div>
+        <div class="hero-orb two"></div>
+        <div class="hero-orb three"></div>
+
+        <div class="jobs-hero-container">
+
+            <div class="jobs-hero-content">
+
+                <div class="jobs-eyebrow">
+                    <span class="jobs-eyebrow-icon"></span>
+                    WorkHub Careers
+                </div>
+
+                <h1>
+                    Find Your Next
+                    <span>Opportunity.</span>
+                </h1>
+
+                <p class="jobs-hero-description">
+                    Discover jobs from companies looking for talented people.
+                    Search by career category, role, or keyword and take the
+                    next step toward your future.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="jobs-hero-dots">
+
+            <button type="button"
+                    class="hero-dot active"
+                    data-slide="0"
+                    aria-label="Show slide 1"></button>
+
+            <button type="button"
+                    class="hero-dot"
+                    data-slide="1"
+                    aria-label="Show slide 2"></button>
+
+            <button type="button"
+                    class="hero-dot"
+                    data-slide="2"
+                    aria-label="Show slide 3"></button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SEARCH
+         ====================================================== -->
+
+    <div class="jobs-search-wrap">
+
+        <form method="get"
+              asp-page="/Jobs/Index"
+              class="jobs-search-panel">
+
+            <div class="jobs-search-grid">
+
+                <!-- CATEGORY -->
+
+                <div class="jobs-field">
+
+                    <label class="jobs-field-label">
+                        Career Category
+                    </label>
+
+                    <select id="categorySelect"
+                            name="SelectedCareerCategoryId"
+                            class="jobs-select">
+
+                        <option value="">
+                            All Categories
+                        </option>
+
+                        @if (Model.Categories != null)
+                        {
+                            foreach (var category in Model.Categories)
+                            {
+                                if (Model.SelectedCareerCategoryId == category.CareerCategoryId)
+                                {
+                                    <option value="@category.CareerCategoryId"
+                                            selected>
+                                        @category.CategoryName
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@category.CareerCategoryId">
+                                        @category.CategoryName
+                                    </option>
+                                }
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="jobs-field">
+
+                    <label class="jobs-field-label">
+                        Career Role
+                    </label>
+
+                    <select id="roleSelect"
+                            name="SelectedCareerRoleId"
+                            class="jobs-select">
+
+                        <option value="">
+                            All Roles
+                        </option>
+
+                        @if (Model.Roles != null)
+                        {
+                            foreach (var role in Model.Roles)
+                            {
+                                if (Model.SelectedCareerRoleId == role.CareerRoleId)
+                                {
+                                    <option value="@role.CareerRoleId"
+                                            selected>
+                                        @role.RoleName
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@role.CareerRoleId">
+                                        @role.RoleName
+                                    </option>
+                                }
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <div class="jobs-field">
+
+                    <label class="jobs-field-label">
+                        Search
+                    </label>
+
+                    <input type="text"
+                           name="Search"
+                           value="@Model.Search"
+                           class="jobs-input"
+                           placeholder="Search jobs, companies..." />
+
+                </div>
+
+
+                <!-- SEARCH BUTTON -->
+
+                <button type="submit"
+                        class="jobs-search-button">
+
+                    <svg class="wh-icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-4-4"></path>
+
+                    </svg>
+
+                    Search
+
+                </button>
+
+
+                <!-- CLEAR -->
+
+                <a asp-page="/Jobs/Index"
+                   class="jobs-clear-button"
+                   style="text-decoration:none;">
+
+                    <svg class="wh-icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M3 6h18"></path>
+                        <path d="M8 6V4h8v2"></path>
+                        <path d="m19 6-1 14H6L5 6"></path>
+                        <path d="M10 11v5"></path>
+                        <path d="M14 11v5"></path>
+
+                    </svg>
+
+                    Clear
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTENT
+         ====================================================== -->
+
+    <main class="jobs-content">
+
+        <!-- SECTION HEADER -->
+
+        <div class="jobs-section-header">
+
+            <div class="jobs-section-title-wrap">
+
+                <div class="jobs-section-kicker">
+                    Career opportunities
+                </div>
+
+                <h2>
+                    Latest Jobs
+                </h2>
+
+            </div>
+
+            @if (Model.Jobs != null)
+            {
+                <div class="jobs-count">
+
+                    <svg class="wh-icon"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <path d="M3 12h18"></path>
+
+                    </svg>
+
+                    @Model.Jobs.Count job@(Model.Jobs.Count == 1 ? "" : "s")
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- ERROR -->
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="jobs-alert">
+
+                <svg class="wh-icon"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 8v4"></path>
+                    <path d="M12 16h.01"></path>
+
+                </svg>
+
+                @Model.ErrorMessage
+
+            </div>
+        }
+
+
+        <!-- JOBS -->
+        @if (Model.Jobs != null && Model.Jobs.Any())
+        {
+            <div class="jobs-grid">
+
+                @foreach (var job in Model.Jobs)
+                {
+                    var isNew = (DateTime.UtcNow - job.CreatedAt).TotalDays <= 7;
+
+                    <article class="job-card">
+
+                        <!-- IMAGE -->
+
+                        <div class="job-image-wrap">
+
+                            @if (!string.IsNullOrWhiteSpace(job.ImagePath))
+                            {
+                                <img src="@job.ImagePath"
+                                     alt="@job.Title"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                                <div class="job-fallback"
+                                     style="display:none;">
+
+                                    <div class="job-fallback-box">
+
+                                        <svg class="wh-icon wh-icon-xl"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            <path d="M3 12h18"></path>
+                                            <path d="M10 12v2h4v-2"></path>
+
+                                        </svg>
+
+                                    </div>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="job-fallback">
+
+                                    <div class="job-fallback-box">
+
+                                        <svg class="wh-icon wh-icon-xl"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            <path d="M3 12h18"></path>
+                                            <path d="M10 12v2h4v-2"></path>
+
+                                        </svg>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                            <div class="job-image-overlay"></div>
+
+
+                            <!-- CATEGORY -->
+                            @if (!string.IsNullOrWhiteSpace(job.DisplayCategory))
+                            {
+                                <div class="job-category-badge">
+
+                                    <svg class="wh-icon"
+                                         viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="M20 7h-9"></path>
+                                        <path d="M20 12h-9"></path>
+                                        <path d="M20 17h-9"></path>
+                                        <path d="M4 7h.01"></path>
+                                        <path d="M4 12h.01"></path>
+                                        <path d="M4 17h.01"></path>
+
+                                    </svg>
+
+                                    @job.DisplayCategory
+
+                                </div>
+                            }
+
+
+                            <!-- NEW -->
+                            @if (isNew)
+                            {
+                                <div class="job-new-badge">
+
+                                    <svg class="wh-icon"
+                                         viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="M12 3v4"></path>
+                                        <path d="M12 17v4"></path>
+                                        <path d="m4.22 4.22 2.83 2.83"></path>
+                                        <path d="m16.95 16.95 2.83 2.83"></path>
+                                        <path d="M3 12h4"></path>
+                                        <path d="M17 12h4"></path>
+                                        <path d="m4.22 19.78 2.83-2.83"></path>
+                                        <path d="m16.95 7.05 2.83-2.83"></path>
+
+                                    </svg>
+
+                                    NEW
+
+                                </div>
+                            }
+
+                        </div>
+
+
+                        <!-- BODY -->
+
+                        <div class="job-body">
+
+                            @if (!string.IsNullOrWhiteSpace(job.DisplayRole))
+                            {
+                                <div class="job-role">
+                                    @job.DisplayRole
+                                </div>
+                            }
+
+                            <h3 class="job-title">
+                                @job.Title
+                            </h3>
+
+
+                            <!-- COMPANY -->
+
+                            <div class="job-company">
+
+                                <svg class="wh-icon"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true">
+
+                                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                                    <path d="M8 8h.01"></path>
+                                    <path d="M12 8h.01"></path>
+                                    <path d="M16 8h.01"></path>
+                                    <path d="M8 12h.01"></path>
+                                    <path d="M12 12h.01"></path>
+                                    <path d="M16 12h.01"></path>
+                                    <path d="M8 16h.01"></path>
+                                    <path d="M12 16h.01"></path>
+                                    <path d="M16 16h.01"></path>
+
+                                </svg>
+
+                                @job.Company?.CompanyName
+
+                            </div>
+
+
+                            <!-- META -->
+
+                            <div class="job-meta">
+
+                                <!-- LOCATION -->
+
+                                <div class="job-meta-item">
+
+                                    <div class="job-meta-icon">
+
+                                        <svg class="wh-icon"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                                            <circle cx="12" cy="10" r="2.5"></circle>
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="job-meta-text">
+
+                                        <span class="job-meta-label">
+                                            Location
+                                        </span>
+
+                                        <span class="job-meta-value">
+                                            @job.LocationText
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- JOB TYPE -->
+
+                                <div class="job-meta-item">
+
+                                    <div class="job-meta-icon">
+
+                                        <svg class="wh-icon"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                            <path d="M8 5V3h8v2"></path>
+                                            <path d="M3 10h18"></path>
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="job-meta-text">
+
+                                        <span class="job-meta-label">
+                                            Job Type
+                                        </span>
+
+                                        <span class="job-meta-value">
+                                            @job.JobTypeText
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- SALARY -->
+
+                                <div class="job-meta-item">
+
+                                    <div class="job-meta-icon">
+
+                                        <svg class="wh-icon"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <circle cx="12" cy="12" r="9"></circle>
+                                            <path d="M12 7v10"></path>
+                                            <path d="M15 9.5c-.6-1-1.5-1.5-3-1.5-1.6 0-3 .8-3 2s1.1 1.8 3 2c1.9.2 3 .9 3 2.2s-1.2 2.3-3 2.3c-1.5 0-2.6-.5-3.2-1.5"></path>
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="job-meta-text">
+
+                                        <span class="job-meta-label">
+                                            Salary
+                                        </span>
+
+                                        <span class="job-meta-value">
+                                            @job.SalaryText
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- EXPERIENCE -->
+
+                                <div class="job-meta-item">
+
+                                    <div class="job-meta-icon">
+
+                                        <svg class="wh-icon"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <circle cx="12" cy="12" r="9"></circle>
+                                            <path d="M12 7v5l3 2"></path>
+
+                                        </svg>
+
+                                    </div>
+
+                                    <div class="job-meta-text">
+
+                                        <span class="job-meta-label">
+                                            Experience
+                                        </span>
+
+                                        <span class="job-meta-value">
+                                            @job.ExperienceText
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- FOOTER -->
+
+                            <div class="job-footer">
+
+                                <div class="job-dates">
+
+                                    <div class="job-posted">
+                                        Posted @job.PostedText
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(job.ClosingText))
+                                    {
+                                        <div class="job-closing">
+                                            Closes @job.ClosingText
+                                        </div>
+                                    }
+
+                                </div>
+
+
+                                <a asp-controller="Jobs"
+                                   asp-action="Details"
+                                   asp-route-id="@job.JobId"
+                                   class="job-view-button"
+                                   data-job-id="@job.JobId">
+
+                                    View Job
+
+                                    <svg class="wh-icon"
+                                         viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="M5 12h13"></path>
+                                        <path d="m13 6 6 6-6 6"></path>
+
+                                    </svg>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <!-- EMPTY -->
+
+            <div class="jobs-empty">
+
+                <div class="jobs-empty-icon">
+
+                    <svg class="wh-icon wh-icon-xl"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <path d="M3 12h18"></path>
+                        <path d="M10 12v2h4v-2"></path>
+
+                    </svg>
+
+                </div>
+
+                <h3>
+                    No jobs found
+                </h3>
+
+                <p>
+                    We couldn't find any jobs matching your current search.
+                    Try another keyword, category, or career role.
+                </p>
+
+                @if (hasFilter)
+                {
+                    <a asp-page="/Jobs/Index"
+                       class="jobs-empty-button">
+
+                        <svg class="wh-icon"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4h8v2"></path>
+                            <path d="m19 6-1 14H6L5 6"></path>
+
+                        </svg>
+
+                        Clear Filters
+
+                    </a>
+                }
+
+            </div>
+        }
+
+    </main>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            /* =====================================================
+               HERO SLIDER
+               ====================================================== */
+
+            const slides =
+                document.querySelectorAll(".jobs-hero-slide");
+
+            const dots =
+                document.querySelectorAll(".hero-dot");
+
+            let currentSlide = 0;
+
+            let slideTimer;
+
+
+            function showSlide(index) {
+
+                if (!slides.length) {
+                    return;
+                }
+
+                currentSlide = index;
+
+                slides.forEach(function(slide, i) {
+
+                    slide.classList.toggle(
+                        "active",
+                        i === index
+                    );
+
+                });
+
+                dots.forEach(function(dot, i) {
+
+                    dot.classList.toggle(
+                        "active",
+                        i === index
+                    );
+
+                });
+
+            }
+
+
+            function startSlider() {
+
+                clearInterval(slideTimer);
+
+                slideTimer = setInterval(function() {
+
+                    currentSlide =
+                        (currentSlide + 1) % slides.length;
+
+                    showSlide(currentSlide);
+
+                }, 5000);
+
+            }
+
+
+            dots.forEach(function(dot) {
+
+                dot.addEventListener("click", function() {
+
+                    const index =
+                        Number(this.dataset.slide);
+
+                    showSlide(index);
+
+                    startSlider();
+
+                });
+
+            });
+
+
+            showSlide(0);
+            startSlider();
+
+
+            /* =====================================================
+               CATEGORY -> ROLE
+               ====================================================== */
+
+            const categorySelect =
+                document.getElementById("categorySelect");
+
+            const roleSelect =
+                document.getElementById("roleSelect");
+
+
+            if (categorySelect && roleSelect) {
+
+                categorySelect.addEventListener(
+                    "change",
+                    async function() {
+
+                        const categoryId =
+                            this.value;
+
+                        const currentRole =
+                            roleSelect.value;
+
+
+                        roleSelect.innerHTML =
+                            '<option value="">Loading roles...</option>';
+
+                        roleSelect.disabled = true;
+
+
+                        if (!categoryId) {
+
+                            roleSelect.innerHTML =
+                                '<option value="">All Roles</option>';
+
+                            roleSelect.disabled = false;
+
+                            return;
+                        }
+
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    `/Jobs/Roles?categoryId=${encodeURIComponent(categoryId)}`
+                                );
+
+
+                            if (!response.ok) {
+
+                                throw new Error(
+                                    "Unable to load roles."
+                                );
+
+                            }
+
+
+                            const roles =
+                                await response.json();
+
+
+                            roleSelect.innerHTML =
+                                '<option value="">All Roles</option>';
+
+
+                            if (Array.isArray(roles)) {
+
+                                roles.forEach(function(role) {
+
+                                    const option =
+                                        document.createElement("option");
+
+                                    option.value =
+                                        role.careerRoleId
+                                        ?? role.CareerRoleId;
+
+                                    option.textContent =
+                                        role.roleName
+                                        ?? role.RoleName;
+
+                                    roleSelect.appendChild(option);
+
+                                });
+
+                            }
+
+
+                            if (currentRole) {
+
+                                const matchingOption =
+                                    Array.from(
+                                        roleSelect.options
+                                    ).find(
+                                        option =>
+                                            option.value === currentRole
+                                    );
+
+                                if (matchingOption) {
+
+                                    matchingOption.selected =
+                                        true;
+
+                                }
+
+                            }
+
+                        }
+                        catch (error) {
+
+                            console.error(
+                                "Role loading error:",
+                                error
+                            );
+
+                            roleSelect.innerHTML =
+                                '<option value="">Unable to load roles</option>';
+
+                        }
+                        finally {
+
+                            roleSelect.disabled = false;
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            /* =====================================================
+               CARD INTERACTION
+               ====================================================== */
+
+            document
+                .querySelectorAll(".job-card")
+                .forEach(function(card) {
+
+                    card.addEventListener(
+                        "mouseenter",
+                        function() {
+
+                            this.style.zIndex = "5";
+
+                        }
+                    );
+
+                    card.addEventListener(
+                        "mouseleave",
+                        function() {
+
+                            this.style.zIndex = "1";
+
+                        }
+                    );
+
+                });
+
+        });
+
+    </script>
+
+}

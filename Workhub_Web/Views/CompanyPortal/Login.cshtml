@@ -1,0 +1,443 @@
+﻿@model Workhub_Web.Models.CompanyLoginViewModel
+
+@{
+    ViewData["Title"] = "Company Sign In";
+}
+
+<style>
+
+    :root {
+        --company-orange: #FD5000;
+        --company-orange-dark: #D94300;
+        --company-soft: #FFF3EC;
+        --company-dark: #0F172A;
+        --company-text: #64748B;
+        --company-border: #E2E8F0;
+        --company-bg: #F8FAFC;
+        --company-red: #DC2626;
+    }
+
+
+    .company-login-page {
+        min-height: calc(100vh - 70px);
+        padding: 65px 20px 90px;
+        display: flex;
+        align-items: center;
+        background: radial-gradient( circle at 85% 15%, rgba(253, 80, 0, .12), transparent 30% ), var(--company-bg);
+    }
+
+
+    .company-login-container {
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+
+    .company-back-link {
+        margin-bottom: 20px;
+        display: inline-flex;
+        color: #64748B;
+        font-size: 11px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+
+        .company-back-link:hover {
+            color: var(--company-orange-dark);
+        }
+
+
+    .company-login-card {
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(300px, .85fr) minmax(0, 1.15fr);
+        border: 1px solid var(--company-border);
+        border-radius: 20px;
+        background: #FFFFFF;
+        box-shadow: 0 20px 55px rgba(15, 23, 42, .10);
+    }
+
+
+    /* LEFT */
+
+    .company-login-left {
+        padding: 50px 40px;
+        background: radial-gradient( circle at 80% 15%, rgba(253, 80, 0, .35), transparent 30% ), linear-gradient( 145deg, #0F172A, #1E293B 60%, #431407 );
+    }
+
+
+    .company-login-badge {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 6px 10px;
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 30px;
+        background: rgba(255,255,255,.07);
+        color: #FDBA74;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+
+    .company-login-left h1 {
+        margin: 0 0 14px;
+        color: #FFFFFF;
+        font-size: 36px;
+        font-weight: 950;
+        line-height: 1.15;
+    }
+
+
+    .company-login-left p {
+        margin: 0 0 28px;
+        color: #CBD5E1;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+
+    .approval-information {
+        padding: 16px;
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 11px;
+        background: rgba(255,255,255,.06);
+    }
+
+
+        .approval-information strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+
+        .approval-information span {
+            color: #CBD5E1;
+            font-size: 9px;
+            line-height: 1.6;
+        }
+
+
+    /* FORM */
+
+    .company-login-form {
+        padding: 52px 48px;
+    }
+
+
+    .company-login-heading {
+        margin-bottom: 28px;
+    }
+
+
+        .company-login-heading span {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--company-orange);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+
+        .company-login-heading h2 {
+            margin: 0 0 8px;
+            color: var(--company-dark);
+            font-size: 28px;
+            font-weight: 950;
+        }
+
+
+        .company-login-heading p {
+            margin: 0;
+            color: var(--company-text);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+
+    .validation-summary-errors {
+        margin-bottom: 20px;
+        padding: 13px 15px;
+        border: 1px solid #FECACA;
+        border-radius: 9px;
+        background: #FEF2F2;
+        color: #B91C1C;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+
+    .company-login-field {
+        margin-bottom: 17px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+
+        .company-login-field label {
+            color: #334155;
+            font-size: 10px;
+            font-weight: 850;
+        }
+
+
+    .company-login-input {
+        width: 100%;
+        height: 48px;
+        padding: 0 13px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        color: var(--company-dark);
+        font-size: 11px;
+        outline: none;
+    }
+
+
+        .company-login-input:focus {
+            border-color: var(--company-orange);
+            box-shadow: 0 0 0 3px rgba(253, 80, 0, .10);
+        }
+
+
+    .field-validation-error {
+        color: var(--company-red);
+        font-size: 8px;
+        font-weight: 700;
+    }
+
+
+    .company-login-button {
+        width: 100%;
+        margin-top: 7px;
+        padding: 13px 18px;
+        border: none;
+        border-radius: 9px;
+        background: var(--company-orange);
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+
+        .company-login-button:hover {
+            background: var(--company-orange-dark);
+        }
+
+
+    .company-register-note {
+        margin-top: 22px;
+        padding-top: 19px;
+        border-top: 1px solid #F1F5F9;
+        color: #64748B;
+        font-size: 9px;
+        text-align: center;
+    }
+
+
+        .company-register-note a {
+            color: var(--company-orange-dark);
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+
+    @@media (max-width: 760px) {
+
+        .company-login-card {
+            grid-template-columns: 1fr;
+        }
+
+
+        .company-login-left,
+        .company-login-form {
+            padding: 35px 25px;
+        }
+    }
+
+</style>
+
+
+<section class="company-login-page">
+
+    <div class="company-login-container">
+
+
+        <a asp-controller="CompanyPortal"
+           asp-action="Index"
+           class="company-back-link">
+
+            ← Back to Company Portal
+
+        </a>
+
+
+        <div class="company-login-card">
+
+
+            <!-- LEFT -->
+
+            <div class="company-login-left">
+
+
+                <span class="company-login-badge">
+                    WorkHub Company Portal
+                </span>
+
+
+                <h1>
+                    Welcome Back
+                </h1>
+
+
+                <p>
+                    Sign in to your approved WorkHub
+                    company account and manage your
+                    company profile, jobs and applications.
+                </p>
+
+
+                <div class="approval-information">
+
+                    <strong>
+                        Company approval required
+                    </strong>
+
+                    <span>
+                        Newly registered company accounts
+                        cannot sign in until a WorkHub
+                        administrator approves the
+                        registration request.
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- LOGIN FORM -->
+
+            <div class="company-login-form">
+
+
+                <div class="company-login-heading">
+
+                    <span>
+                        Company Sign In
+                    </span>
+
+                    <h2>
+                        Access Company Dashboard
+                    </h2>
+
+                    <p>
+                        Enter the email and password
+                        used during registration.
+                    </p>
+
+                </div>
+
+
+                <div asp-validation-summary="ModelOnly">
+                </div>
+
+
+                <form asp-controller="CompanyPortal"
+                      asp-action="Login"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <div class="company-login-field">
+
+                        <label asp-for="Email">
+                            Company Email
+                        </label>
+
+                        <input asp-for="Email"
+                               type="email"
+                               class="company-login-input"
+                               placeholder="company@example.com"
+                               autocomplete="email" />
+
+                        <span asp-validation-for="Email">
+                        </span>
+
+                    </div>
+
+
+                    <div class="company-login-field">
+
+                        <label asp-for="Password">
+                            Password
+                        </label>
+
+                        <input asp-for="Password"
+                               type="password"
+                               class="company-login-input"
+                               placeholder="Enter password"
+                               autocomplete="current-password" />
+
+                        <span asp-validation-for="Password">
+                        </span>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="company-login-button">
+
+                        Sign In to Company Dashboard
+
+                    </button>
+
+
+                </form>
+
+
+                <div class="company-register-note">
+
+                    Don't have a company account?
+
+                    <a asp-controller="CompanyPortal"
+                       asp-action="Register">
+
+                        Submit Registration Request
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

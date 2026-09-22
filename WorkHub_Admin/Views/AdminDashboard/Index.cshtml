@@ -1,0 +1,2837 @@
+@model WorkHub_Admin.Models.AdminDashboardViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Admin Dashboard";
+
+    var dashboardUrl =
+        Url.Action(
+            "Index",
+            "AdminDashboard")
+        ?? "/AdminDashboard/Index";
+
+    var inquiriesUrl =
+        "/AdminInquiries/Index";
+
+    var newsUrl =
+        "/AdminNews/Index";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>WorkHub Admin</title>
+
+
+    <style>
+
+            /* =========================================================
+                       WORKHUB ADMIN DASHBOARD
+                       PROFESSIONAL UI
+                    ========================================================== */
+
+            :root {
+                --admin-orange: #FD5000;
+                --admin-orange-dark: #D94700;
+                --admin-orange-light: #FF6A21;
+                --admin-orange-soft: #FFF4EE;
+                --admin-orange-border: #FFD5C2;
+                --admin-dark: #101828;
+                --admin-dark-2: #1D2939;
+                --admin-text: #667085;
+                --admin-text-dark: #344054;
+                --admin-text-light: #98A2B3;
+                --admin-border: #E4E7EC;
+                --admin-border-soft: #F0F2F5;
+                --admin-bg: #F7F8FA;
+                --admin-white: #FFFFFF;
+                --admin-green: #067647;
+                --admin-green-dark: #05603A;
+                --admin-green-soft: #ECFDF3;
+                --admin-green-border: #ABEFC6;
+                --admin-yellow: #B54708;
+                --admin-yellow-soft: #FFFAEB;
+                --admin-yellow-border: #FEDF89;
+                --admin-red: #B42318;
+                --admin-red-dark: #912018;
+                --admin-red-soft: #FEF3F2;
+                --admin-red-border: #FECDCA;
+                --shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.04);
+                --shadow-md: 0 8px 28px rgba(16, 24, 40, 0.07);
+                --shadow-hover: 0 14px 38px rgba(16, 24, 40, 0.11);
+            }
+
+
+            /* =========================================================
+                       RESET
+                    ========================================================== */
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                font-size: 16px;
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                font-size: 16px;
+                line-height: 1.6;
+                background: var(--admin-bg);
+                color: var(--admin-dark);
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            button,
+            input {
+                font: inherit;
+            }
+
+            a {
+                color: inherit;
+            }
+
+            svg {
+                display: block;
+            }
+
+
+            /* =========================================================
+                       GENERAL SVG
+                    ========================================================== */
+
+            .admin-svg {
+                width: 20px;
+                height: 20px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+
+            /* =========================================================
+                       PAGE
+                    ========================================================== */
+
+            .admin-page {
+                min-height: 100vh;
+                display: grid;
+                grid-template-columns: 285px minmax(0, 1fr);
+            }
+
+
+            /* =========================================================
+                       SIDEBAR
+                    ========================================================== */
+
+            .admin-sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                min-height: 100vh;
+                overflow-y: auto;
+                background: linear-gradient( 180deg, #0F172A 0%, #172033 55%, #111827 100% );
+                color: #FFFFFF;
+                box-shadow: 8px 0 25px rgba(15, 23, 42, 0.08);
+            }
+
+
+            /* =========================================================
+                       BRAND
+                    ========================================================== */
+
+            .admin-brand {
+                height: 88px;
+                padding: 0 22px;
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .admin-brand-logo {
+                width: 46px;
+                height: 46px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                border-radius: 13px;
+                background: linear-gradient( 135deg, var(--admin-orange), var(--admin-orange-light) );
+                color: #FFFFFF;
+                font-size: 21px;
+                font-weight: 900;
+                box-shadow: 0 7px 18px rgba(253, 80, 0, 0.27);
+            }
+
+            .admin-brand-text strong {
+                display: block;
+                color: #FFFFFF;
+                font-size: 20px;
+                line-height: 1.2;
+                font-weight: 900;
+                letter-spacing: -0.4px;
+            }
+
+            .admin-brand-text span {
+                display: block;
+                margin-top: 3px;
+                color: #94A3B8;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.8px;
+                text-transform: uppercase;
+            }
+
+
+            /* =========================================================
+                       SIDEBAR NAVIGATION
+                    ========================================================== */
+
+            .admin-navigation {
+                padding: 25px 13px;
+            }
+
+            .admin-nav-label {
+                margin: 0 11px 10px;
+                color: #64748B;
+                font-size: 11px;
+                font-weight: 850;
+                letter-spacing: 1.15px;
+                text-transform: uppercase;
+            }
+
+            .admin-nav-item {
+                position: relative;
+                width: 100%;
+                min-height: 52px;
+                margin-bottom: 5px;
+                padding: 0 12px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                border: none;
+                border-radius: 10px;
+                background: transparent;
+                color: #CBD5E1;
+                font-size: 14px;
+                font-weight: 700;
+                text-decoration: none;
+                cursor: pointer;
+                transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            }
+
+                .admin-nav-item:hover {
+                    background: rgba(255, 255, 255, 0.07);
+                    color: #FFFFFF;
+                    transform: translateX(2px);
+                }
+
+                .admin-nav-item.active {
+                    background: rgba(253, 80, 0, 0.15);
+                    color: #FDBA74;
+                }
+
+                    .admin-nav-item.active::before {
+                        content: "";
+                        position: absolute;
+                        left: -13px;
+                        top: 8px;
+                        bottom: 8px;
+                        width: 4px;
+                        border-radius: 0 4px 4px 0;
+                        background: var(--admin-orange);
+                    }
+
+
+            /* =========================================================
+                       NAV SVG ICON
+                    ========================================================== */
+
+            .admin-nav-icon {
+                width: 35px;
+                height: 35px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 9px;
+                background: rgba(255, 255, 255, 0.055);
+                color: #94A3B8;
+                transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            }
+
+                .admin-nav-icon .admin-svg {
+                    width: 19px;
+                    height: 19px;
+                }
+
+            .admin-nav-item:hover .admin-nav-icon {
+                background: rgba(255, 255, 255, 0.11);
+                color: #FFFFFF;
+                transform: scale(1.04);
+            }
+
+            .admin-nav-item.active .admin-nav-icon {
+                background: rgba(253, 80, 0, 0.22);
+                color: #FDBA74;
+            }
+
+
+            /* =========================================================
+                       NAV BADGES
+                    ========================================================== */
+
+            .admin-nav-badge {
+                margin-left: auto;
+                min-width: 25px;
+                height: 25px;
+                padding: 0 7px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 999px;
+                background: var(--admin-orange);
+                color: #FFFFFF;
+                font-size: 11px;
+                font-weight: 850;
+            }
+
+            .admin-nav-live {
+                margin-left: auto;
+                padding: 4px 8px;
+                border-radius: 999px;
+                background: rgba(22, 163, 74, 0.16);
+                color: #86EFAC;
+                font-size: 9px;
+                font-weight: 850;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+
+
+            /* =========================================================
+                       SIDEBAR ADMIN ACCOUNT
+                    ========================================================== */
+
+            .admin-sidebar-user {
+                margin: 13px;
+                padding: 17px;
+                border: 1px solid rgba(255, 255, 255, 0.09);
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.045);
+            }
+
+            .admin-user-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .admin-user-avatar {
+                width: 43px;
+                height: 43px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: linear-gradient( 135deg, var(--admin-orange), var(--admin-orange-light) );
+                color: #FFFFFF;
+                font-size: 16px;
+                font-weight: 900;
+            }
+
+            .admin-user-name {
+                min-width: 0;
+                overflow: hidden;
+            }
+
+                .admin-user-name strong {
+                    display: block;
+                    overflow: hidden;
+                    color: #FFFFFF;
+                    font-size: 13px;
+                    font-weight: 750;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .admin-user-name span {
+                    display: block;
+                    margin-top: 3px;
+                    overflow: hidden;
+                    color: #94A3B8;
+                    font-size: 11px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+
+            /* =========================================================
+                       LOGOUT
+                    ========================================================== */
+
+            .admin-logout {
+                width: 100%;
+                min-height: 40px;
+                margin-top: 14px;
+                padding: 8px 11px;
+                border: 1px solid rgba(255, 255, 255, 0.13);
+                border-radius: 8px;
+                background: transparent;
+                color: #CBD5E1;
+                font-size: 12px;
+                font-weight: 750;
+                cursor: pointer;
+                transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            }
+
+                .admin-logout:hover {
+                    border-color: #FDBA74;
+                    background: rgba(253, 80, 0, 0.08);
+                    color: #FDBA74;
+                }
+
+
+            /* =========================================================
+                       MAIN AREA
+                    ========================================================== */
+
+            .admin-main {
+                min-width: 0;
+            }
+
+
+            /* =========================================================
+                       TOPBAR
+                    ========================================================== */
+
+            .admin-topbar {
+                position: sticky;
+                top: 0;
+                z-index: 900;
+                min-height: 88px;
+                padding: 0 34px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                border-bottom: 1px solid var(--admin-border-soft);
+                background: rgba(255, 255, 255, 0.97);
+                box-shadow: 0 2px 14px rgba(16, 24, 40, 0.04);
+                backdrop-filter: blur(14px);
+            }
+
+            .admin-topbar-left span {
+                display: block;
+                margin-bottom: 4px;
+                color: var(--admin-orange);
+                font-size: 11px;
+                font-weight: 850;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .admin-topbar-left h1 {
+                margin: 0;
+                color: var(--admin-dark);
+                font-size: 28px;
+                line-height: 1.15;
+                font-weight: 900;
+                letter-spacing: -0.7px;
+            }
+
+            .admin-topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+
+            /* =========================================================
+                       NOTIFICATION BUTTON
+                    ========================================================== */
+
+            .admin-notification-button {
+                position: relative;
+                width: 46px;
+                height: 46px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--admin-border);
+                border-radius: 11px;
+                background: #FFFFFF;
+                color: #475467;
+                cursor: pointer;
+                box-shadow: 0 2px 7px rgba(16, 24, 40, 0.04);
+                transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+            }
+
+                .admin-notification-button:hover {
+                    color: var(--admin-orange);
+                    border-color: var(--admin-orange-border);
+                    background: var(--admin-orange-soft);
+                    transform: translateY(-1px);
+                }
+
+                .admin-notification-button .admin-svg {
+                    width: 22px;
+                    height: 22px;
+                }
+
+            .admin-notification-number {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                min-width: 21px;
+                height: 21px;
+                padding: 0 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid #FFFFFF;
+                border-radius: 999px;
+                background: var(--admin-orange);
+                color: #FFFFFF;
+                font-size: 9px;
+                font-weight: 900;
+            }
+
+
+            /* =========================================================
+                       CONTENT
+                    ========================================================== */
+
+            .admin-content {
+                padding: 36px;
+            }
+
+
+            /* =========================================================
+                       SUCCESS / ERROR
+                    ========================================================== */
+
+            .admin-message {
+                margin-bottom: 22px;
+                padding: 14px 17px;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .admin-message-success {
+                border: 1px solid var(--admin-green-border);
+                background: var(--admin-green-soft);
+                color: var(--admin-green);
+            }
+
+            .admin-message-error {
+                border: 1px solid var(--admin-red-border);
+                background: var(--admin-red-soft);
+                color: var(--admin-red);
+            }
+
+
+            /* =========================================================
+                       WELCOME
+                    ========================================================== */
+
+            .admin-welcome {
+                margin-bottom: 30px;
+            }
+
+                .admin-welcome h2 {
+                    margin: 0 0 9px;
+                    color: var(--admin-dark);
+                    font-size: clamp(30px, 3vw, 38px);
+                    line-height: 1.15;
+                    font-weight: 900;
+                    letter-spacing: -1px;
+                }
+
+                .admin-welcome p {
+                    max-width: 850px;
+                    margin: 0;
+                    color: var(--admin-text);
+                    font-size: 15px;
+                    line-height: 1.7;
+                }
+
+
+            /* =========================================================
+                       STAT GRID
+                    ========================================================== */
+
+            .admin-stat-grid {
+                margin-bottom: 30px;
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 18px;
+            }
+
+            .admin-stat-card {
+                position: relative;
+                min-height: 165px;
+                padding: 23px;
+                overflow: hidden;
+                border: 1px solid var(--admin-border);
+                border-radius: 15px;
+                background: #FFFFFF;
+                box-shadow: var(--shadow-sm);
+                transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+            }
+
+                .admin-stat-card::after {
+                    content: "";
+                    position: absolute;
+                    width: 100px;
+                    height: 100px;
+                    right: -42px;
+                    bottom: -50px;
+                    border-radius: 50%;
+                    background: rgba(253, 80, 0, 0.035);
+                }
+
+                .admin-stat-card:hover {
+                    transform: translateY(-3px);
+                    border-color: var(--admin-orange-border);
+                    box-shadow: var(--shadow-hover);
+                }
+
+                .admin-stat-card.pending {
+                    border-color: var(--admin-yellow-border);
+                }
+
+
+            /* =========================================================
+                       STAT ICON
+                    ========================================================== */
+
+            .admin-stat-icon {
+                width: 47px;
+                height: 47px;
+                margin-bottom: 17px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 12px;
+                background: var(--admin-orange-soft);
+                color: var(--admin-orange-dark);
+            }
+
+                .admin-stat-icon .admin-svg {
+                    width: 23px;
+                    height: 23px;
+                }
+
+            .admin-stat-card.pending
+            .admin-stat-icon {
+                background: var(--admin-yellow-soft);
+                color: var(--admin-yellow);
+            }
+
+            .admin-stat-card strong {
+                position: relative;
+                z-index: 1;
+                display: block;
+                margin-bottom: 5px;
+                color: var(--admin-dark);
+                font-size: 31px;
+                line-height: 1;
+                font-weight: 900;
+                letter-spacing: -0.7px;
+            }
+
+            .admin-stat-card > span:not(.admin-stat-live) {
+                position: relative;
+                z-index: 1;
+                color: var(--admin-text);
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .admin-stat-live {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                padding: 4px 9px;
+                border-radius: 999px;
+                background: var(--admin-green-soft);
+                color: var(--admin-green);
+                font-size: 9px;
+                font-weight: 850;
+                letter-spacing: 0.25px;
+                text-transform: uppercase;
+            }
+
+
+            /* =========================================================
+                       DASHBOARD GRID
+                    ========================================================== */
+
+            .admin-dashboard-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.55fr);
+                gap: 25px;
+                align-items: start;
+            }
+
+
+            /* =========================================================
+                       PANEL
+                    ========================================================== */
+
+            .admin-panel {
+                margin-bottom: 25px;
+                overflow: hidden;
+                border: 1px solid var(--admin-border);
+                border-radius: 15px;
+                background: #FFFFFF;
+                box-shadow: var(--shadow-md);
+            }
+
+            .admin-panel-header {
+                min-height: 78px;
+                padding: 20px 23px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+                border-bottom: 1px solid var(--admin-border-soft);
+                background: linear-gradient( 180deg, #FFFFFF, #FCFCFD );
+            }
+
+                .admin-panel-header h3 {
+                    margin: 0 0 5px;
+                    color: var(--admin-dark);
+                    font-size: 19px;
+                    font-weight: 850;
+                    letter-spacing: -0.3px;
+                }
+
+                .admin-panel-header p {
+                    margin: 0;
+                    color: var(--admin-text);
+                    font-size: 13px;
+                    line-height: 1.55;
+                }
+
+            .admin-panel-count {
+                flex-shrink: 0;
+                padding: 6px 11px;
+                border: 1px solid var(--admin-orange-border);
+                border-radius: 999px;
+                background: var(--admin-orange-soft);
+                color: var(--admin-orange-dark);
+                font-size: 11px;
+                font-weight: 800;
+            }
+
+
+            /* =========================================================
+                       COMPANY REQUESTS
+                    ========================================================== */
+
+            .company-request-list {
+                padding: 5px 22px;
+            }
+
+            .company-request {
+                padding: 21px 0;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                gap: 18px;
+                border-bottom: 1px solid var(--admin-border-soft);
+            }
+
+                .company-request:last-child {
+                    border-bottom: none;
+                }
+
+            .company-request-main {
+                display: flex;
+                gap: 15px;
+                min-width: 0;
+            }
+
+            .company-request-logo {
+                width: 51px;
+                height: 51px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--admin-orange-border);
+                border-radius: 12px;
+                background: var(--admin-orange-soft);
+                color: var(--admin-orange-dark);
+                font-size: 19px;
+                font-weight: 900;
+            }
+
+            .company-request-info {
+                min-width: 0;
+            }
+
+                .company-request-info h4 {
+                    margin: 0 0 5px;
+                    color: var(--admin-dark);
+                    font-size: 15px;
+                    font-weight: 800;
+                }
+
+            .company-contact {
+                margin-bottom: 7px;
+                color: #475467;
+                font-size: 13px;
+                font-weight: 600;
+                overflow-wrap: anywhere;
+            }
+
+            .company-meta {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+                color: var(--admin-text-light);
+                font-size: 11px;
+            }
+
+            .company-location {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+                .company-location .admin-svg {
+                    width: 14px;
+                    height: 14px;
+                    color: var(--admin-orange);
+                }
+
+
+            /* =========================================================
+                       PENDING STATUS
+                    ========================================================== */
+
+            .pending-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 4px 9px;
+                border: 1px solid var(--admin-yellow-border);
+                border-radius: 999px;
+                background: var(--admin-yellow-soft);
+                color: var(--admin-yellow);
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+            }
+
+            .pending-status-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #F79009;
+            }
+
+
+            /* =========================================================
+                       COMPANY ACTION BUTTONS
+                    ========================================================== */
+
+            .company-request-actions {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: flex-end;
+            }
+
+                .company-request-actions form {
+                    margin: 0;
+                }
+
+            .company-review-button,
+            .company-approve-button,
+            .company-reject-button {
+                min-height: 39px;
+                padding: 8px 13px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 750;
+                text-decoration: none;
+                cursor: pointer;
+                transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+                .company-review-button .admin-svg,
+                .company-approve-button .admin-svg,
+                .company-reject-button .admin-svg {
+                    width: 15px;
+                    height: 15px;
+                }
+
+            .company-review-button {
+                border: 1px solid var(--admin-orange);
+                background: #FFFFFF;
+                color: var(--admin-orange-dark);
+            }
+
+                .company-review-button:hover {
+                    background: var(--admin-orange);
+                    color: #FFFFFF;
+                    transform: translateY(-1px);
+                    box-shadow: 0 5px 14px rgba(253, 80, 0, 0.18);
+                }
+
+            .company-approve-button {
+                border: 1px solid var(--admin-green);
+                background: var(--admin-green);
+                color: #FFFFFF;
+            }
+
+                .company-approve-button:hover {
+                    border-color: var(--admin-green-dark);
+                    background: var(--admin-green-dark);
+                    transform: translateY(-1px);
+                }
+
+            .company-reject-button {
+                border: 1px solid var(--admin-red-border);
+                background: #FFFFFF;
+                color: var(--admin-red);
+            }
+
+                .company-reject-button:hover {
+                    border-color: var(--admin-red);
+                    background: var(--admin-red-soft);
+                    color: var(--admin-red-dark);
+                    transform: translateY(-1px);
+                }
+
+
+            /* =========================================================
+                       EMPTY STATE
+                    ========================================================== */
+
+            .admin-empty {
+                padding: 55px 22px;
+                text-align: center;
+            }
+
+            .admin-empty-icon {
+                width: 62px;
+                height: 62px;
+                margin: 0 auto 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--admin-green-border);
+                border-radius: 50%;
+                background: var(--admin-green-soft);
+                color: var(--admin-green);
+            }
+
+                .admin-empty-icon .admin-svg {
+                    width: 28px;
+                    height: 28px;
+                    stroke-width: 2.3;
+                }
+
+            .admin-empty h4 {
+                margin: 0 0 7px;
+                color: var(--admin-dark);
+                font-size: 17px;
+                font-weight: 800;
+            }
+
+            .admin-empty p {
+                max-width: 430px;
+                margin: 0 auto;
+                color: var(--admin-text);
+                font-size: 13px;
+                line-height: 1.6;
+            }
+
+
+            /* =========================================================
+                       SYSTEM STATUS
+                    ========================================================== */
+
+            .admin-system-list {
+                padding: 20px;
+                display: grid;
+                gap: 11px;
+            }
+
+            .admin-system-item {
+                min-height: 52px;
+                padding: 13px 14px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                border: 1px solid #F0F2F5;
+                border-radius: 10px;
+                background: #F9FAFB;
+                transition: border-color 0.2s ease, background 0.2s ease;
+            }
+
+                .admin-system-item:hover {
+                    border-color: var(--admin-orange-border);
+                    background: #FFFAF7;
+                }
+
+                .admin-system-item > span {
+                    color: #475467;
+                    font-size: 13px;
+                    font-weight: 650;
+                }
+
+            .admin-system-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                color: var(--admin-green);
+                font-size: 11px;
+                font-weight: 800;
+            }
+
+            .admin-system-dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: #22C55E;
+                box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.10);
+            }
+
+
+            /* =========================================================
+                       ADMINISTRATION MODULES
+                    ========================================================== */
+
+            .admin-quick-list {
+                padding: 20px;
+                display: grid;
+                gap: 10px;
+            }
+
+            .admin-quick-item {
+                min-height: 57px;
+                padding: 11px 13px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                border: 1px solid var(--admin-border-soft);
+                border-radius: 10px;
+                background: #FFFFFF;
+                color: #667085;
+                font-size: 13px;
+                font-weight: 700;
+                text-decoration: none;
+                transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+            }
+
+                .admin-quick-item.active-module {
+                    cursor: pointer;
+                }
+
+                    .admin-quick-item.active-module:hover {
+                        border-color: var(--admin-orange-border);
+                        background: var(--admin-orange-soft);
+                        color: var(--admin-dark);
+                        transform: translateX(2px);
+                    }
+
+
+            /* =========================================================
+                       QUICK MODULE ICON
+                    ========================================================== */
+
+            .admin-quick-icon {
+                width: 39px;
+                height: 39px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 9px;
+                background: #F8FAFC;
+                color: #667085;
+                transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            }
+
+                .admin-quick-icon .admin-svg {
+                    width: 20px;
+                    height: 20px;
+                }
+
+            .admin-quick-item.active-module
+            .admin-quick-icon {
+                background: var(--admin-orange-soft);
+                color: var(--admin-orange-dark);
+            }
+
+            .admin-quick-item:hover
+            .admin-quick-icon {
+                background: var(--admin-orange);
+                color: #FFFFFF;
+                transform: scale(1.05);
+            }
+
+
+            /* =========================================================
+                       TEXT SELECTION
+                    ========================================================== */
+
+            ::selection {
+                background: rgba(253, 80, 0, 0.18);
+                color: var(--admin-dark);
+            }
+
+
+            /* =========================================================
+                       RESPONSIVE - LARGE TABLET
+                    ========================================================== */
+
+            @@media (max-width: 1150px) {
+
+                .admin-page {
+                    grid-template-columns: 260px minmax(0, 1fr);
+                }
+
+                .admin-stat-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+
+                .admin-dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+
+            /* =========================================================
+                       RESPONSIVE - TABLET
+                    ========================================================== */
+
+            @@media (max-width: 850px) {
+
+                .company-request {
+                    grid-template-columns: 1fr;
+                }
+
+                .company-request-actions {
+                    justify-content: flex-start;
+                    padding-left: 66px;
+                }
+            }
+
+
+            /* =========================================================
+                       RESPONSIVE - MOBILE
+                    ========================================================== */
+
+            @@media (max-width: 780px) {
+
+                .admin-page {
+                    grid-template-columns: 1fr;
+                }
+
+                .admin-sidebar {
+                    position: static;
+                    height: auto;
+                    min-height: auto;
+                }
+
+                .admin-brand {
+                    height: 76px;
+                    padding: 0 17px;
+                }
+
+                .admin-navigation {
+                    display: none;
+                }
+
+                .admin-sidebar-user {
+                    display: none;
+                }
+
+                .admin-topbar {
+                    position: relative;
+                    min-height: 80px;
+                    padding: 0 18px;
+                }
+
+                .admin-topbar-left h1 {
+                    font-size: 24px;
+                }
+
+                .admin-content {
+                    padding: 24px 17px;
+                }
+
+                .admin-welcome h2 {
+                    font-size: 29px;
+                }
+
+                .admin-welcome p {
+                    font-size: 14px;
+                }
+            }
+
+
+            /* =========================================================
+                       RESPONSIVE - SMALL MOBILE
+                    ========================================================== */
+
+            @@media (max-width: 560px) {
+
+                .admin-stat-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .admin-stat-card {
+                    min-height: 150px;
+                }
+
+                .company-request-actions {
+                    padding-left: 0;
+                }
+
+                .company-review-button,
+                .company-approve-button,
+                .company-reject-button {
+                    flex: 1;
+                }
+
+                .admin-panel-header {
+                    padding: 17px;
+                }
+
+                .company-request-list {
+                    padding: 4px 17px;
+                }
+
+                .admin-topbar-left span {
+                    font-size: 10px;
+                }
+
+                .admin-topbar-left h1 {
+                    font-size: 22px;
+                }
+
+                .admin-welcome h2 {
+                    font-size: 26px;
+                }
+            }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="admin-page">
+
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="admin-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="admin-brand">
+
+                <div class="admin-brand-logo">
+                    W
+                </div>
+
+                <div class="admin-brand-text">
+
+                    <strong>
+                        WorkHub
+                    </strong>
+
+                    <span>
+                        Administration
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 NAVIGATION
+            ================================================== -->
+
+            <nav class="admin-navigation">
+
+
+                <!-- OVERVIEW -->
+
+                <div class="admin-nav-label">
+                    Overview
+                </div>
+
+
+                <!-- DASHBOARD -->
+
+                <a href="@dashboardUrl"
+                   class="admin-nav-item active">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <rect x="3"
+                                  y="3"
+                                  width="7"
+                                  height="7"
+                                  rx="1">
+                            </rect>
+
+                            <rect x="14"
+                                  y="3"
+                                  width="7"
+                                  height="7"
+                                  rx="1">
+                            </rect>
+
+                            <rect x="3"
+                                  y="14"
+                                  width="7"
+                                  height="7"
+                                  rx="1">
+                            </rect>
+
+                            <rect x="14"
+                                  y="14"
+                                  width="7"
+                                  height="7"
+                                  rx="1">
+                            </rect>
+
+                        </svg>
+
+                    </span>
+
+                    Dashboard
+
+                </a>
+
+
+                <!-- COMPANY REQUESTS -->
+
+                <a href="#companyRequests"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9">
+                            </path>
+
+                            <path d="M10 21h4">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Company Requests
+
+
+                    @if (Model.PendingCompanyRequestCount > 0)
+                    {
+                        <span class="admin-nav-badge">
+
+                            @Model.PendingCompanyRequestCount
+
+                        </span>
+                    }
+
+                </a>
+
+
+                <!-- MANAGEMENT -->
+
+                <div class="admin-nav-label"
+                     style="margin-top:24px;">
+
+                    Management
+
+                </div>
+
+
+                <!-- USERS -->
+
+                <a href="/AdminOperations#users"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2">
+                            </path>
+
+                            <circle cx="9"
+                                    cy="7"
+                                    r="4">
+                            </circle>
+
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87">
+                            </path>
+
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Users
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+                <!-- COMPANIES -->
+
+                <a href="/AdminOperations#companies"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <rect x="3"
+                                  y="3"
+                                  width="18"
+                                  height="18"
+                                  rx="2">
+                            </rect>
+
+                            <path d="M9 21V9h6v12">
+                            </path>
+
+                            <path d="M7 7h.01">
+                            </path>
+
+                            <path d="M17 7h.01">
+                            </path>
+
+                            <path d="M7 12h.01">
+                            </path>
+
+                            <path d="M17 12h.01">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Companies
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+                <!-- JOBS -->
+
+                <a href="/AdminOperations#jobs"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <rect x="3"
+                                  y="7"
+                                  width="18"
+                                  height="13"
+                                  rx="2">
+                            </rect>
+
+                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+
+                            <path d="M3 12h18">
+                            </path>
+
+                            <path d="M10 12v2h4v-2">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Jobs
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+                <!-- SERVICES -->
+
+                <a href="/AdminOperations#providers"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <path d="M14.7 6.3a4 4 0 0 0-5-5L7.4 3.6l3 3-7.4 7.4a2 2 0 0 0 0 2.8l4.2 4.2a2 2 0 0 0 2.8 0l7.4-7.4 3 3 2.3-2.3a4 4 0 0 0-5-5">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Services
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+                <!-- MARKETPLACE -->
+
+                <a href="/AdminOperations#listings"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <path d="M3 9l2-5h14l2 5">
+                            </path>
+
+                            <path d="M5 13v7h14v-7">
+                            </path>
+
+                            <path d="M3 9a3 3 0 0 0 6 0">
+                            </path>
+
+                            <path d="M9 9a3 3 0 0 0 6 0">
+                            </path>
+
+                            <path d="M15 9a3 3 0 0 0 6 0">
+                            </path>
+
+                            <path d="M9 20v-5h6v5">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Marketplace
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+                <!-- SYSTEM -->
+
+                <div class="admin-nav-label"
+                     style="margin-top:24px;">
+
+                    System
+
+                </div>
+
+
+                <!-- INQUIRIES -->
+
+                <a href="@inquiriesUrl"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <rect x="3"
+                                  y="5"
+                                  width="18"
+                                  height="14"
+                                  rx="2">
+                            </rect>
+
+                            <path d="m3 7 9 6 9-6">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    Inquiries
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+                <!-- NEWS -->
+
+                <a href="@newsUrl"
+                   class="admin-nav-item">
+
+                    <span class="admin-nav-icon">
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <rect x="4"
+                                  y="3"
+                                  width="16"
+                                  height="18"
+                                  rx="2">
+                            </rect>
+
+                            <path d="M8 7h8">
+                            </path>
+
+                            <path d="M8 11h8">
+                            </path>
+
+                            <path d="M8 15h5">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+                    News & Updates
+
+                    <span class="admin-nav-live">
+                        Live
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+
+            <!-- =================================================
+                 ADMIN ACCOUNT
+            ================================================== -->
+
+            <div class="admin-sidebar-user">
+
+
+                <div class="admin-user-row">
+
+
+                    <div class="admin-user-avatar">
+
+                        @(string.IsNullOrWhiteSpace(
+                            Model.AdminFullName)
+                            ? "A"
+                            : Model.AdminFullName
+                                .Substring(0, 1)
+                                .ToUpperInvariant())
+
+                    </div>
+
+
+                    <div class="admin-user-name">
+
+                        <strong>
+                            @Model.AdminFullName
+                        </strong>
+
+                        <span>
+                            @Model.AdminEmail
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <form asp-controller="AdminAuth"
+                      asp-action="Logout"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <button type="submit"
+                            class="admin-logout">
+
+                        Sign Out
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="admin-main">
+
+
+            <!-- =================================================
+                 TOP BAR
+            ================================================== -->
+
+            <header class="admin-topbar">
+
+
+                <div class="admin-topbar-left">
+
+                    <span>
+                        WorkHub Administration
+                    </span>
+
+                    <h1>
+                        Admin Dashboard
+                    </h1>
+
+                </div>
+
+
+                <div class="admin-topbar-right">
+
+
+                    <div class="admin-notification-button"
+                         title="Pending Company Requests">
+
+
+                        <svg class="admin-svg"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9">
+                            </path>
+
+                            <path d="M10 21h4">
+                            </path>
+
+                        </svg>
+
+
+                        @if (Model.PendingCompanyRequestCount > 0)
+                        {
+                            <span class="admin-notification-number">
+
+                                @Model.PendingCompanyRequestCount
+
+                            </span>
+                        }
+
+
+                    </div>
+
+
+                </div>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="admin-content">
+
+
+                <!-- SUCCESS MESSAGE -->
+                @if (!string.IsNullOrWhiteSpace(
+                                    Model.SuccessMessage))
+                {
+                    <div class="admin-message admin-message-success">
+
+                        @Model.SuccessMessage
+
+                    </div>
+                }
+
+
+                <!-- ERROR MESSAGE -->
+                @if (!string.IsNullOrWhiteSpace(
+                                    Model.ErrorMessage))
+                {
+                    <div class="admin-message admin-message-error">
+
+                        @Model.ErrorMessage
+
+                    </div>
+                }
+
+
+                <!-- =================================================
+                     WELCOME
+                ================================================== -->
+
+                <div class="admin-welcome">
+
+
+                    <h2>
+                        Welcome, @Model.AdminFullName
+                    </h2>
+
+
+                    <p>
+
+                        Monitor WorkHub activity,
+                        review company registration requests,
+                        manage contact inquiries,
+                        publish news and updates,
+                        and administer WorkHub services.
+
+                    </p>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     STAT CARDS
+                ================================================== -->
+
+                <div class="admin-stat-grid">
+
+
+                    <!-- PENDING REQUESTS -->
+
+                    <div class="admin-stat-card pending">
+
+
+                        <span class="admin-stat-live">
+                            Live
+                        </span>
+
+
+                        <div class="admin-stat-icon">
+
+                            <svg class="admin-svg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+
+                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9">
+                                </path>
+
+                                <path d="M10 21h4">
+                                </path>
+
+                            </svg>
+
+                        </div>
+
+
+                        <strong>
+                            @Model.PendingCompanyRequestCount
+                        </strong>
+
+
+                        <span>
+                            Pending Company Requests
+                        </span>
+
+
+                    </div>
+
+
+                    <!-- USERS -->
+
+                    <div class="admin-stat-card">
+
+
+                        <span class="admin-stat-live">
+                            Live
+                        </span>
+
+
+                        <div class="admin-stat-icon">
+
+                            <svg class="admin-svg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2">
+                                </path>
+
+                                <circle cx="9"
+                                        cy="7"
+                                        r="4">
+                                </circle>
+
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87">
+                                </path>
+
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75">
+                                </path>
+
+                            </svg>
+
+                        </div>
+
+
+                        <strong>
+                            @Model.TotalUsers
+                        </strong>
+
+
+                        <span>
+                            WorkHub Users
+                        </span>
+
+
+                    </div>
+
+
+                    <!-- COMPANIES -->
+
+                    <div class="admin-stat-card">
+
+
+                        <span class="admin-stat-live">
+                            Live
+                        </span>
+
+
+                        <div class="admin-stat-icon">
+
+                            <svg class="admin-svg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+
+                                <rect x="3"
+                                      y="3"
+                                      width="18"
+                                      height="18"
+                                      rx="2">
+                                </rect>
+
+                                <path d="M9 21V9h6v12">
+                                </path>
+
+                                <path d="M7 7h.01">
+                                </path>
+
+                                <path d="M17 7h.01">
+                                </path>
+
+                                <path d="M7 12h.01">
+                                </path>
+
+                                <path d="M17 12h.01">
+                                </path>
+
+                            </svg>
+
+                        </div>
+
+
+                        <strong>
+                            @Model.TotalCompanies
+                        </strong>
+
+
+                        <span>
+                            Registered Companies
+                        </span>
+
+
+                    </div>
+
+
+                    <!-- JOBS -->
+
+                    <div class="admin-stat-card">
+
+
+                        <span class="admin-stat-live">
+                            Live
+                        </span>
+
+
+                        <div class="admin-stat-icon">
+
+                            <svg class="admin-svg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+
+                                <rect x="3"
+                                      y="7"
+                                      width="18"
+                                      height="13"
+                                      rx="2">
+                                </rect>
+
+                                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+
+                                <path d="M3 12h18">
+                                </path>
+
+                                <path d="M10 12v2h4v-2">
+                                </path>
+
+                            </svg>
+
+                        </div>
+
+
+                        <strong>
+                            @Model.TotalJobs
+                        </strong>
+
+
+                        <span>
+                            WorkHub Jobs
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     DASHBOARD GRID
+                ================================================== -->
+
+                <div class="admin-dashboard-grid">
+
+
+                    <!-- =================================================
+                         LEFT SIDE
+                    ================================================== -->
+
+                    <div>
+
+
+                        <!-- COMPANY REGISTRATION REQUESTS -->
+
+                        <section class="admin-panel"
+                                 id="companyRequests">
+
+
+                            <div class="admin-panel-header">
+
+
+                                <div>
+
+                                    <h3>
+                                        Company Registration Requests
+                                    </h3>
+
+                                    <p>
+
+                                        Review, approve or reject companies
+                                        waiting for WorkHub access.
+
+                                    </p>
+
+                                </div>
+
+
+                                <span class="admin-panel-count">
+
+                                    @Model.PendingCompanyRequestCount Pending
+
+                                </span>
+
+
+                            </div>
+
+
+                            @if (
+                                Model.PendingCompanies != null
+                                &&
+                                Model.PendingCompanies.Any()
+                            )
+                            {
+
+                                <div class="company-request-list">
+
+
+                                    @foreach (
+                                        var company
+                                        in Model.PendingCompanies)
+                                    {
+
+                                        var companyInitial =
+                                            string.IsNullOrWhiteSpace(
+                                                company.CompanyName)
+                                                ? "C"
+                                                : company.CompanyName
+                                                    .Substring(0, 1)
+                                                    .ToUpperInvariant();
+
+
+                                        <div class="company-request">
+
+
+                                            <div class="company-request-main">
+
+
+                                                <div class="company-request-logo">
+
+                                                    @companyInitial
+
+                                                </div>
+
+
+                                                <div class="company-request-info">
+
+
+                                                    <h4>
+                                                        @company.CompanyName
+                                                    </h4>
+
+
+                                                    <div class="company-contact">
+
+                                                        Contact:
+                                                        @company.ContactPerson
+
+                                                        ·
+
+                                                        @company.Email
+
+                                                    </div>
+
+
+                                                    <div class="company-meta">
+
+
+                                                        @if (
+                                                            !string.IsNullOrWhiteSpace(
+                                                                company.Location)
+                                                        )
+                                                        {
+
+                                                            <span class="company-location">
+
+                                                                <svg class="admin-svg"
+                                                                     viewBox="0 0 24 24"
+                                                                     aria-hidden="true">
+
+                                                                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0">
+                                                                    </path>
+
+                                                                    <circle cx="12"
+                                                                            cy="10"
+                                                                            r="2.5">
+                                                                    </circle>
+
+                                                                </svg>
+
+                                                                @company.Location
+
+                                                            </span>
+
+                                                        }
+
+
+                                                        <span>
+
+                                                            Submitted:
+                                                            @company.SubmittedDateText
+
+                                                        </span>
+
+
+                                                        <span class="pending-status">
+
+                                                            <span class="pending-status-dot">
+                                                            </span>
+
+                                                            Pending
+
+                                                        </span>
+
+
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                            <!-- ACTION BUTTONS -->
+
+                                            <div class="company-request-actions">
+
+
+                                                <!-- REVIEW -->
+
+                                                <a asp-controller="AdminCompanyRequests"
+                                                   asp-action="Details"
+                                                   asp-route-id="@company.CompanyProfileId"
+                                                   class="company-review-button">
+
+
+                                                    <svg class="admin-svg"
+                                                         viewBox="0 0 24 24"
+                                                         aria-hidden="true">
+
+                                                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12">
+                                                        </path>
+
+                                                        <circle cx="12"
+                                                                cy="12"
+                                                                r="3">
+                                                        </circle>
+
+                                                    </svg>
+
+
+                                                    Review
+
+
+                                                </a>
+
+
+                                                <!-- REJECT -->
+
+                                                <form asp-controller="AdminCompanyRequests"
+                                                      asp-action="Reject"
+                                                      method="post"
+                                                      onsubmit="return confirm('Are you sure you want to reject this company registration request?');">
+
+
+                                                    @Html.AntiForgeryToken()
+
+
+                                                    <input type="hidden"
+                                                           name="id"
+                                                           value="@company.CompanyProfileId" />
+
+
+                                                    <button type="submit"
+                                                            class="company-reject-button">
+
+
+                                                        <svg class="admin-svg"
+                                                             viewBox="0 0 24 24"
+                                                             aria-hidden="true">
+
+                                                            <path d="M18 6 6 18">
+                                                            </path>
+
+                                                            <path d="m6 6 12 12">
+                                                            </path>
+
+                                                        </svg>
+
+
+                                                        Reject
+
+
+                                                    </button>
+
+
+                                                </form>
+
+
+                                                <!-- APPROVE -->
+
+                                                <form asp-controller="AdminCompanyRequests"
+                                                      asp-action="Approve"
+                                                      method="post"
+                                                      onsubmit="return confirm('Approve this company and activate the company account?');">
+
+
+                                                    @Html.AntiForgeryToken()
+
+
+                                                    <input type="hidden"
+                                                           name="id"
+                                                           value="@company.CompanyProfileId" />
+
+
+                                                    <button type="submit"
+                                                            class="company-approve-button">
+
+
+                                                        <svg class="admin-svg"
+                                                             viewBox="0 0 24 24"
+                                                             aria-hidden="true">
+
+                                                            <path d="m5 12 4 4L19 6">
+                                                            </path>
+
+                                                        </svg>
+
+
+                                                        Approve
+
+
+                                                    </button>
+
+
+                                                </form>
+
+
+                                            </div>
+
+
+                                        </div>
+
+                                    }
+
+
+                                </div>
+
+                            }
+                            else
+                            {
+
+                                <div class="admin-empty">
+
+
+                                    <div class="admin-empty-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <circle cx="12"
+                                                    cy="12"
+                                                    r="9">
+                                            </circle>
+
+                                            <path d="m8 12 3 3 5-6">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </div>
+
+
+                                    <h4>
+                                        No Pending Requests
+                                    </h4>
+
+
+                                    <p>
+
+                                        There are currently no company
+                                        registrations waiting for
+                                        administrator approval.
+
+                                    </p>
+
+
+                                </div>
+
+                            }
+
+
+                        </section>
+
+
+                    </div>
+
+
+                    <!-- =================================================
+                         RIGHT SIDE
+                    ================================================== -->
+
+                    <div>
+
+
+                        <!-- =================================================
+                             SYSTEM STATUS
+                        ================================================== -->
+
+                        <section class="admin-panel">
+
+
+                            <div class="admin-panel-header">
+
+
+                                <div>
+
+                                    <h3>
+                                        System Status
+                                    </h3>
+
+                                    <p>
+                                        Current WorkHub administration services.
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="admin-system-list">
+
+
+                                <div class="admin-system-item">
+
+                                    <span>
+                                        WorkHub API
+                                    </span>
+
+                                    <div class="admin-system-status">
+
+                                        <span class="admin-system-dot">
+                                        </span>
+
+                                        Connected
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="admin-system-item">
+
+                                    <span>
+                                        Admin Authentication
+                                    </span>
+
+                                    <div class="admin-system-status">
+
+                                        <span class="admin-system-dot">
+                                        </span>
+
+                                        Active
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="admin-system-item">
+
+                                    <span>
+                                        Company Approval
+                                    </span>
+
+                                    <div class="admin-system-status">
+
+                                        <span class="admin-system-dot">
+                                        </span>
+
+                                        Active
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="admin-system-item">
+
+                                    <span>
+                                        Contact Inquiries
+                                    </span>
+
+                                    <div class="admin-system-status">
+
+                                        <span class="admin-system-dot">
+                                        </span>
+
+                                        Active
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="admin-system-item">
+
+                                    <span>
+                                        News & Updates
+                                    </span>
+
+                                    <div class="admin-system-status">
+
+                                        <span class="admin-system-dot">
+                                        </span>
+
+                                        Active
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </section>
+
+
+                        <!-- =================================================
+                             ADMINISTRATION MODULES
+                        ================================================== -->
+
+                        <section class="admin-panel">
+
+
+                            <div class="admin-panel-header">
+
+
+                                <div>
+
+                                    <h3>
+                                        Administration Modules
+                                    </h3>
+
+                                    <p>
+                                        WorkHub administration tools.
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="admin-quick-list">
+
+
+                                <!-- CONTACT INQUIRIES -->
+
+                                <a href="@inquiriesUrl"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="3"
+                                                  y="5"
+                                                  width="18"
+                                                  height="14"
+                                                  rx="2">
+                                            </rect>
+
+                                            <path d="m3 7 9 6 9-6">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    Contact Inquiries — active
+
+                                </a>
+
+
+                                <!-- NEWS -->
+
+                                <a href="@newsUrl"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="4"
+                                                  y="3"
+                                                  width="16"
+                                                  height="18"
+                                                  rx="2">
+                                            </rect>
+
+                                            <path d="M8 7h8">
+                                            </path>
+
+                                            <path d="M8 11h8">
+                                            </path>
+
+                                            <path d="M8 15h5">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    News & Updates — active
+
+                                </a>
+
+
+                                <!-- USER MANAGEMENT -->
+
+                                <a href="/AdminOperations#users"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2">
+                                            </path>
+
+                                            <circle cx="9"
+                                                    cy="7"
+                                                    r="4">
+                                            </circle>
+
+                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87">
+                                            </path>
+
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    User Management — active
+
+                                </a>
+
+
+                                <!-- COMPANY MANAGEMENT -->
+
+                                <a href="/AdminOperations#companies"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="3"
+                                                  y="3"
+                                                  width="18"
+                                                  height="18"
+                                                  rx="2">
+                                            </rect>
+
+                                            <path d="M9 21V9h6v12">
+                                            </path>
+
+                                            <path d="M7 7h.01">
+                                            </path>
+
+                                            <path d="M17 7h.01">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    Company Management — active
+
+                                </a>
+
+
+                                <!-- JOB MANAGEMENT -->
+
+                                <a href="/AdminOperations#jobs"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <rect x="3"
+                                                  y="7"
+                                                  width="18"
+                                                  height="13"
+                                                  rx="2">
+                                            </rect>
+
+                                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                            </path>
+
+                                            <path d="M3 12h18">
+                                            </path>
+
+                                            <path d="M10 12v2h4v-2">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    Job Management — active
+
+                                </a>
+
+
+                                <!-- SERVICE MANAGEMENT -->
+
+                                <a href="/AdminOperations#providers"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <path d="M14.7 6.3a4 4 0 0 0-5-5L7.4 3.6l3 3-7.4 7.4a2 2 0 0 0 0 2.8l4.2 4.2a2 2 0 0 0 2.8 0l7.4-7.4 3 3 2.3-2.3a4 4 0 0 0-5-5">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    Service Management — active
+
+                                </a>
+
+
+                                <!-- MARKETPLACE -->
+
+                                <a href="/AdminOperations#listings"
+                                   class="admin-quick-item active-module">
+
+                                    <span class="admin-quick-icon">
+
+
+                                        <svg class="admin-svg"
+                                             viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <path d="M3 9l2-5h14l2 5">
+                                            </path>
+
+                                            <path d="M5 13v7h14v-7">
+                                            </path>
+
+                                            <path d="M3 9a3 3 0 0 0 6 0">
+                                            </path>
+
+                                            <path d="M9 9a3 3 0 0 0 6 0">
+                                            </path>
+
+                                            <path d="M15 9a3 3 0 0 0 6 0">
+                                            </path>
+
+                                        </svg>
+
+
+                                    </span>
+
+                                    Marketplace Management — active
+
+                                </a>
+
+
+                            </div>
+
+
+                        </section>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </main>
+
+
+    </div>
+
+
+</body>
+
+</html>

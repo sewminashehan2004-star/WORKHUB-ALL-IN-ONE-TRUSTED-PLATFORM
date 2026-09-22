@@ -1,0 +1,4586 @@
+@model Workhub_Web.Models.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "My Dashboard";
+
+    var accountSuccess =
+        TempData["AccountSuccess"]?.ToString();
+
+    var accountError =
+        TempData["AccountError"]?.ToString();
+
+    var profileSuccess =
+        TempData["ProfileSuccess"]?.ToString();
+
+    var profileError =
+        TempData["ProfileError"]?.ToString();
+}
+
+<style>
+    /* =========================================================
+                   WORKHUB - USER DASHBOARD / PROFILE
+                   Premium Orange UI
+                   ========================================================= */
+
+    :root {
+        --wh-orange: #FD5000;
+        --wh-orange-dark: #D94300;
+        --wh-orange-hover: #B93800;
+        --wh-orange-light: #FFF2EB;
+        --wh-orange-soft: #FFF8F4;
+        --wh-dark: #0F172A;
+        --wh-dark-2: #1E293B;
+        --wh-text: #64748B;
+        --wh-text-dark: #334155;
+        --wh-muted: #94A3B8;
+        --wh-border: #E5E7EB;
+        --wh-light: #F8FAFC;
+        --wh-white: #FFFFFF;
+        --wh-green: #16A34A;
+        --wh-green-dark: #15803D;
+        --wh-green-soft: #DCFCE7;
+        --wh-red: #DC2626;
+        --wh-red-dark: #B91C1C;
+        --wh-red-soft: #FEF2F2;
+        --wh-shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+        --wh-shadow-md: 0 12px 35px rgba(15, 23, 42, 0.09);
+        --wh-shadow-lg: 0 20px 55px rgba(15, 23, 42, 0.12);
+        --wh-radius: 18px;
+        --wh-radius-sm: 12px;
+    }
+
+
+    /* =========================================================
+                   PAGE
+                   ========================================================= */
+
+    .profile-dashboard-page {
+        min-height: calc(100vh - 80px);
+        background: radial-gradient(circle at 5% 5%, rgba(253, 80, 0, 0.07), transparent 24%), radial-gradient(circle at 95% 10%, rgba(253, 80, 0, 0.05), transparent 22%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        padding: 42px 0 70px;
+    }
+
+    .profile-dashboard-container {
+        width: min(1380px, calc(100% - 40px));
+        margin: 0 auto;
+    }
+
+
+    /* =========================================================
+                   MAIN HEADING
+                   ========================================================= */
+
+    .dashboard-heading {
+        margin-bottom: 30px;
+    }
+
+    .dashboard-heading-label {
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 8px;
+        color: var(--wh-orange-dark);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .4px;
+    }
+
+    .dashboard-heading h1 {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: clamp(30px, 4vw, 44px);
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        line-height: 1.1;
+    }
+
+    .dashboard-heading p {
+        margin: 10px 0 0;
+        color: var(--wh-text);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+
+    /* =========================================================
+                   MAIN LAYOUT
+                   ========================================================= */
+
+    .profile-dashboard-layout {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+    }
+
+
+    /* =========================================================
+                   SIDEBAR
+                   ========================================================= */
+
+    .profile-sidebar {
+        position: sticky;
+        top: 100px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 22px;
+        box-shadow: var(--wh-shadow-md);
+        backdrop-filter: blur(18px);
+    }
+
+
+    /* =========================================================
+                   COVER IMAGE
+                   ========================================================= */
+
+    .sidebar-cover {
+        position: relative;
+        height: 125px;
+        overflow: hidden;
+        background: linear-gradient( 135deg, var(--wh-orange), var(--wh-orange-dark) );
+    }
+
+        .sidebar-cover::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( 135deg, rgba(255,255,255,0.08), transparent 50% );
+            pointer-events: none;
+        }
+
+    .sidebar-cover-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+
+    /* =========================================================
+                   AVATAR
+                   ========================================================= */
+
+    .sidebar-avatar {
+        position: relative;
+        width: 112px;
+        height: 112px;
+        margin: -56px auto 0;
+        z-index: 5;
+    }
+
+        .sidebar-avatar::before {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: linear-gradient( 135deg, var(--wh-orange), #ff8a5c );
+            z-index: -1;
+            box-shadow: 0 8px 25px rgba(253, 80, 0, 0.28);
+        }
+
+    .sidebar-profile-image,
+    .sidebar-avatar-placeholder,
+    .sidebar-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--wh-white);
+        border: 4px solid var(--wh-white);
+        color: var(--wh-orange);
+        font-size: 38px;
+        font-weight: 800;
+        box-shadow: var(--wh-shadow-md);
+    }
+
+    .sidebar-avatar-fallback {
+        position: absolute;
+        inset: 0;
+    }
+
+    .sidebar-profile-image {
+        position: relative;
+        z-index: 2;
+    }
+
+
+    /* =========================================================
+                   SIDEBAR USER INFO
+                   ========================================================= */
+
+    .sidebar-user {
+        text-align: center;
+        padding: 17px 20px 8px;
+    }
+
+        .sidebar-user h2 {
+            margin: 0;
+            color: var(--wh-dark);
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .sidebar-user p {
+            margin: 6px 0 0;
+            color: var(--wh-text);
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+    .sidebar-email {
+        margin: 6px 0 0;
+        color: var(--wh-text);
+        font-size: 13px;
+        word-break: break-word;
+    }
+
+    .sidebar-location {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 8px 0 0;
+        color: var(--wh-muted);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .sidebar-location-icon {
+        color: var(--wh-orange);
+        font-size: 8px;
+        line-height: 1;
+    }
+
+    .sidebar-about {
+        display: none;
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--wh-light);
+        color: var(--wh-text-dark);
+        font-size: 12px;
+        line-height: 1.6;
+        text-align: left;
+    }
+
+    .sidebar-role-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .sidebar-role {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange-dark);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+    }
+
+
+    /* =========================================================
+                   EDIT PROFILE
+                   ========================================================= */
+
+    .sidebar-edit-profile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 12px 20px 16px;
+        padding: 11px 15px;
+        border-radius: 11px;
+        background: var(--wh-dark);
+        color: #fff !important;
+        text-decoration: none !important;
+        font-size: 13px;
+        font-weight: 700;
+        transition: all .25s ease;
+    }
+
+        .sidebar-edit-profile:hover {
+            background: var(--wh-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 9px 20px rgba(253, 80, 0, 0.2);
+        }
+
+
+    /* =========================================================
+                   ACCOUNT STATUS
+                   ========================================================= */
+
+    .sidebar-account-status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0 20px 18px;
+        padding: 12px 14px;
+        border: 1px solid #dcfce7;
+        border-radius: 12px;
+        background: #f0fdf4;
+        color: var(--wh-green-dark);
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--wh-green);
+        box-shadow: 0 0 0 3px var(--wh-green-soft);
+    }
+
+
+    /* =========================================================
+                   SIDEBAR TABS
+                   ========================================================= */
+
+    .sidebar-tabs {
+        padding: 10px;
+        border-top: 1px solid var(--wh-border);
+        background: rgba(248, 250, 252, .75);
+    }
+
+    .sidebar-tab {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 0;
+        background: transparent;
+        color: var(--wh-text);
+        padding: 13px 14px;
+        margin-bottom: 4px;
+        border-radius: 11px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        text-align: left;
+        transition: all .25s ease;
+    }
+
+        .sidebar-tab:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-tab:hover {
+            background: var(--wh-orange-soft);
+            color: var(--wh-orange);
+            transform: translateX(3px);
+        }
+
+        .sidebar-tab.active {
+            background: linear-gradient( 135deg, var(--wh-orange-light), #fff8f4 );
+            color: var(--wh-orange);
+            box-shadow: inset 3px 0 0 var(--wh-orange), 0 5px 15px rgba(253, 80, 0, 0.06);
+        }
+
+    .sidebar-tab-icon {
+        width: 23px;
+        height: 23px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .notification-tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 19px;
+        height: 19px;
+        margin-left: auto;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--wh-orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+
+    /* =========================================================
+                   SVG ICONS
+                   ========================================================= */
+
+    .wh-svg-icon {
+        width: 19px;
+        height: 19px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .wh-svg-icon-lg {
+        width: 23px;
+        height: 23px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .wh-svg-icon-xl {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+
+    /* =========================================================
+                   CONTENT AREA
+                   ========================================================= */
+
+    .dashboard-content-area {
+        min-width: 0;
+    }
+
+    .tab-panel {
+        display: none;
+        animation: dashboardFade .3s ease;
+    }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+    @@keyframes dashboardFade {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+    /* =========================================================
+                   DASHBOARD CARDS
+                   ========================================================= */
+
+    .dashboard-card {
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 255, 255, .95);
+        border: 1px solid var(--wh-border);
+        border-radius: var(--wh-radius);
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: var(--wh-shadow-sm);
+        transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+
+        .dashboard-card:hover {
+            border-color: rgba(253, 80, 0, .22);
+            box-shadow: var(--wh-shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-card::before {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: -70px;
+            right: -60px;
+            border-radius: 50%;
+            background: rgba(253, 80, 0, .05);
+            pointer-events: none;
+        }
+
+    .dashboard-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+        .dashboard-card-header h2,
+        .dashboard-card-header h3 {
+            margin: 0;
+            color: var(--wh-dark);
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .dashboard-card-header p,
+        .dashboard-card-header > span {
+            margin: 5px 0 0;
+            color: var(--wh-text);
+            font-size: 13px;
+        }
+
+
+    /* =========================================================
+                   PROFILE MESSAGES
+                   ========================================================= */
+
+    .profile-message {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        font-size: 13px;
+        line-height: 1.5;
+        font-weight: 600;
+    }
+
+        .profile-message.success {
+            background: var(--wh-green-soft);
+            border: 1px solid #bbf7d0;
+            color: var(--wh-green-dark);
+        }
+
+        .profile-message.error {
+            background: var(--wh-red-soft);
+            border: 1px solid #fecaca;
+            color: var(--wh-red-dark);
+        }
+
+
+    /* =========================================================
+                   OVERVIEW STATS
+                   ========================================================= */
+
+    .overview-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .overview-stat {
+        position: relative;
+        overflow: hidden;
+        padding: 21px;
+        border: 1px solid var(--wh-border);
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: var(--wh-shadow-sm);
+        transition: all .25s ease;
+    }
+
+        .overview-stat:hover {
+            transform: translateY(-4px);
+            border-color: rgba(253, 80, 0, .25);
+            box-shadow: 0 15px 30px rgba(253, 80, 0, .09);
+        }
+
+    .overview-stat-label {
+        color: var(--wh-text);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+    }
+
+    .overview-stat-value {
+        margin-top: 7px;
+        color: var(--wh-dark);
+        font-size: 28px;
+        line-height: 1;
+        font-weight: 800;
+    }
+
+    .overview-stat small {
+        display: block;
+        margin-top: 8px;
+        color: var(--wh-muted);
+        font-size: 11px;
+    }
+
+    /* overview-stat markup uses strong (value) + span (label) */
+    .overview-stat strong {
+        display: block;
+        color: var(--wh-dark);
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .overview-stat > span {
+        display: block;
+        margin-top: 6px;
+        color: var(--wh-text);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+
+    /* =========================================================
+                   ACCOUNT INFORMATION
+                   ========================================================= */
+
+    .account-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .account-info-item {
+        padding: 16px;
+        border: 1px solid var(--wh-border);
+        border-radius: 13px;
+        background: var(--wh-light);
+    }
+
+        .account-info-item span,
+        .account-info-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--wh-muted);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .55px;
+        }
+
+        .account-info-item strong,
+        .account-info-value {
+            display: block;
+            color: var(--wh-text-dark);
+            font-size: 14px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+    .dashboard-website-link {
+        display: none;
+        color: var(--wh-orange);
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        word-break: break-word;
+    }
+
+        .dashboard-website-link:hover {
+            color: var(--wh-orange-dark);
+            text-decoration: underline;
+        }
+
+    .not-added-text {
+        display: block;
+        color: var(--wh-muted);
+        font-size: 13px;
+        font-weight: 600;
+        font-style: italic;
+    }
+
+
+    /* =========================================================
+                   CONNECTED APPS
+                   ========================================================= */
+
+    .connected-apps-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .dashboard-app-link {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--wh-border);
+        border-radius: 13px;
+        background: #fff;
+        color: var(--wh-text-dark);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        transition: all .25s ease;
+    }
+
+        .dashboard-app-link:hover {
+            color: var(--wh-orange);
+            border-color: rgba(253, 80, 0, .25);
+            background: var(--wh-orange-soft);
+            transform: translateX(4px);
+        }
+
+
+    /* =========================================================
+                   PROFILES GRID
+                   ========================================================= */
+
+    .profiles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .workhub-profile-card {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 300px;
+        padding: 25px;
+        border: 1px solid var(--wh-border);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: var(--wh-shadow-sm);
+        transition: all .3s ease;
+    }
+
+        .workhub-profile-card::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            right: -80px;
+            bottom: -80px;
+            border-radius: 50%;
+            background: var(--wh-orange-soft);
+            transition: all .3s ease;
+        }
+
+        .workhub-profile-card:hover {
+            transform: translateY(-7px);
+            border-color: rgba(253, 80, 0, .25);
+            box-shadow: 0 20px 40px rgba(253, 80, 0, .1);
+        }
+
+            .workhub-profile-card:hover::after {
+                transform: scale(1.3);
+            }
+
+    .profile-card-icon {
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        border-radius: 16px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+        transition: all .3s ease;
+    }
+
+    .workhub-profile-card:hover .profile-card-icon {
+        color: #fff;
+        background: var(--wh-orange);
+        transform: rotate(-4deg) scale(1.06);
+        box-shadow: 0 10px 22px rgba(253, 80, 0, .22);
+    }
+
+    .workhub-profile-card h4 {
+        position: relative;
+        z-index: 2;
+        margin: 0 0 8px;
+        color: var(--wh-dark);
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .workhub-profile-card p {
+        position: relative;
+        z-index: 2;
+        margin: 0;
+        color: var(--wh-text);
+        font-size: 13px;
+        line-height: 1.7;
+        flex: 1;
+    }
+
+    .profile-card-spacer {
+        flex: 1;
+    }
+
+
+    /* =========================================================
+                   PROFILE CARD STATUS
+                   ========================================================= */
+
+    .profile-state,
+    .profile-card-status {
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        margin: 0 0 15px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--wh-green-soft);
+        color: var(--wh-green-dark);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+        .profile-state.inactive,
+        .profile-card-status.inactive {
+            background: #f1f5f9;
+            color: var(--wh-text);
+        }
+
+
+    /* =========================================================
+                   BUTTONS
+                   ========================================================= */
+
+    .wh-btn,
+    .manage-profile-button,
+    .activate-profile-button {
+        position: relative;
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        min-height: 42px;
+        margin-top: 6px;
+        padding: 10px 17px;
+        border-radius: 11px;
+        border: 1px solid transparent;
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .25s ease;
+    }
+
+    .wh-btn-primary,
+    .manage-profile-button {
+        color: #fff !important;
+        background: linear-gradient( 135deg, var(--wh-orange), var(--wh-orange-dark) );
+        box-shadow: 0 8px 18px rgba(253, 80, 0, .18);
+    }
+
+        .wh-btn-primary:hover,
+        .manage-profile-button:hover {
+            color: #fff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 13px 25px rgba(253, 80, 0, .25);
+        }
+
+    .wh-btn-dark,
+    .activate-profile-button {
+        color: #fff !important;
+        background: var(--wh-dark);
+    }
+
+        .wh-btn-dark:hover,
+        .activate-profile-button:hover {
+            color: #fff !important;
+            background: var(--wh-orange);
+            transform: translateY(-2px);
+        }
+
+    .wh-btn-outline {
+        color: var(--wh-orange) !important;
+        background: #fff;
+        border-color: rgba(253, 80, 0, .3);
+    }
+
+        .wh-btn-outline:hover {
+            color: #fff !important;
+            background: var(--wh-orange);
+            border-color: var(--wh-orange);
+        }
+
+    .wh-btn-danger {
+        color: #fff !important;
+        background: var(--wh-red);
+    }
+
+        .wh-btn-danger:hover {
+            color: #fff !important;
+            background: var(--wh-red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(220, 38, 38, .2);
+        }
+
+
+    /* =========================================================
+                   SIMPLE CONTENT (My Profiles tab)
+                   ========================================================= */
+
+    .simple-content {
+        color: var(--wh-text);
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+
+    /* =========================================================
+                   NOTIFICATION SUMMARY
+                   ========================================================= */
+
+    .notification-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 18px;
+        padding: 18px 20px;
+        border-radius: 15px;
+        background: linear-gradient( 135deg, var(--wh-orange-light), #fff );
+        border: 1px solid rgba(253, 80, 0, .15);
+    }
+
+    .notification-summary-content,
+    .notification-summary-left {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .notification-summary-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        background: var(--wh-orange);
+        color: #fff;
+    }
+
+    .notification-summary strong {
+        color: var(--wh-dark);
+        font-size: 15px;
+    }
+
+    .notification-summary span {
+        display: block;
+        margin-top: 3px;
+        color: var(--wh-text);
+        font-size: 12px;
+    }
+
+    .notification-action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 10px 16px;
+        border: 1px solid rgba(253, 80, 0, .3);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--wh-orange);
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all .25s ease;
+    }
+
+        .notification-action-button:hover {
+            color: #fff;
+            background: var(--wh-orange);
+            border-color: var(--wh-orange);
+        }
+
+        .notification-action-button:disabled {
+            opacity: .6;
+            cursor: default;
+            transform: none;
+        }
+
+
+    /* =========================================================
+                   NOTIFICATION EMPTY
+                   ========================================================= */
+
+    .notification-empty {
+        padding: 45px 25px;
+        text-align: center;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        background: rgba(248, 250, 252, .7);
+    }
+
+        .notification-empty .notification-summary-icon {
+            margin: 0 auto 14px;
+            background: var(--wh-orange-light);
+            color: var(--wh-orange);
+        }
+
+        .notification-empty h4 {
+            margin: 0;
+            color: var(--wh-dark);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .notification-empty p {
+            margin: 7px 0 0;
+            color: var(--wh-text);
+            font-size: 13px;
+        }
+
+
+    /* =========================================================
+                   NOTIFICATIONS
+                   ========================================================= */
+
+    .notification-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 17px;
+        border: 1px solid var(--wh-border);
+        border-radius: 14px;
+        background: #fff;
+        transition: all .25s ease;
+    }
+
+        .notification-item:hover {
+            border-color: rgba(253, 80, 0, .2);
+            background: #fffdfb;
+            transform: translateX(3px);
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid var(--wh-orange);
+            background: var(--wh-orange-soft);
+        }
+
+    .notification-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        border-radius: 11px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+        font-size: 16px;
+    }
+
+    .notification-item > div:not(.notification-icon) {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-title-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .notification-item-title,
+    .notification-title {
+        color: var(--wh-dark);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .notification-new-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--wh-orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .notification-read-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: var(--wh-text);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .notification-item-message,
+    .notification-message-box {
+        margin-top: 5px;
+        color: var(--wh-text);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .notification-item-date,
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 7px;
+        color: var(--wh-muted);
+        font-size: 11px;
+    }
+
+    .notification-type {
+        color: var(--wh-muted);
+        font-weight: 700;
+    }
+
+    .notification-read-form {
+        flex-shrink: 0;
+    }
+
+    .notification-read-button {
+        padding: 8px 13px;
+        border: 1px solid var(--wh-border);
+        border-radius: 9px;
+        background: #fff;
+        color: var(--wh-text-dark);
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all .2s ease;
+    }
+
+        .notification-read-button:hover {
+            color: #fff;
+            background: var(--wh-orange);
+            border-color: var(--wh-orange);
+        }
+
+        .notification-read-button:disabled {
+            opacity: .6;
+            cursor: default;
+        }
+
+
+    /* =========================================================
+                   NEWS
+                   ========================================================= */
+
+    .news-intro {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 16px;
+        background: linear-gradient( 135deg, var(--wh-dark), var(--wh-dark-2) );
+        color: #fff;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, .12);
+    }
+
+    .news-intro-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        background: rgba(253, 80, 0, .18);
+        color: #ff7848;
+    }
+
+    .news-intro h3 {
+        margin: 0 0 5px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .news-intro p {
+        margin: 0;
+        color: #cbd5e1;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .news-list,
+    .profile-news-list {
+        display: grid;
+        gap: 15px;
+    }
+
+    /* LOADING / ERROR / EMPTY STATES */
+
+    .news-loading,
+    .news-error,
+    .news-empty {
+        padding: 45px 25px;
+        text-align: center;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        background: rgba(248, 250, 252, .7);
+    }
+
+    .news-error {
+        border: 1px solid #fecaca;
+        border-style: solid;
+        background: var(--wh-red-soft);
+        color: var(--wh-red-dark);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .news-loading-icon,
+    .news-empty-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+        border-radius: 16px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+        font-size: 22px;
+    }
+
+    .news-loading strong {
+        display: block;
+        color: var(--wh-dark);
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .news-loading span {
+        display: block;
+        margin-top: 6px;
+        color: var(--wh-text);
+        font-size: 13px;
+    }
+
+    .news-empty h4 {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .news-empty p {
+        margin: 7px 0 0;
+        color: var(--wh-text);
+        font-size: 13px;
+    }
+
+    .news-card,
+    .profile-news-card {
+        padding: 20px;
+        border: 1px solid var(--wh-border);
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: var(--wh-shadow-sm);
+        transition: all .25s ease;
+    }
+
+        .news-card:hover,
+        .profile-news-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(253, 80, 0, .2);
+            box-shadow: var(--wh-shadow-md);
+        }
+
+    .profile-news-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .profile-news-category {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange-dark);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .news-card-date,
+    .profile-news-date {
+        display: block;
+        color: var(--wh-muted);
+        font-size: 11px;
+    }
+
+    .news-card-title,
+    .profile-news-title {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .news-card-content,
+    .profile-news-summary {
+        margin-top: 12px;
+        color: var(--wh-text);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .profile-news-content {
+        display: none;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--wh-border);
+        color: var(--wh-text);
+        font-size: 13px;
+        line-height: 1.8;
+        white-space: pre-line;
+    }
+
+        .profile-news-content.open {
+            display: block;
+        }
+
+    .profile-news-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 13px;
+    }
+
+    .profile-news-author {
+        color: var(--wh-muted);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .news-read-more,
+    .profile-news-read-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--wh-orange);
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+        .news-read-more:hover,
+        .profile-news-read-button:hover {
+            color: var(--wh-orange-dark);
+        }
+
+
+    /* =========================================================
+                   SETTINGS
+                   ========================================================= */
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .settings-section {
+        padding: 20px;
+        border: 1px solid var(--wh-border);
+        border-radius: 15px;
+        background: #fff;
+    }
+
+        .settings-section.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .settings-section.danger {
+            border-color: #fecaca;
+            background: linear-gradient( 135deg, #fff, #fff7f7 );
+        }
+
+    .settings-danger {
+        border-color: #fecaca;
+        background: linear-gradient( 135deg, #fff, #fff7f7 );
+    }
+
+    .settings-heading {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .settings-heading-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 13px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+    }
+
+    .settings-section.danger .settings-heading-icon,
+    .settings-danger .settings-heading-icon {
+        background: var(--wh-red-soft);
+        color: var(--wh-red);
+    }
+
+    .settings-heading h3,
+    .settings-heading h4 {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .settings-section.danger .settings-heading h4,
+    .settings-danger .settings-heading h3 {
+        color: var(--wh-red-dark);
+    }
+
+    .settings-heading p {
+        margin: 4px 0 0;
+        color: var(--wh-text);
+        font-size: 12px;
+    }
+
+    .settings-account-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .settings-account-item {
+        padding: 14px;
+        border: 1px solid var(--wh-border);
+        border-radius: 12px;
+        background: var(--wh-light);
+    }
+
+        .settings-account-item span {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--wh-muted);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .settings-account-item strong {
+            display: block;
+            color: var(--wh-text-dark);
+            font-size: 14px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+    .settings-secondary-button,
+    .settings-logout-button,
+    .settings-primary-button,
+    .delete-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 10px 18px;
+        border-radius: 11px;
+        border: 1px solid transparent;
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .25s ease;
+    }
+
+    .settings-secondary-button {
+        color: var(--wh-orange) !important;
+        background: #fff;
+        border-color: rgba(253, 80, 0, .3);
+    }
+
+        .settings-secondary-button:hover {
+            color: #fff !important;
+            background: var(--wh-orange);
+            border-color: var(--wh-orange);
+        }
+
+    .settings-logout-button {
+        color: #fff !important;
+        background: var(--wh-dark);
+    }
+
+        .settings-logout-button:hover {
+            color: #fff !important;
+            background: var(--wh-orange);
+            transform: translateY(-2px);
+        }
+
+    .settings-primary-button {
+        color: #fff !important;
+        background: linear-gradient( 135deg, var(--wh-orange), var(--wh-orange-dark) );
+        box-shadow: 0 8px 18px rgba(253, 80, 0, .18);
+    }
+
+        .settings-primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 13px 25px rgba(253, 80, 0, .25);
+        }
+
+    .delete-button {
+        color: #fff !important;
+        background: var(--wh-red);
+    }
+
+        .delete-button:hover {
+            background: var(--wh-red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(220, 38, 38, .2);
+        }
+
+    .settings-field {
+        margin-bottom: 15px;
+    }
+
+        .settings-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--wh-text-dark);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+    .settings-input {
+        width: 100%;
+        min-height: 45px;
+        padding: 10px 13px;
+        border: 1px solid var(--wh-border);
+        border-radius: 11px;
+        outline: none;
+        background: #fff;
+        color: var(--wh-dark);
+        font-size: 13px;
+        transition: all .2s ease;
+    }
+
+        .settings-input:focus {
+            border-color: var(--wh-orange);
+            box-shadow: 0 0 0 4px rgba(253, 80, 0, .09);
+        }
+
+    .settings-helper {
+        margin-top: 6px;
+        color: var(--wh-muted);
+        font-size: 11px;
+    }
+
+    .delete-warning {
+        margin-bottom: 18px;
+        padding: 14px 16px;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        background: var(--wh-red-soft);
+        color: var(--wh-red-dark);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+        .delete-warning strong {
+            color: var(--wh-red-dark);
+        }
+
+
+    /* =========================================================
+                   EMPTY STATES
+                   ========================================================= */
+
+    .dashboard-empty {
+        padding: 45px 25px;
+        text-align: center;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+        background: rgba(248, 250, 252, .7);
+    }
+
+    .dashboard-empty-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+        border-radius: 16px;
+        background: var(--wh-orange-light);
+        color: var(--wh-orange);
+    }
+
+    .dashboard-empty h3 {
+        margin: 0;
+        color: var(--wh-dark);
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .dashboard-empty p {
+        margin: 7px 0 0;
+        color: var(--wh-text);
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+                   FORMS
+                   ========================================================= */
+
+    .dashboard-form-group {
+        margin-bottom: 17px;
+    }
+
+        .dashboard-form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--wh-text-dark);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+    .dashboard-form-control {
+        width: 100%;
+        min-height: 45px;
+        padding: 10px 13px;
+        border: 1px solid var(--wh-border);
+        border-radius: 11px;
+        outline: none;
+        background: #fff;
+        color: var(--wh-dark);
+        font-size: 13px;
+        transition: all .2s ease;
+    }
+
+        .dashboard-form-control:focus {
+            border-color: var(--wh-orange);
+            box-shadow: 0 0 0 4px rgba(253, 80, 0, .09);
+        }
+
+
+    /* =========================================================
+                   BADGES
+                   ========================================================= */
+
+    .wh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+
+    .wh-badge-success {
+        background: var(--wh-green-soft);
+        color: var(--wh-green-dark);
+    }
+
+    .wh-badge-orange {
+        background: var(--wh-orange-light);
+        color: var(--wh-orange-dark);
+    }
+
+    .wh-badge-danger {
+        background: var(--wh-red-soft);
+        color: var(--wh-red-dark);
+    }
+
+
+    /* =========================================================
+                   LINKS
+                   ========================================================= */
+
+    .dashboard-link {
+        color: var(--wh-orange);
+        font-weight: 700;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+        .dashboard-link:hover {
+            color: var(--wh-orange-dark);
+            text-decoration: underline;
+        }
+
+
+    /* =========================================================
+                   SCROLLBAR
+                   ========================================================= */
+
+    .profile-dashboard-page ::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+
+    .profile-dashboard-page ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .profile-dashboard-page ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+    }
+
+        .profile-dashboard-page ::-webkit-scrollbar-thumb:hover {
+            background: var(--wh-orange);
+        }
+
+
+    /* =========================================================
+                   RESPONSIVE - TABLET
+                   ========================================================= */
+
+    @@media (max-width: 1100px) {
+
+        .profile-dashboard-layout {
+            grid-template-columns: 250px minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        .profiles-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .overview-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .settings-grid,
+        .settings-account-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    /* =========================================================
+                   RESPONSIVE - MOBILE
+                   ========================================================= */
+
+    @@media (max-width: 800px) {
+
+        .profile-dashboard-page {
+            padding: 28px 0 50px;
+        }
+
+        .profile-dashboard-container {
+            width: min(100% - 24px, 680px);
+        }
+
+        .profile-dashboard-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-sidebar {
+            position: static;
+        }
+
+        .sidebar-tabs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .sidebar-tab {
+            margin-bottom: 0;
+        }
+
+        .overview-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .profiles-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .account-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-card {
+            padding: 20px;
+        }
+    }
+
+
+    /* =========================================================
+                   RESPONSIVE - SMALL MOBILE
+                   ========================================================= */
+
+    @@media (max-width: 520px) {
+
+        .profile-dashboard-page {
+            padding-top: 20px;
+        }
+
+        .profile-dashboard-container {
+            width: calc(100% - 18px);
+        }
+
+        .dashboard-heading h1 {
+            font-size: 28px;
+        }
+
+        .dashboard-heading p {
+            font-size: 13px;
+        }
+
+        .sidebar-tabs {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar-tab {
+            padding: 12px;
+        }
+
+        .dashboard-card {
+            padding: 17px;
+            border-radius: 15px;
+        }
+
+        .dashboard-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .notification-summary {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .notification-item {
+            flex-direction: column;
+        }
+
+        .settings-action {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .wh-btn {
+            width: 100%;
+        }
+
+        .profile-card-icon {
+            width: 52px;
+            height: 52px;
+        }
+    }
+
+
+    /* =========================================================
+                   REDUCED MOTION
+                   ========================================================= */
+
+    @@media (prefers-reduced-motion: reduce) {
+
+        .profile-dashboard-page *,
+        .profile-dashboard-page *::before,
+        .profile-dashboard-page *::after {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+
+
+<section class="profile-dashboard-page">
+
+    <div class="profile-dashboard-container">
+
+
+        <!-- =====================================
+             HEADING
+        ====================================== -->
+
+        <div class="dashboard-heading">
+
+            <span class="dashboard-heading-label">
+                My WorkHub
+            </span>
+
+            <h1>
+                Welcome back, @Model.FirstName
+            </h1>
+
+            <p>
+                Manage your WorkHub account and
+                optional professional profiles.
+            </p>
+
+        </div>
+
+
+        <div class="profile-dashboard-layout">
+
+
+            <!-- =====================================
+                 SIDEBAR
+            ====================================== -->
+
+            <aside class="profile-sidebar">
+
+
+                <div class="sidebar-cover">
+
+                    <img src="/UserProfile/CoverImage?v=@DateTime.UtcNow.Ticks"
+                         class="sidebar-cover-image"
+                         alt=""
+                         onerror="this.style.display='none';" />
+
+                </div>
+
+                
+                <div class="sidebar-user">
+
+
+                    <div class="sidebar-avatar">
+
+                        <span class="sidebar-avatar-fallback">
+                            @Model.Initial
+                        </span>
+
+                        <img src="/UserProfile/ProfileImage?v=@DateTime.UtcNow.Ticks"
+                             class="sidebar-profile-image"
+                             alt="@Model.FullName"
+                             onerror="this.style.display='none';" />
+
+                    </div>
+
+
+                    <h2>
+                        @Model.FullName
+                    </h2>
+
+
+                    <div class="sidebar-email">
+                        @Model.Email
+                    </div>
+
+
+                    <div id="dashboardProfileLocation"
+                         class="sidebar-location">
+
+                        <span class="sidebar-location-icon">
+                            ●
+                        </span>
+
+                        <span id="dashboardProfileLocationText">
+                        </span>
+
+                    </div>
+
+
+                    <div id="dashboardProfileAbout"
+                         class="sidebar-about">
+                    </div>
+
+
+                    <div class="sidebar-role-row">
+
+                        <span class="sidebar-role">
+                            @Model.Role
+                        </span>
+
+
+                        <a asp-controller="UserProfile"
+                           asp-action="Edit"
+                           class="sidebar-edit-profile">
+
+                            ✎ Edit Profile
+
+                        </a>
+
+                    </div>
+
+
+                    <div class="sidebar-account-status">
+
+                        <span class="status-dot">
+                        </span>
+
+                        Active WorkHub Account
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     NAVIGATION
+                ================================== -->
+
+                <nav class="sidebar-tabs">
+
+
+                    <button type="button"
+                            class="sidebar-tab active"
+                            data-tab="dashboard">
+
+                        <span class="sidebar-tab-icon">
+                            <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                            </svg>
+                        </span>
+
+                        Dashboard
+
+                    </button>
+
+
+                    <button type="button"
+                            class="sidebar-tab"
+                            data-tab="profiles">
+
+                        <span class="sidebar-tab-icon">
+                            <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="8" r="4"></circle>
+                                <path d="M4 21a8 8 0 0 1 16 0"></path>
+                            </svg>
+                        </span>
+
+                        My Profiles
+
+                    </button>
+
+
+                    <button type="button"
+                            class="sidebar-tab"
+                            data-tab="notifications">
+
+                        <span class="sidebar-tab-icon">
+                            <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+                                <path d="M10 21h4"></path>
+                            </svg>
+                        </span>
+
+                        Notifications
+
+
+                        @if (Model.UnreadNotificationCount > 0)
+                        {
+                            <span class="notification-tab-badge">
+
+                                @Model.UnreadNotificationCount
+
+                            </span>
+                        }
+
+                    </button>
+
+
+                    <button type="button"
+                            class="sidebar-tab"
+                            data-tab="news">
+
+                        <span class="sidebar-tab-icon">
+                            <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 4h16v16H4z"></path>
+                                <path d="M8 9h8"></path>
+                                <path d="M8 13h8"></path>
+                                <path d="M8 17h5"></path>
+                            </svg>
+                        </span>
+
+                        News & Updates
+
+                    </button>
+
+
+                    <button type="button"
+                            class="sidebar-tab"
+                            data-tab="account">
+
+                        <span class="sidebar-tab-icon">
+                            <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3v2"></path>
+                                <path d="M12 19v2"></path>
+                                <path d="M3 12h2"></path>
+                                <path d="M19 12h2"></path>
+                                <path d="m5.6 5.6 1.4 1.4"></path>
+                                <path d="m17 17 1.4 1.4"></path>
+                                <path d="m5.6 18.4 1.4-1.4"></path>
+                                <path d="m17 7 1.4-1.4"></path>
+                                <circle cx="12" cy="12" r="4"></circle>
+                            </svg>
+                        </span>
+                        Account Settings
+
+                    </button>
+
+
+                </nav>
+
+            </aside>
+
+
+            <!-- =====================================
+                 CONTENT
+            ====================================== -->
+
+            <div class="dashboard-content-area">
+
+
+                <!-- =================================
+                     DASHBOARD
+                ================================== -->
+
+                <section id="dashboard"
+                         class="tab-panel active">
+
+
+                    @if (!string.IsNullOrWhiteSpace(profileSuccess))
+                    {
+                        <div class="profile-message success">
+
+                            ✓ @profileSuccess
+
+                        </div>
+                    }
+
+
+                    @if (!string.IsNullOrWhiteSpace(profileError))
+                    {
+                        <div class="profile-message error">
+
+                            @profileError
+
+                        </div>
+                    }
+
+
+                    <div class="dashboard-card">
+
+
+                        <div class="dashboard-card-header">
+
+                            <h3>
+                                Account Overview
+                            </h3>
+
+                            <span>
+                                WorkHub Dashboard
+                            </span>
+
+                        </div>
+
+
+                        <div class="overview-stats">
+
+
+
+                            <div class="overview-stat">
+
+                                <strong>
+                                    Active
+                                </strong>
+
+                                <span>
+                                    Account Status
+                                </span>
+
+                            </div>
+
+
+                            <div class="overview-stat">
+
+                                <strong>
+                                    @Model.Role
+                                </strong>
+
+                                <span>
+                                    Account Type
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="account-info-grid">
+
+
+                            <div class="account-info-item">
+
+                                <span class="account-info-label">
+                                    Full Name
+                                </span>
+
+                                <div class="account-info-value">
+                                    @Model.FullName
+                                </div>
+
+                            </div>
+
+
+                            <div class="account-info-item">
+
+                                <span class="account-info-label">
+                                    Email
+                                </span>
+
+                                <div class="account-info-value">
+                                    @Model.Email
+                                </div>
+
+                            </div>
+
+
+                            <div class="account-info-item">
+
+                                <span class="account-info-label">
+                                    Website
+                                </span>
+
+
+                                <a id="dashboardWebsiteLink"
+                                   class="dashboard-website-link"
+                                   href="#"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                </a>
+
+
+                                <span id="dashboardWebsiteEmpty"
+                                      class="not-added-text">
+
+                                    Not added
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="account-info-item">
+
+                                <span class="account-info-label">
+                                    Connected Apps
+                                </span>
+
+
+                                <div class="connected-apps-list">
+
+
+                                    <a id="dashboardLinkedIn"
+                                       class="dashboard-app-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+
+                                        LinkedIn
+
+                                    </a>
+
+
+                                    <a id="dashboardFacebook"
+                                       class="dashboard-app-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+
+                                        Facebook
+
+                                    </a>
+
+
+                                    <a id="dashboardGitHub"
+                                       class="dashboard-app-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+
+                                        GitHub
+
+                                    </a>
+
+
+                                    <a id="dashboardInstagram"
+                                       class="dashboard-app-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+
+                                        Instagram
+
+                                    </a>
+
+
+                                    <span id="dashboardAppsEmpty"
+                                          class="not-added-text">
+
+                                        Not connected
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =================================
+                         WORKHUB PROFILES
+                    ================================== -->
+
+                    <div class="dashboard-card">
+
+
+                        <div class="dashboard-card-header">
+
+                            <h3>
+                                My WorkHub Profiles
+                            </h3>
+
+                            <span>
+                                Your professional activities
+                            </span>
+
+                        </div>
+
+
+                        <div class="profiles-grid">
+
+
+                            <!-- JOB SEEKER -->
+
+                            <div class="workhub-profile-card">
+
+
+                                <span class="profile-state
+                                    @(Model.JobSeekerActive
+                                        ? "active"
+                                        : "inactive")">
+
+                                    @(Model.JobSeekerActive
+                                        ? "Active"
+                                        : "Not Created")
+
+                                </span>
+
+
+                                <div class="profile-card-icon">
+                                    <svg class="wh-svg-icon-xl" viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <path d="M3 12h18"></path>
+                                        <path d="M10 12v2h4v-2"></path>
+                                    </svg>
+                                </div>
+
+
+                                <h4>
+                                    Job Seeker
+                                </h4>
+
+
+                                <p>
+                                    Manage your professional information,
+                                    education, skills, experience and CV.
+                                </p>
+
+
+                                <div class="profile-card-spacer">
+                                </div>
+
+
+                                @if (Model.JobSeekerActive)
+                                {
+                                    <a asp-controller="JobSeeker"
+                                       asp-action="Application"
+                                       class="manage-profile-button">
+
+                                        Manage Job Seeker Profile
+
+                                    </a>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Account"
+                                          asp-action="ActivateJobSeeker"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="activate-profile-button">
+
+                                            Create Job Seeker Profile
+
+                                        </button>
+
+                                    </form>
+                                }
+
+
+                            </div>
+
+
+                            <!-- SERVICE PROVIDER -->
+
+                            <div class="workhub-profile-card">
+
+
+                                <span class="profile-state
+                                    @(Model.ServiceProviderActive
+                                        ? "active"
+                                        : "inactive")">
+
+                                    @(Model.ServiceProviderActive
+                                        ? "Active"
+                                        : "Not Created")
+
+                                </span>
+
+                                <div class="profile-card-icon">
+                                    <svg class="wh-svg-icon-xl" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.1 2.1-2.7-2.7z"></path>
+                                        <path d="m15 3 6 6"></path>
+                                    </svg>
+                                </div>
+
+
+                                <h4>
+                                    Service Provider
+                                </h4>
+
+
+                                <p>
+                                    Create professional service
+                                    offerings and connect with customers.
+                                </p>
+
+
+                                <div class="profile-card-spacer">
+                                </div>
+
+
+                                @if (Model.ServiceProviderActive)
+                                {
+                                    <a asp-controller="ServiceProviderPortal"
+                                       asp-action="Index"
+                                       class="manage-profile-button">
+
+                                        Manage Services
+
+                                    </a>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Account"
+                                          asp-action="ActivateServiceProvider"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="activate-profile-button">
+
+                                            Create Service Provider Profile
+
+                                        </button>
+
+                                    </form>
+                                }
+
+
+                            </div>
+
+
+                            <!-- MARKETPLACE -->
+
+                            <div class="workhub-profile-card">
+
+
+                                <span class="profile-state
+                                    @(Model.MarketplaceSellerActive
+                                        ? "active"
+                                        : "inactive")">
+
+                                    @(Model.MarketplaceSellerActive
+                                        ? "Active"
+                                        : "Not Created")
+
+                                </span>
+
+
+                                <div class="profile-card-icon">
+                                    <svg class="wh-svg-icon-xl" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M4 9h16l-1.5 11h-13z"></path>
+                                        <path d="M8 9a4 4 0 0 1 8 0"></path>
+                                        <path d="M9 13h6"></path>
+                                    </svg>
+                                </div>
+
+
+                                <h4>
+                                    Marketplace Seller
+                                </h4>
+
+
+                                <p>
+                                    Sell or rent products through
+                                    the WorkHub marketplace.
+                                </p>
+
+
+                                <div class="profile-card-spacer">
+                                </div>
+
+
+                                @if (Model.MarketplaceSellerActive)
+                                {
+                                    <a asp-controller="MarketplaceSellerPortal"
+                                       asp-action="Index"
+                                       class="manage-profile-button">
+
+                                        Manage Marketplace
+
+                                    </a>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Account"
+                                          asp-action="ActivateMarketplaceSeller"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="activate-profile-button">
+
+                                            Create Marketplace Profile
+
+                                        </button>
+
+                                    </form>
+                                }
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- =================================
+                     MY PROFILES
+                ================================== -->
+
+                <section id="profiles"
+                         class="tab-panel">
+
+
+                    <div class="dashboard-card">
+
+
+                        <div class="dashboard-card-header">
+
+                            <h3>
+                                My WorkHub Profiles
+                            </h3>
+
+                            <span>
+                                Manage your profile types
+                            </span>
+
+                        </div>
+
+
+                        <div class="simple-content">
+
+                            WorkHub lets you use Job Seeker,
+                            Service Provider and Marketplace Seller
+                            profiles independently.
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- =================================
+                     NOTIFICATIONS
+                ================================== -->
+
+                <section id="notifications"
+                         class="tab-panel">
+
+
+                    <div class="dashboard-card">
+
+
+                        <div class="dashboard-card-header">
+
+                            <h3>
+                                Notifications
+                            </h3>
+
+                            <span>
+                                Admin replies and WorkHub activity
+                            </span>
+
+                        </div>
+
+
+                        <div class="notification-summary">
+
+
+                            <div class="notification-summary-left">
+
+
+                                <div class="notification-summary-icon">
+                                    <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+                                        <path d="M10 21h4"></path>
+                                    </svg>
+                                </div>
+
+                                <div>
+
+                                    <strong>
+
+                                        @Model.UnreadNotificationCount
+                                        unread notification@(Model.UnreadNotificationCount == 1 ? "" : "s")
+
+                                    </strong>
+
+
+                                    <span>
+                                        Admin replies to your inquiries
+                                        will appear here.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            @if (Model.UnreadNotificationCount > 0)
+                            {
+                                <form asp-controller="Account"
+                                      asp-action="MarkAllNotificationsRead"
+                                      method="post"
+                                      class="notification-ajax-form">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <button type="submit"
+                                            class="notification-action-button">
+
+                                        Mark all as read
+
+                                    </button>
+
+                                </form>
+                            }
+
+
+                        </div>
+
+
+                        @if (
+                            Model.Notifications == null
+                            ||
+                            !Model.Notifications.Any()
+                        )
+                        {
+                            <div class="notification-empty">
+
+
+                                <div class="notification-summary-icon">
+                                    <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+                                        <path d="M10 21h4"></path>
+                                    </svg>
+                                </div>
+
+                                <h4>
+                                    No notifications yet
+                                </h4>
+
+
+                                <p>
+                                    When WorkHub Admin replies
+                                    to your Contact Us inquiry,
+                                    the reply will appear here.
+                                </p>
+
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="notification-list">
+
+
+                                @foreach (
+                                    var notification
+                                    in Model.Notifications)
+                                {
+                                    <div class="notification-item
+                                        @(!notification.IsRead
+                                            ? "unread"
+                                            : "")">
+
+
+                                        <div class="notification-icon">
+
+                                            @if (string.Equals(
+                                                notification.NotificationType,
+                                                "InquiryReply",
+                                                StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                                    <path d="m4 6 8 7 8-7"></path>
+                                                </svg>
+                                            }
+                                            else
+                                            {
+                                                <svg class="wh-svg-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+                                                    <path d="M10 21h4"></path>
+                                                </svg>
+                                            }
+
+                                        </div>
+
+
+                                        <div>
+
+
+                                            <div class="notification-title-row">
+
+
+                                                <span class="notification-title">
+
+                                                    @notification.Title
+
+                                                </span>
+
+
+                                                @if (!notification.IsRead)
+                                                {
+                                                    <span class="notification-new-badge">
+                                                        New
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="notification-read-badge">
+                                                        Read
+                                                    </span>
+                                                }
+
+
+                                            </div>
+
+
+                                            <div class="notification-message-box">@notification.Message</div>
+
+
+                                            <div class="notification-meta">
+
+
+                                                <span>
+
+                                                    @notification.CreatedAt
+
+                                                 
+                                                </span>
+
+
+                                                <span>
+                                                    •
+                                                </span>
+
+
+                                                <span class="notification-type">
+
+                                                    @(string.Equals(
+                                                        notification.NotificationType,
+                                                        "InquiryReply",
+                                                        StringComparison.OrdinalIgnoreCase)
+                                                        ? "Admin Reply"
+                                                        : notification.NotificationType)
+
+                                                </span>
+
+
+
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                        @if (!notification.IsRead)
+                                        {
+                                            <form asp-controller="Account"
+                                                  asp-action="MarkNotificationRead"
+                                                  method="post"
+                                                  class="notification-read-form notification-ajax-form">
+
+                                                @Html.AntiForgeryToken()
+
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@notification.UserNotificationId" />
+
+
+                                                <button type="submit"
+                                                        class="notification-read-button">
+
+                                                    Mark as read
+
+                                                </button>
+
+
+                                            </form>
+                                        }
+
+
+                                    </div>
+                                }
+
+
+                            </div>
+                        }
+
+
+                    </div>
+
+
+                </section>
+
+
+
+
+
+
+
+                <!-- =================================
+                     NEWS & UPDATES
+                ================================== -->
+
+                <section id="news"
+                         class="tab-panel">
+
+
+                    <div class="dashboard-card">
+
+
+                        <div class="dashboard-card-header">
+
+                            <h3>
+                                News & Updates
+                            </h3>
+
+                            <span>
+                                Latest from WorkHub
+                            </span>
+
+                        </div>
+
+
+                        <div class="news-intro">
+
+                            <div class="news-intro-icon">
+                                <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 4h16v16H4z"></path>
+                                    <path d="M8 9h8"></path>
+                                    <path d="M8 13h8"></path>
+                                    <path d="M8 17h5"></path>
+                                </svg>
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    WorkHub News
+                                </strong>
+
+                                <span>
+                                    Stay informed about platform updates,
+                                    announcements and important information
+                                    published by WorkHub Admin.
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- LOADING -->
+
+                        <div id="newsLoading"
+                             class="news-loading">
+
+
+                            <div class="news-loading-icon">
+                                <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 4h16v16H4z"></path>
+                                    <path d="M8 9h8"></path>
+                                    <path d="M8 13h8"></path>
+                                    <path d="M8 17h5"></path>
+                                </svg>
+                            </div>
+
+
+                            <strong>
+                                Loading latest updates...
+                            </strong>
+
+
+                            <span>
+                                Getting the latest published news from WorkHub.
+                            </span>
+
+
+                        </div>
+
+
+                        <!-- ERROR -->
+
+                        <div id="newsError"
+                             class="news-error"
+                             style="display:none;">
+
+                            Unable to load WorkHub news and updates.
+                            Please refresh the page and try again.
+
+                        </div>
+
+
+                        <!-- EMPTY -->
+
+                        <div id="newsEmpty"
+                             class="news-empty"
+                             style="display:none;">
+
+
+                            <div class="news-empty-icon">
+                                <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 4h16v16H4z"></path>
+                                    <path d="M8 9h8"></path>
+                                    <path d="M8 13h8"></path>
+                                    <path d="M8 17h5"></path>
+                                </svg>
+                            </div>
+
+
+                            <h4>
+                                No news yet
+                            </h4>
+
+
+                            <p>
+                                WorkHub announcements and
+                                platform updates will appear here.
+                            </p>
+
+
+                        </div>
+
+
+                        <!-- PUBLISHED NEWS -->
+
+                        <div id="newsList"
+                             class="profile-news-list">
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+                <!-- =================================
+     ACCOUNT SETTINGS
+================================== -->
+
+                <section id="account"
+                         class="tab-panel">
+
+                    @if (!string.IsNullOrWhiteSpace(accountSuccess))
+                    {
+                        <div class="profile-message success">
+                            ✓ @accountSuccess
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(accountError))
+                    {
+                        <div class="profile-message error">
+                            @accountError
+                        </div>
+                    }
+
+                    <div class="dashboard-card">
+
+                        <div class="dashboard-card-header">
+
+                            <h3>
+                                Account Settings
+                            </h3>
+
+                            <span>
+                                Manage your WorkHub account
+                            </span>
+
+                        </div>
+
+                        <div class="settings-grid">
+
+                            <!-- =========================================
+                 PROFILE INFORMATION
+            ========================================== -->
+
+                            <div class="settings-section">
+
+                                <div class="settings-heading">
+
+                                    <div class="settings-heading-icon">
+                                        <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                            <circle cx="12" cy="8" r="4"></circle>
+                                            <path d="M4 21a8 8 0 0 1 16 0"></path>
+                                        </svg>
+                                    </div>
+
+                                    <div>
+                                        <h4>
+                                            Profile Information
+                                        </h4>
+
+                                        <p>
+                                            Review and update your
+                                            WorkHub profile information.
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div class="settings-account-grid">
+
+                                    <div class="settings-account-item">
+
+                                        <span>
+                                            Full Name
+                                        </span>
+
+                                        <strong>
+                                            @Model.FullName
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="settings-account-item">
+
+                                        <span>
+                                            Email
+                                        </span>
+
+                                        <strong>
+                                            @Model.Email
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="settings-account-item">
+
+                                        <span>
+                                            Account Type
+                                        </span>
+
+                                        <strong>
+                                            @Model.Role
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="settings-account-item">
+
+                                        <span>
+                                            Status
+                                        </span>
+
+                                        <strong style="color:#15803D;">
+                                            Active
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+                                <div style="margin-top:18px;">
+
+                                    <a asp-controller="UserProfile"
+                                       asp-action="Edit"
+                                       class="settings-secondary-button">
+
+                                        ✎ Edit Profile
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================================
+                 SIGN OUT
+            ========================================== -->
+
+                            <div class="settings-section">
+
+                                <div class="settings-heading">
+
+                                    <div class="settings-heading-icon">
+                                        <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                            <path d="M16 17l5-5-5-5"></path>
+                                            <path d="M21 12H9"></path>
+                                        </svg>
+                                    </div>
+
+                                    <div>
+
+                                        <h4>
+                                            Sign Out
+                                        </h4>
+
+                                        <p>
+                                            End your current WorkHub
+                                            session securely on this device.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                                <form asp-controller="Account"
+                                      asp-action="Logout"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="settings-logout-button">
+
+                                        Sign Out
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <!-- =========================================
+                 CHANGE PASSWORD
+            ========================================== -->
+
+                            <div class="settings-section full-width">
+
+                                <div class="settings-heading">
+
+                                    <div class="settings-heading-icon">
+                                        <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                            <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                                            <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                                        </svg>
+                                    </div>
+
+                                    <div>
+
+                                        <h4>
+                                            Change Password
+                                        </h4>
+
+                                        <p>
+                                            Update your password to
+                                            keep your WorkHub account secure.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <form asp-controller="Account"
+                                      asp-action="ChangePassword"
+                                      method="post"
+                                      id="changePasswordForm">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <!-- CURRENT PASSWORD -->
+
+                                    <div class="settings-field">
+
+                                        <label for="currentPassword">
+                                            Current Password
+                                        </label>
+
+                                        <input type="password"
+                                               id="currentPassword"
+                                               name="currentPassword"
+                                               class="settings-input"
+                                               autocomplete="current-password"
+                                               required />
+
+                                    </div>
+
+
+                                    <!-- NEW + CONFIRM PASSWORD -->
+
+                                    <div class="settings-account-grid">
+
+                                        <div class="settings-field">
+
+                                            <label for="newPassword">
+                                                New Password
+                                            </label>
+
+                                            <input type="password"
+                                                   id="newPassword"
+                                                   name="newPassword"
+                                                   class="settings-input"
+                                                   minlength="6"
+                                                   autocomplete="new-password"
+                                                   required />
+
+                                            <div class="settings-helper">
+                                                Minimum 6 characters.
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="settings-field">
+
+                                            <label for="confirmPassword">
+                                                Confirm New Password
+                                            </label>
+
+                                            <input type="password"
+                                                   id="confirmPassword"
+                                                   name="confirmPassword"
+                                                   class="settings-input"
+                                                   minlength="6"
+                                                   autocomplete="new-password"
+                                                   required />
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <button type="submit"
+                                            class="settings-primary-button">
+
+                                        Change Password
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <!-- =========================================
+                 DANGER ZONE
+            ========================================== -->
+
+                            <div class="settings-section full-width danger">
+
+                                <div class="settings-heading">
+
+                                    <div class="settings-heading-icon">
+                                        <svg class="wh-svg-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 9v4"></path>
+                                            <path d="M12 17h.01"></path>
+                                            <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>
+                                        </svg>
+                                    </div>
+
+                                    <div>
+
+                                        <h4 style="color:#B91C1C;">
+                                            Danger Zone
+                                        </h4>
+
+                                        <p>
+                                            Delete your WorkHub account
+                                            and disable your professional profiles.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- WARNING -->
+
+                                <div class="delete-warning">
+
+                                    <strong>
+                                        Warning:
+                                    </strong>
+
+                                    Deleting your account will prevent
+                                    you from signing in and will deactivate
+                                    your Job Seeker, Service Provider and
+                                    Marketplace Seller profiles.
+
+                                </div>
+
+
+                                <!-- DELETE ACCOUNT FORM -->
+
+                                <form asp-controller="Account"
+                                      asp-action="DeleteAccount"
+                                      method="post"
+                                      id="deleteAccountForm">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <!-- CURRENT PASSWORD -->
+
+                                    <div class="settings-field">
+
+                                        <label for="deletePassword">
+                                            Current Password
+                                        </label>
+
+                                        <input type="password"
+                                               id="deletePassword"
+                                               name="password"
+                                               class="settings-input"
+                                               autocomplete="current-password"
+                                               required />
+
+                                    </div>
+
+
+                                    <!-- DELETE CONFIRMATION -->
+
+                                    <div class="settings-field">
+
+                                        <label for="deleteConfirmation">
+                                            Type DELETE to confirm
+                                        </label>
+
+                                        <input type="text"
+                                               id="deleteConfirmation"
+                                               name="confirmation"
+                                               class="settings-input"
+                                               placeholder="DELETE"
+                                               autocomplete="off"
+                                               required />
+
+                                        <div class="settings-helper">
+                                            Type DELETE exactly to confirm account deletion.
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- DELETE BUTTON -->
+
+                                    <button type="submit"
+                                            class="delete-button">
+
+                                        Delete WorkHub Account
+
+                                    </button>
+
+
+
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                @section Scripts
+                {
+                    <script>
+
+                                        document.addEventListener(
+                                            "DOMContentLoaded",
+                                            function() {
+
+
+                                                // =====================================
+                                                // TAB SYSTEM
+                                                // =====================================
+
+                                                const tabs =
+                                                    document.querySelectorAll(
+                                                        ".sidebar-tab"
+                                                    );
+
+
+                                                const panels =
+                                                    document.querySelectorAll(
+                                                        ".tab-panel"
+                                                    );
+
+
+                                                function openTab(tabName) {
+                                                    tabs.forEach(
+                                                        function(tab) {
+                                                            tab.classList.remove(
+                                                                "active"
+                                                            );
+                                                        }
+                                                    );
+
+
+                                                    panels.forEach(
+                                                        function(panel) {
+                                                            panel.classList.remove(
+                                                                "active"
+                                                            );
+                                                        }
+                                                    );
+
+
+                                                    const selectedTab =
+                                                        document.querySelector(
+                                                            '.sidebar-tab[data-tab="' +
+                                                            tabName +
+                                                            '"]'
+                                                        );
+
+
+                                                    const selectedPanel =
+                                                        document.getElementById(
+                                                            tabName
+                                                        );
+
+
+                                                    if (selectedTab) {
+                                                        selectedTab.classList.add(
+                                                            "active"
+                                                        );
+                                                    }
+
+
+                                                    if (selectedPanel) {
+                                                        selectedPanel.classList.add(
+                                                            "active"
+                                                        );
+                                                    }
+
+
+                                                    if (
+                                                        history
+                                                        &&
+                                                        history.replaceState
+                                                    ) {
+                                                        history.replaceState(
+                                                            null,
+                                                            "",
+                                                            "#" + tabName
+                                                        );
+                                                    }
+                                                }
+
+
+                                                tabs.forEach(
+                                                    function(tab) {
+                                                        tab.addEventListener(
+                                                            "click",
+                                                            function() {
+                                                                openTab(
+                                                                    this.dataset.tab
+                                                                );
+                                                            }
+                                                        );
+                                                    }
+                                                );
+
+
+                                                // =====================================
+                                                // OPEN TAB FROM URL HASH
+                                                // =====================================
+
+                                                const hash =
+                                                    window.location.hash
+                                                        .replace(
+                                                            "#",
+                                                            ""
+                                                        );
+
+
+                                                if (
+                                                    hash
+                                                    &&
+                                                    document.getElementById(
+                                                        hash
+                                                    )
+                                                ) {
+                                                    openTab(
+                                                        hash
+                                                    );
+                                                }
+
+
+                                                // =====================================
+                                                // CHANGE PASSWORD VALIDATION
+                                                // =====================================
+
+                                                const changePasswordForm =
+                                                    document.getElementById(
+                                                        "changePasswordForm"
+                                                    );
+
+
+                                                changePasswordForm?.addEventListener(
+                                                    "submit",
+                                                    function(event) {
+                                                        const newPassword =
+                                                            document.getElementById(
+                                                                "newPassword"
+                                                            )?.value
+                                                            ??
+                                                            "";
+
+
+                                                        const confirmPassword =
+                                                            document.getElementById(
+                                                                "confirmPassword"
+                                                            )?.value
+                                                            ??
+                                                            "";
+
+
+                                                        if (
+                                                            newPassword !==
+                                                            confirmPassword
+                                                        ) {
+                                                            event.preventDefault();
+
+
+                                                            alert(
+                                                                "New password and confirmation password do not match."
+                                                            );
+                                                        }
+                                                    }
+                                                );
+
+
+                                                // =====================================
+                                                // DELETE ACCOUNT SAFETY
+                                                // =====================================
+
+                                                const deleteAccountForm =
+                                                    document.getElementById(
+                                                        "deleteAccountForm"
+                                                    );
+
+
+                                                deleteAccountForm?.addEventListener(
+                                                    "submit",
+                                                    function(event) {
+                                                        const confirmation =
+                                                            document.getElementById(
+                                                                "deleteConfirmation"
+                                                            )?.value
+                                                                .trim()
+                                                                .toUpperCase()
+                                                            ??
+                                                            "";
+
+
+                                                        if (
+                                                            confirmation !==
+                                                            "DELETE"
+                                                        ) {
+                                                            event.preventDefault();
+
+
+                                                            alert(
+                                                                "Please type DELETE to confirm account deletion."
+                                                            );
+
+
+                                                            return;
+                                                        }
+
+
+                                                        const confirmed =
+                                                            window.confirm(
+                                                                "Are you sure you want to delete your WorkHub account? You will no longer be able to sign in."
+                                                            );
+
+
+                                                        if (!confirmed) {
+                                                            event.preventDefault();
+                                                        }
+                                                    }
+                                                );
+
+
+                                                // =====================================
+                                                // NOTIFICATION FORMS
+                                                // =====================================
+
+                                                const notificationForms =
+                                                    document.querySelectorAll(
+                                                        ".notification-ajax-form"
+                                                    );
+
+
+                                                notificationForms.forEach(
+                                                    function(form) {
+                                                        form.addEventListener(
+                                                            "submit",
+                                                            async function(event) {
+                                                                event.preventDefault();
+
+
+                                                                const button =
+                                                                    form.querySelector(
+                                                                        "button"
+                                                                    );
+
+
+                                                                if (button) {
+                                                                    button.disabled =
+                                                                        true;
+
+                                                                    button.textContent =
+                                                                        "Updating...";
+                                                                }
+
+
+                                                                try {
+                                                                    const formData =
+                                                                        new FormData(
+                                                                            form
+                                                                        );
+
+
+                                                                    const response =
+                                                                        await fetch(
+                                                                            form.action,
+                                                                            {
+                                                                                method:
+                                                                                    "POST",
+
+                                                                                body:
+                                                                                    formData,
+
+                                                                                credentials:
+                                                                                    "same-origin"
+                                                                            }
+                                                                        );
+
+
+                                                                    if (!response.ok) {
+                                                                        throw new Error();
+                                                                    }
+
+
+                                                                    window.location.href =
+                                                                        "/Account/Profile#notifications";
+                                                                }
+                                                                catch {
+                                                                    if (button) {
+                                                                        button.disabled =
+                                                                            false;
+
+                                                                        button.textContent =
+                                                                            "Try again";
+                                                                    }
+
+
+                                                                    alert(
+                                                                        "Unable to update notification."
+                                                                    );
+                                                                }
+                                                            }
+                                                        );
+                                                    }
+                                                );
+
+
+                                                // =====================================
+                                                // SAFE URL
+                                                // =====================================
+
+                                                function getSafeUrl(value) {
+                                                    if (!value) {
+                                                        return null;
+                                                    }
+
+
+                                                    let url =
+                                                        value.trim();
+
+
+                                                    if (!url) {
+                                                        return null;
+                                                    }
+
+
+                                                    if (
+                                                        !url.startsWith(
+                                                            "http://"
+                                                        )
+                                                        &&
+                                                        !url.startsWith(
+                                                            "https://"
+                                                        )
+                                                    ) {
+                                                        url =
+                                                            "https://" +
+                                                            url;
+                                                    }
+
+
+                                                    try {
+                                                        const parsed =
+                                                            new URL(
+                                                                url
+                                                            );
+
+
+                                                        if (
+                                                            parsed.protocol !==
+                                                            "http:"
+                                                            &&
+                                                            parsed.protocol !==
+                                                            "https:"
+                                                        ) {
+                                                            return null;
+                                                        }
+
+
+                                                        return parsed.href;
+                                                    }
+                                                    catch {
+                                                        return null;
+                                                    }
+                                                }
+
+
+                                                // =====================================
+                                                // EXTERNAL LINK
+                                                // =====================================
+
+                                                function setupExternalLink(
+                                                    elementId,
+                                                    value) {
+                                                    const element =
+                                                        document.getElementById(
+                                                            elementId
+                                                        );
+
+
+                                                    if (!element) {
+                                                        return false;
+                                                    }
+
+
+                                                    const safeUrl =
+                                                        getSafeUrl(
+                                                            value
+                                                        );
+
+
+                                                    if (!safeUrl) {
+                                                        element.style.display =
+                                                            "none";
+
+                                                        return false;
+                                                    }
+
+
+                                                    element.href =
+                                                        safeUrl;
+
+
+                                                    element.style.display =
+                                                        "inline-flex";
+
+
+                                                    return true;
+                                                }
+
+
+                                                // =====================================
+                                                // LOAD GENERAL PROFILE
+                                                // =====================================
+
+                                                loadDashboardProfile();
+
+
+                                                async function loadDashboardProfile() {
+                                                    try {
+                                                        const response =
+                                                            await fetch(
+                                                                "/UserProfile/DashboardSummary",
+                                                                {
+                                                                    credentials:
+                                                                        "same-origin",
+
+                                                                    cache:
+                                                                        "no-store"
+                                                                }
+                                                            );
+
+
+                                                        if (!response.ok) {
+                                                            return;
+                                                        }
+
+
+                                                        const profile =
+                                                            await response.json();
+
+
+                                                        // LOCATION
+
+                                                        const locationParts =
+                                                            [];
+
+
+                                                        if (profile.country) {
+                                                            locationParts.push(
+                                                                profile.country
+                                                            );
+                                                        }
+
+
+                                                        if (profile.location) {
+                                                            locationParts.push(
+                                                                profile.location
+                                                            );
+                                                        }
+
+
+                                                        if (
+                                                            locationParts.length
+                                                            > 0
+                                                        ) {
+                                                            const box =
+                                                                document.getElementById(
+                                                                    "dashboardProfileLocation"
+                                                                );
+
+
+                                                            const text =
+                                                                document.getElementById(
+                                                                    "dashboardProfileLocationText"
+                                                                );
+
+
+                                                            if (box && text) {
+                                                                text.textContent =
+                                                                    locationParts.join(
+                                                                        " · "
+                                                                    );
+
+
+                                                                box.style.display =
+                                                                    "flex";
+                                                            }
+                                                        }
+
+
+                                                        // ABOUT
+
+                                                        if (profile.about) {
+                                                            let about =
+                                                                profile.about.trim();
+
+
+                                                            if (
+                                                                about.length
+                                                                > 120
+                                                            ) {
+                                                                about =
+                                                                    about.substring(
+                                                                        0,
+                                                                        120
+                                                                    )
+                                                                    +
+                                                                    "...";
+                                                            }
+
+
+                                                            const aboutBox =
+                                                                document.getElementById(
+                                                                    "dashboardProfileAbout"
+                                                                );
+
+
+                                                            if (aboutBox) {
+                                                                aboutBox.textContent =
+                                                                    about;
+
+
+                                                                aboutBox.style.display =
+                                                                    "block";
+                                                            }
+                                                        }
+
+
+                                                        // WEBSITE
+
+                                                        const websiteLink =
+                                                            document.getElementById(
+                                                                "dashboardWebsiteLink"
+                                                            );
+
+
+                                                        const websiteEmpty =
+                                                            document.getElementById(
+                                                                "dashboardWebsiteEmpty"
+                                                            );
+
+
+                                                        const websiteUrl =
+                                                            getSafeUrl(
+                                                                profile.website
+                                                            );
+
+
+                                                        if (
+                                                            websiteUrl
+                                                            &&
+                                                            websiteLink
+                                                        ) {
+                                                            websiteLink.href =
+                                                                websiteUrl;
+
+
+                                                            websiteLink.textContent =
+                                                                profile.website;
+
+
+                                                            websiteLink.style.display =
+                                                                "inline";
+
+
+                                                            if (websiteEmpty) {
+                                                                websiteEmpty.style.display =
+                                                                    "none";
+                                                            }
+                                                        }
+
+
+                                                        // CONNECTED APPS
+
+                                                        let appCount =
+                                                            0;
+
+
+                                                        if (
+                                                            setupExternalLink(
+                                                                "dashboardLinkedIn",
+                                                                profile.linkedInUrl
+                                                            )
+                                                        ) {
+                                                            appCount++;
+                                                        }
+
+
+                                                        if (
+                                                            setupExternalLink(
+                                                                "dashboardFacebook",
+                                                                profile.facebookUrl
+                                                            )
+                                                        ) {
+                                                            appCount++;
+                                                        }
+
+
+                                                        if (
+                                                            setupExternalLink(
+                                                                "dashboardGitHub",
+                                                                profile.gitHubUrl
+                                                            )
+                                                        ) {
+                                                            appCount++;
+                                                        }
+
+
+                                                        if (
+                                                            setupExternalLink(
+                                                                "dashboardInstagram",
+                                                                profile.instagramUrl
+                                                            )
+                                                        ) {
+                                                            appCount++;
+                                                        }
+
+
+                                                        if (appCount > 0) {
+                                                            const emptyApps =
+                                                                document.getElementById(
+                                                                    "dashboardAppsEmpty"
+                                                                );
+
+
+                                                            if (emptyApps) {
+                                                                emptyApps.style.display =
+                                                                    "none";
+                                                            }
+                                                        }
+                                                    }
+                                                    catch {
+                                                        console.log(
+                                                            "Dashboard profile information could not be loaded."
+                                                        );
+                                                    }
+                                                }
+
+
+                                                // =====================================
+                                                // LOAD NEWS & UPDATES
+                                                // =====================================
+
+                                                loadNewsUpdates();
+
+
+                                                async function loadNewsUpdates() {
+                                                    const loading =
+                                                        document.getElementById(
+                                                            "newsLoading"
+                                                        );
+
+
+                                                    const errorBox =
+                                                        document.getElementById(
+                                                            "newsError"
+                                                        );
+
+
+                                                    const emptyBox =
+                                                        document.getElementById(
+                                                            "newsEmpty"
+                                                        );
+
+
+                                                    const list =
+                                                        document.getElementById(
+                                                            "newsList"
+                                                        );
+
+
+                                                    if (!list) {
+                                                        return;
+                                                    }
+
+
+                                                    // CLEAR OLD CONTENT
+
+                                                    list.innerHTML =
+                                                        "";
+
+
+                                                    if (errorBox) {
+                                                        errorBox.style.display =
+                                                            "none";
+                                                    }
+
+
+                                                    if (emptyBox) {
+                                                        emptyBox.style.display =
+                                                            "none";
+                                                    }
+
+
+                                                    if (loading) {
+                                                        loading.style.display =
+                                                            "block";
+                                                    }
+
+
+                                                    try {
+                                                        const response =
+                                                            await fetch(
+                                                                "/UserNews/List",
+                                                                {
+                                                                    method:
+                                                                        "GET",
+
+                                                                    credentials:
+                                                                        "same-origin",
+
+                                                                    cache:
+                                                                        "no-store",
+
+                                                                    headers:
+                                                                    {
+                                                                        "Accept":
+                                                                            "application/json"
+                                                                    }
+                                                                }
+                                                            );
+
+
+                                                        if (loading) {
+                                                            loading.style.display =
+                                                                "none";
+                                                        }
+
+
+                                                        if (!response.ok) {
+                                                            if (errorBox) {
+                                                                errorBox.style.display =
+                                                                    "block";
+                                                            }
+
+
+                                                            return;
+                                                        }
+
+
+                                                        const newsItems =
+                                                            await response.json();
+
+
+                                                        if (
+                                                            !Array.isArray(
+                                                                newsItems
+                                                            )
+                                                            ||
+                                                            newsItems.length === 0
+                                                        ) {
+                                                            if (emptyBox) {
+                                                                emptyBox.style.display =
+                                                                    "block";
+                                                            }
+
+
+                                                            return;
+                                                        }
+
+
+                                                        newsItems.forEach(
+                                                            function(news) {
+                                                                createNewsCard(
+                                                                    news,
+                                                                    list
+                                                                );
+                                                            }
+                                                        );
+                                                    }
+                                                    catch (error) {
+                                                        if (loading) {
+                                                            loading.style.display =
+                                                                "none";
+                                                        }
+
+
+                                                        if (errorBox) {
+                                                            errorBox.style.display =
+                                                                "block";
+                                                        }
+
+
+                                                        console.log(
+                                                            "News and updates could not be loaded.",
+                                                            error
+                                                        );
+                                                    }
+                                                }
+
+
+                                                // =====================================
+                                                // CREATE NEWS CARD
+                                                // =====================================
+
+                                                function createNewsCard(
+                                                    news,
+                                                    list) {
+                                                    const card =
+                                                        document.createElement(
+                                                            "article"
+                                                        );
+
+
+                                                    card.className =
+                                                        "profile-news-card";
+
+
+                                                    // TOP
+
+                                                    const top =
+                                                        document.createElement(
+                                                            "div"
+                                                        );
+
+
+                                                    top.className =
+                                                        "profile-news-top";
+
+
+                                                    const category =
+                                                        document.createElement(
+                                                            "span"
+                                                        );
+
+
+                                                    category.className =
+                                                        "profile-news-category";
+
+
+                                                    category.textContent =
+                                                        news.category
+                                                        ||
+                                                        "General";
+
+
+                                                    const date =
+                                                        document.createElement(
+                                                            "span"
+                                                        );
+
+
+                                                    date.className =
+                                                        "profile-news-date";
+
+
+                                                    const rawDate =
+                                                        news.publishedAt
+                                                        ||
+                                                        news.createdAt;
+
+
+                                                    if (rawDate) {
+                                                        const parsedDate =
+                                                            new Date(
+                                                                rawDate
+                                                            );
+
+
+                                                        if (
+                                                            !Number.isNaN(
+                                                                parsedDate.getTime()
+                                                            )
+                                                        ) {
+                                                            date.textContent =
+                                                                parsedDate
+                                                                    .toLocaleDateString(
+                                                                        undefined,
+                                                                        {
+                                                                            day:
+                                                                                "2-digit",
+
+                                                                            month:
+                                                                                "short",
+
+                                                                            year:
+                                                                                "numeric"
+                                                                        }
+                                                                    );
+                                                        }
+                                                    }
+
+
+                                                    top.appendChild(
+                                                        category
+                                                    );
+
+
+                                                    top.appendChild(
+                                                        date
+                                                    );
+
+
+                                                    // TITLE
+
+                                                    const title =
+                                                        document.createElement(
+                                                            "h4"
+                                                        );
+
+
+                                                    title.className =
+                                                        "profile-news-title";
+
+
+                                                    title.textContent =
+                                                        news.title
+                                                        ||
+                                                        "WorkHub Update";
+
+
+                                                    // SUMMARY
+
+                                                    const summary =
+                                                        document.createElement(
+                                                            "p"
+                                                        );
+
+
+                                                    summary.className =
+                                                        "profile-news-summary";
+
+
+                                                    if (
+                                                        news.summary
+                                                        &&
+                                                        news.summary.trim()
+                                                    ) {
+                                                        summary.textContent =
+                                                            news.summary;
+                                                    }
+                                                    else {
+                                                        const fallback =
+                                                            news.content
+                                                            ||
+                                                            "Read the latest WorkHub update.";
+
+
+                                                        summary.textContent =
+                                                            fallback.length > 180
+                                                                ? fallback.substring(
+                                                                    0,
+                                                                    180
+                                                                )
+                                                                +
+                                                                "..."
+                                                                : fallback;
+                                                    }
+
+
+                                                    // FULL CONTENT
+
+                                                    const content =
+                                                        document.createElement(
+                                                            "div"
+                                                        );
+
+
+                                                    content.className =
+                                                        "profile-news-content";
+
+
+                                                    content.textContent =
+                                                        news.content
+                                                        ||
+                                                        "";
+
+
+                                                    // FOOTER
+
+                                                    const footer =
+                                                        document.createElement(
+                                                            "div"
+                                                        );
+
+
+                                                    footer.className =
+                                                        "profile-news-footer";
+
+
+                                                    const author =
+                                                        document.createElement(
+                                                            "span"
+                                                        );
+
+
+                                                    author.className =
+                                                        "profile-news-author";
+
+
+                                                    author.textContent =
+                                                        "Published by "
+                                                        +
+                                                        (
+                                                            news.createdBy
+                                                            ||
+                                                            "WorkHub Admin"
+                                                        );
+
+
+                                                    const readButton =
+                                                        document.createElement(
+                                                            "button"
+                                                        );
+
+
+                                                    readButton.type =
+                                                        "button";
+
+
+                                                    readButton.className =
+                                                        "profile-news-read-button";
+
+
+                                                    readButton.textContent =
+                                                        "Read More";
+
+
+                                                    readButton.addEventListener(
+                                                        "click",
+                                                        function() {
+                                                            const isOpen =
+                                                                content.classList
+                                                                    .contains(
+                                                                        "open"
+                                                                    );
+
+
+                                                            if (isOpen) {
+                                                                content.classList.remove(
+                                                                    "open"
+                                                                );
+
+
+                                                                readButton.textContent =
+                                                                    "Read More";
+                                                            }
+                                                            else {
+                                                                content.classList.add(
+                                                                    "open"
+                                                                );
+
+
+                                                                readButton.textContent =
+                                                                    "Show Less";
+                                                            }
+                                                        }
+                                                    );
+
+
+                                                    footer.appendChild(
+                                                        author
+                                                    );
+
+
+                                                    footer.appendChild(
+                                                        readButton
+                                                    );
+
+
+                                                    // BUILD
+
+                                                    card.appendChild(
+                                                        top
+                                                    );
+
+
+                                                    card.appendChild(
+                                                        title
+                                                    );
+
+
+                                                    card.appendChild(
+                                                        summary
+                                                    );
+
+
+                                                    card.appendChild(
+                                                        footer
+                                                    );
+
+
+                                                    card.appendChild(
+                                                        content
+                                                    );
+
+
+                                                    list.appendChild(
+                                                        card
+                                                    );
+                                                }
+
+
+                                            }
+                                        );
+
+                    </script>
+                }

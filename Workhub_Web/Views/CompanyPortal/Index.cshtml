@@ -1,0 +1,1238 @@
+﻿@{
+    ViewData["Title"] = "Company Portal";
+}
+
+<style>
+
+    :root {
+        --company-orange: #FD5000;
+        --company-orange-dark: #D94300;
+        --company-orange-soft: #FFF3EC;
+        --company-orange-pale: #FFF8F4;
+        --company-dark: #0F172A;
+        --company-dark-2: #1E293B;
+        --company-text: #475569;
+        --company-muted: #64748B;
+        --company-border: #E2E8F0;
+        --company-light: #F8FAFC;
+        --company-white: #FFFFFF;
+        --company-green: #16A34A;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    /* =========================================================
+           PAGE
+        ========================================================= */
+
+    .company-page {
+        min-height: 100vh;
+        background: radial-gradient(circle at 5% 20%, rgba(253,80,0,.035), transparent 25%), #F8FAFC;
+        color: var(--company-text);
+        overflow: hidden;
+    }
+
+    .company-container {
+        position: relative;
+        z-index: 3;
+        width: calc(100% - 40px);
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    /* =========================================================
+           ICON SYSTEM
+        ========================================================= */
+
+    .company-icon {
+        width: 20px;
+        height: 20px;
+        display: block;
+        flex-shrink: 0;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .company-icon-sm {
+        width: 17px;
+        height: 17px;
+    }
+
+    .company-icon-lg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .company-icon-xl {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* =========================================================
+           HERO
+        ========================================================= */
+
+    .company-hero {
+        position: relative;
+        min-height: 570px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        background: radial-gradient( circle at 82% 18%, rgba(253,80,0,.42), transparent 28% ), radial-gradient( circle at 8% 90%, rgba(253,80,0,.13), transparent 30% ), radial-gradient( circle at 65% 100%, rgba(255,255,255,.06), transparent 35% ), linear-gradient( 125deg, #090F1C 0%, #111827 48%, #24140E 100% );
+    }
+
+        .company-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: .28;
+            background-image: linear-gradient( rgba(255,255,255,.035) 1px, transparent 1px ), linear-gradient( 90deg, rgba(255,255,255,.035) 1px, transparent 1px );
+            background-size: 55px 55px;
+            mask-image: linear-gradient( to bottom, black, transparent 90% );
+        }
+
+        .company-hero::after {
+            content: "";
+            position: absolute;
+            width: 520px;
+            height: 520px;
+            right: -240px;
+            bottom: -300px;
+            border-radius: 50%;
+            border: 1px solid rgba(253,80,0,.25);
+            box-shadow: 0 0 0 45px rgba(253,80,0,.025), 0 0 0 90px rgba(253,80,0,.018), 0 0 0 135px rgba(253,80,0,.012);
+        }
+
+    .company-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(350px, .88fr);
+        gap: 65px;
+        align-items: center;
+    }
+
+    /* =========================================================
+           HERO COPY
+        ========================================================= */
+
+    .company-hero-copy {
+        animation: companyFadeUp .7s ease both;
+    }
+
+    .company-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding: 8px 13px;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 999px;
+        background: rgba(255,255,255,.07);
+        backdrop-filter: blur(10px);
+        color: #FDBA74;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.25px;
+        text-transform: uppercase;
+    }
+
+    .company-eyebrow-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--company-orange);
+        box-shadow: 0 0 12px rgba(253,80,0,.9);
+    }
+
+    .company-hero h1 {
+        max-width: 760px;
+        margin: 0 0 20px;
+        color: #FFFFFF;
+        font-size: clamp(42px, 5vw, 64px);
+        font-weight: 950;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+    }
+
+        .company-hero h1 span {
+            color: #FF8A5B;
+            text-shadow: 0 0 35px rgba(253,80,0,.25);
+        }
+
+    .company-hero-copy p {
+        max-width: 670px;
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    /* =========================================================
+           ACTIONS
+        ========================================================= */
+
+    .company-actions {
+        margin-top: 32px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .company-login-button {
+        min-width: 190px;
+        padding: 14px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 10px;
+        background: rgba(255,255,255,.08);
+        backdrop-filter: blur(10px);
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: transform .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+        .company-login-button:hover {
+            color: #FFFFFF;
+            background: var(--company-orange);
+            border-color: var(--company-orange);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(253,80,0,.28);
+        }
+
+    /* =========================================================
+           HERO RIGHT CARD
+        ========================================================= */
+
+    .company-hero-card {
+        position: relative;
+        padding: 30px;
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 22px;
+        background: linear-gradient( 145deg, rgba(255,255,255,.11), rgba(255,255,255,.045) );
+        backdrop-filter: blur(18px);
+        box-shadow: 0 30px 70px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08);
+        animation: companyFadeUp .7s .15s ease both, companyFloat 6s ease-in-out infinite;
+    }
+
+        .company-hero-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 35px;
+            right: 35px;
+            height: 2px;
+            background: linear-gradient( 90deg, transparent, var(--company-orange), transparent );
+            box-shadow: 0 0 18px rgba(253,80,0,.6);
+        }
+
+    .company-card-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        color: #FDBA74;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.3px;
+        text-transform: uppercase;
+    }
+
+        .company-card-label::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--company-orange);
+            box-shadow: 0 0 10px rgba(253,80,0,.9);
+        }
+
+    .company-feature-row {
+        position: relative;
+        padding: 16px 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border-bottom: 1px solid rgba(255,255,255,.09);
+    }
+
+        .company-feature-row:last-child {
+            border-bottom: none;
+        }
+
+    .company-feature-icon {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(253,80,0,.25);
+        border-radius: 13px;
+        background: linear-gradient( 145deg, rgba(253,80,0,.22), rgba(253,80,0,.08) );
+        color: #FF9A72;
+        transition: transform .25s ease, background .25s ease;
+    }
+
+    .company-feature-row:hover .company-feature-icon {
+        transform: translateY(-2px) scale(1.04);
+        background: rgba(253,80,0,.25);
+    }
+
+    .company-feature-row strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: 850;
+    }
+
+    .company-feature-row span {
+        color: #CBD5E1;
+        font-size: 9px;
+        line-height: 1.55;
+    }
+
+    /* =========================================================
+           CONTENT
+        ========================================================= */
+
+    .company-content {
+        padding: 82px 0 100px;
+    }
+
+    .company-section-heading {
+        max-width: 720px;
+        margin: 0 auto 42px;
+        text-align: center;
+    }
+
+        .company-section-heading > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 10px;
+            color: var(--company-orange);
+            font-size: 9px;
+            font-weight: 950;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+            .company-section-heading > span::before,
+            .company-section-heading > span::after {
+                content: "";
+                width: 18px;
+                height: 1px;
+                background: rgba(253,80,0,.4);
+            }
+
+        .company-section-heading h2 {
+            margin: 0 0 12px;
+            color: var(--company-dark);
+            font-size: clamp(27px, 4vw, 35px);
+            font-weight: 950;
+            line-height: 1.15;
+            letter-spacing: -1px;
+        }
+
+        .company-section-heading p {
+            margin: 0;
+            color: var(--company-muted);
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+    /* =========================================================
+           STEPS
+        ========================================================= */
+
+    .company-steps {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .company-step {
+        position: relative;
+        padding: 27px 23px;
+        border: 1px solid var(--company-border);
+        border-radius: 17px;
+        background: #FFFFFF;
+        box-shadow: 0 8px 30px rgba(15,23,42,.045);
+        overflow: hidden;
+        transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+    }
+
+        .company-step::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient( 90deg, var(--company-orange), #FF9A72 );
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .3s ease;
+        }
+
+        .company-step:hover {
+            transform: translateY(-7px);
+            border-color: #FED7C2;
+            box-shadow: 0 20px 45px rgba(15,23,42,.09), 0 0 0 1px rgba(253,80,0,.04);
+        }
+
+            .company-step:hover::before {
+                transform: scaleX(1);
+            }
+
+    .company-step-number {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 19px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #FED7C2;
+        border-radius: 13px;
+        background: var(--company-orange-soft);
+        color: var(--company-orange-dark);
+        font-size: 12px;
+        font-weight: 950;
+        box-shadow: 0 7px 18px rgba(253,80,0,.08);
+    }
+
+    .company-step h3 {
+        margin: 0 0 9px;
+        color: var(--company-dark);
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1.3;
+    }
+
+    .company-step p {
+        margin: 0;
+        color: var(--company-muted);
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    /* =========================================================
+           BENEFITS
+        ========================================================= */
+
+    .company-benefit-section {
+        position: relative;
+        margin-top: 72px;
+        padding: 42px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 55px;
+        align-items: center;
+        border: 1px solid #FED7C2;
+        border-radius: 22px;
+        background: radial-gradient( circle at 0% 100%, rgba(253,80,0,.08), transparent 30% ), linear-gradient( 135deg, #FFF8F4, #FFFFFF );
+        box-shadow: 0 20px 55px rgba(15,23,42,.05);
+    }
+
+    .company-benefit-copy .company-eyebrow {
+        margin-bottom: 17px;
+        border-color: #FED7C2;
+        background: var(--company-orange-soft);
+        color: var(--company-orange-dark);
+    }
+
+    .company-benefit-copy h2 {
+        max-width: 540px;
+        margin: 0 0 13px;
+        color: var(--company-dark);
+        font-size: 29px;
+        font-weight: 950;
+        line-height: 1.15;
+        letter-spacing: -.8px;
+    }
+
+    .company-benefit-copy p {
+        max-width: 570px;
+        margin: 0;
+        color: var(--company-muted);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .company-benefit-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .company-benefit-item {
+        padding: 14px 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #F1F5F9;
+        border-radius: 12px;
+        background: #FFFFFF;
+        box-shadow: 0 5px 18px rgba(15,23,42,.025);
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+        .company-benefit-item:hover {
+            transform: translateX(4px);
+            border-color: #FED7C2;
+            box-shadow: 0 10px 25px rgba(253,80,0,.06);
+        }
+
+    .benefit-check {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #BBF7D0;
+        border-radius: 9px;
+        background: #F0FDF4;
+        color: var(--company-green);
+    }
+
+    .company-benefit-item span {
+        color: #475569;
+        font-size: 10px;
+        font-weight: 750;
+        line-height: 1.4;
+    }
+
+    /* =========================================================
+           CTA
+        ========================================================= */
+
+    .company-cta {
+        position: relative;
+        margin-top: 55px;
+        padding: 38px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 20px;
+        overflow: hidden;
+        background: radial-gradient( circle at 90% 20%, rgba(253,80,0,.27), transparent 28% ), linear-gradient( 120deg, #0F172A, #1E293B );
+        box-shadow: 0 25px 60px rgba(15,23,42,.16);
+    }
+
+        .company-cta::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 180px;
+            height: 100%;
+            background: linear-gradient( 90deg, rgba(253,80,0,.12), transparent );
+        }
+
+    .company-cta-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .company-cta h2 {
+        margin: 0 0 8px;
+        color: #FFFFFF;
+        font-size: 25px;
+        font-weight: 950;
+        letter-spacing: -.5px;
+    }
+
+    .company-cta p {
+        margin: 0;
+        color: #CBD5E1;
+        font-size: 10px;
+        line-height: 1.65;
+    }
+
+    .company-cta-button {
+        position: relative;
+        z-index: 2;
+        min-width: 180px;
+        padding: 13px 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid var(--company-orange);
+        border-radius: 10px;
+        background: var(--company-orange);
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
+    }
+
+        .company-cta-button:hover {
+            background: var(--company-orange-dark);
+            color: #FFFFFF;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(253,80,0,.3);
+        }
+
+    /* =========================================================
+           ANIMATIONS
+        ========================================================= */
+
+    @@keyframes companyFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes companyFloat {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-7px);
+        }
+    }
+
+    /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+    @@media (max-width: 1050px) {
+
+        .company-hero-grid {
+            grid-template-columns: 1fr;
+            gap: 35px;
+        }
+
+        .company-hero {
+            padding: 80px 0;
+        }
+
+        .company-hero-card {
+            max-width: 700px;
+        }
+
+        .company-steps {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 760px) {
+
+        .company-container {
+            width: calc(100% - 28px);
+        }
+
+        .company-hero {
+            min-height: auto;
+            padding: 70px 0;
+        }
+
+            .company-hero h1 {
+                font-size: 40px;
+                letter-spacing: -1.5px;
+            }
+
+        .company-hero-copy p {
+            font-size: 13px;
+        }
+
+        .company-hero-card {
+            padding: 22px;
+        }
+
+        .company-content {
+            padding: 60px 0 75px;
+        }
+
+        .company-steps {
+            grid-template-columns: 1fr;
+        }
+
+        .company-benefit-section {
+            grid-template-columns: 1fr;
+            padding: 28px 23px;
+            gap: 30px;
+        }
+
+        .company-benefit-copy h2 {
+            font-size: 25px;
+        }
+
+        .company-cta {
+            padding: 30px 24px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .company-cta-button {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 480px) {
+
+        .company-hero h1 {
+            font-size: 34px;
+        }
+
+        .company-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .company-login-button {
+            width: 100%;
+        }
+
+        .company-feature-row {
+            align-items: flex-start;
+        }
+
+        .company-feature-icon {
+            width: 42px;
+            height: 42px;
+        }
+
+        .company-section-heading h2 {
+            font-size: 27px;
+        }
+    }
+
+</style>
+
+
+<section class="company-page">
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <div class="company-hero">
+
+        <div class="company-container">
+
+            <div class="company-hero-grid">
+
+                <!-- LEFT -->
+
+                <div class="company-hero-copy">
+
+                    <span class="company-eyebrow">
+                        <span class="company-eyebrow-dot"></span>
+                        WorkHub Company Portal
+                    </span>
+
+                    <h1>
+                        Find the Right
+                        <span>People</span>
+                        for Your Company
+                    </h1>
+
+                    <p>
+                        Create your company or organization profile,
+                        publish job opportunities and define exactly
+                        which skills and qualifications you need from
+                        candidates.
+                    </p>
+
+                    <div class="company-actions">
+
+                        <a asp-controller="CompanyPortal"
+                           asp-action="Login"
+                           class="company-login-button">
+
+                            <svg class="company-icon company-icon-sm"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+
+                            Company Sign In
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT -->
+
+                <div class="company-hero-card">
+
+                    <span class="company-card-label">
+                        Company Tools
+                    </span>
+
+
+                    <!-- COMPANY -->
+
+                    <div class="company-feature-row">
+
+                        <div class="company-feature-icon">
+
+                            <svg class="company-icon company-icon-lg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M3 21h18"></path>
+                                <path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"></path>
+                                <path d="M15 9h4a2 2 0 0 1 2 2v10"></path>
+                                <path d="M9 7h2"></path>
+                                <path d="M9 11h2"></path>
+                                <path d="M9 15h2"></path>
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Company Profile
+                            </strong>
+
+                            <span>
+                                Build your professional
+                                WorkHub company presence.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- JOBS -->
+
+                    <div class="company-feature-row">
+
+                        <div class="company-feature-icon">
+
+                            <svg class="company-icon company-icon-lg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <path d="M3 12h18"></path>
+                                <path d="M10 12v2h4v-2"></path>
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Post Jobs
+                            </strong>
+
+                            <span>
+                                Publish opportunities to the
+                                WorkHub Jobs section.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SKILLS -->
+
+                    <div class="company-feature-row">
+
+                        <div class="company-feature-icon">
+
+                            <svg class="company-icon company-icon-lg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <path d="M12 7v5l3 2"></path>
+                                <path d="M8 3l-2 2"></path>
+                                <path d="M16 3l2 2"></path>
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Select Required Skills
+                            </strong>
+
+                            <span>
+                                Choose role-specific skills
+                                required for each job.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- APPLICATIONS -->
+
+                    <div class="company-feature-row">
+
+                        <div class="company-feature-icon">
+
+                            <svg class="company-icon company-icon-lg"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <circle cx="9" cy="8" r="3"></circle>
+                                <path d="M3 20c0-3.3 2.7-6 6-6"></path>
+                                <circle cx="17" cy="8" r="2.5"></circle>
+                                <path d="M14 20c0-2.8 2.2-5 5-5"></path>
+                            </svg>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Manage Applications
+                            </strong>
+
+                            <span>
+                                Review candidates and
+                                applications from one portal.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
+    <div class="company-content">
+
+        <div class="company-container">
+
+
+            <!-- SECTION HEADING -->
+
+            <div class="company-section-heading">
+
+                <span>
+                    Getting Started
+                </span>
+
+                <h2>
+                    How the Company Portal Works
+                </h2>
+
+                <p>
+                    WorkHub gives companies and organizations
+                    a structured way to create jobs and connect
+                    each opportunity with the correct career
+                    category, role and required skills.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 STEPS
+            ================================================== -->
+
+            <div class="company-steps">
+
+
+                <!-- STEP 1 -->
+
+                <div class="company-step">
+
+                    <div class="company-step-number">
+                        01
+                    </div>
+
+                    <h3>
+                        Create Company Account
+                    </h3>
+
+                    <p>
+                        Register a dedicated Company /
+                        Organization account on WorkHub.
+                    </p>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="company-step">
+
+                    <div class="company-step-number">
+                        02
+                    </div>
+
+                    <h3>
+                        Build Company Profile
+                    </h3>
+
+                    <p>
+                        Add your company name,
+                        industry, website, address and
+                        business information.
+                    </p>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="company-step">
+
+                    <div class="company-step-number">
+                        03
+                    </div>
+
+                    <h3>
+                        Post a Job
+                    </h3>
+
+                    <p>
+                        Select a WorkHub career category
+                        and role, then enter the job
+                        requirements.
+                    </p>
+
+                </div>
+
+
+                <!-- STEP 4 -->
+
+                <div class="company-step">
+
+                    <div class="company-step-number">
+                        04
+                    </div>
+
+                    <h3>
+                        Select Job Skills
+                    </h3>
+
+                    <p>
+                        Choose only the WorkHub skills
+                        that your company actually
+                        requires for that vacancy.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 BENEFITS
+            ================================================== -->
+
+            <div class="company-benefit-section">
+
+
+                <!-- LEFT -->
+
+                <div class="company-benefit-copy">
+
+                    <span class="company-eyebrow">
+
+                        <svg class="company-icon company-icon-sm"
+                             viewBox="0 0 24 24"
+                             aria-hidden="true">
+                            <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+
+                        Structured Recruitment
+
+                    </span>
+
+                    <h2>
+                        Better Job Data for
+                        Better Career Matching
+                    </h2>
+
+                    <p>
+                        Every WorkHub job will be linked to a
+                        career category, a specific career role,
+                        and the skills selected by the company.
+                        This structure will later power job
+                        filtering, candidate matching and
+                        WorkHub CV Intelligence.
+                    </p>
+
+                </div>
+
+
+                <!-- RIGHT -->
+
+                <div class="company-benefit-list">
+
+
+                    <!-- BENEFIT 1 -->
+
+                    <div class="company-benefit-item">
+
+                        <div class="benefit-check">
+
+                            <svg class="company-icon company-icon-sm"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+
+                        </div>
+
+                        <span>
+                            Structured career category and role
+                        </span>
+
+                    </div>
+
+
+                    <!-- BENEFIT 2 -->
+
+                    <div class="company-benefit-item">
+
+                        <div class="benefit-check">
+
+                            <svg class="company-icon company-icon-sm"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+
+                        </div>
+
+                        <span>
+                            Company-selected required skills
+                        </span>
+
+                    </div>
+
+
+                    <!-- BENEFIT 3 -->
+
+                    <div class="company-benefit-item">
+
+                        <div class="benefit-check">
+
+                            <svg class="company-icon company-icon-sm"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+
+                        </div>
+
+                        <span>
+                            Jobs automatically appear in the
+                            correct WorkHub filters
+                        </span>
+
+                    </div>
+
+
+                    <!-- BENEFIT 4 -->
+
+                    <div class="company-benefit-item">
+
+                        <div class="benefit-check">
+
+                            <svg class="company-icon company-icon-sm"
+                                 viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+
+                        </div>
+
+                        <span>
+                            New job opportunities can be
+                            identified automatically
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CTA
+            ================================================== -->
+
+            <div class="company-cta">
+
+                <div class="company-cta-content">
+
+                    <h2>
+                        Ready to build your company presence?
+                    </h2>
+
+                    <p>
+                        Sign in to your WorkHub Company Portal
+                        and start managing your recruitment journey.
+                    </p>
+
+                </div>
+
+
+                <a asp-controller="CompanyPortal"
+                   asp-action="Login"
+                   class="company-cta-button">
+
+                    <svg class="company-icon company-icon-sm"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+
+                    Company Sign In
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>

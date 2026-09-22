@@ -1,0 +1,998 @@
+@model Workhub_Web.Models.EditUserProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<style>
+    :root {
+        --orange: #FD5000;
+        --orange-dark: #D94300;
+        --orange-soft: #FFF2EB;
+        --dark: #0F172A;
+        --text: #64748B;
+        --border: #E5E7EB;
+    }
+
+    .edit-profile-page {
+        min-height: 100vh;
+        padding: 45px 28px 90px;
+        background: #f4f6f8;
+    }
+
+    .edit-profile-container {
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    .edit-page-header {
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+        .edit-page-header h1 {
+            margin: 0 0 6px;
+            color: var(--dark);
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .edit-page-header p {
+            margin: 0;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+    .back-dashboard {
+        padding: 10px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: white;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+        .back-dashboard:hover {
+            border-color: var(--orange);
+            color: var(--orange-dark);
+        }
+
+    .profile-message {
+        margin-bottom: 20px;
+        padding: 14px 17px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .success-message {
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .error-message {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    /* PROFILE HEADER */
+
+    .profile-main-card {
+        overflow: hidden;
+        margin-bottom: 22px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(15,23,42,.05);
+    }
+
+    .profile-cover {
+        position: relative;
+        height: 280px;
+        background: linear-gradient( 135deg, #b7c9d8, #dce6ed );
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .cover-upload {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+
+    .image-upload-button {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255,255,255,.95);
+        font-size: 19px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(15,23,42,.15);
+    }
+
+    .image-file-input {
+        display: none;
+    }
+
+    .profile-main-body {
+        position: relative;
+        padding: 105px 35px 34px;
+    }
+
+    .profile-photo-wrapper {
+        position: absolute;
+        top: -105px;
+        left: 35px;
+    }
+
+    .profile-photo {
+        width: 180px;
+        height: 180px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 6px solid white;
+        border-radius: 50%;
+        background: var(--orange);
+        color: white;
+        font-size: 58px;
+        font-weight: 800;
+        box-shadow: 0 8px 24px rgba(15,23,42,.18);
+    }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .profile-photo-edit {
+        position: absolute;
+        right: 5px;
+        bottom: 8px;
+    }
+
+        .profile-photo-edit .image-upload-button {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+        }
+
+    .profile-name {
+        margin: 0 0 6px;
+        color: var(--dark);
+        font-size: 31px;
+        font-weight: 800;
+    }
+
+    .profile-email {
+        color: var(--text);
+        font-size: 14px;
+    }
+
+    /* CONTENT */
+
+    .edit-profile-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 22px;
+        align-items: start;
+    }
+
+    .profile-column {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .profile-section {
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(15,23,42,.04);
+    }
+
+    .section-header {
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+        .section-header h2 {
+            margin: 0;
+            color: var(--dark);
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .section-header span {
+            color: var(--text);
+            font-size: 11px;
+        }
+
+    /* FORM */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 19px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #334155;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 13px 14px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        background: white;
+        color: var(--dark);
+        font-size: 13px;
+        outline: none;
+    }
+
+        .form-control-custom:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(253,80,0,.10);
+        }
+
+    .readonly-field {
+        background: #f8fafc;
+        color: #64748b;
+    }
+
+    textarea.form-control-custom {
+        min-height: 180px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .field-note {
+        color: #94a3b8;
+        font-size: 10px;
+    }
+
+    .save-button {
+        margin-top: 22px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        background: var(--orange-dark);
+        color: white;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+        .save-button:hover {
+            background: #b93800;
+        }
+
+    /* CONNECTED APPS */
+
+    .connected-app {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+    }
+
+    .connected-icon {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: var(--orange-soft);
+        color: var(--orange-dark);
+        font-size: 11px;
+        font-weight: 900;
+    }
+
+    .connected-field {
+        flex: 1;
+    }
+
+    /* ACCOUNT SIDEBAR */
+
+    .summary-row {
+        padding: 16px 0;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+        .summary-row:first-child {
+            padding-top: 0;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .summary-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #94a3b8;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+    .summary-value {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 700;
+        word-break: break-word;
+    }
+
+    @@media(max-width:900px) {
+
+        .edit-profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-cover {
+            height: 220px;
+        }
+    }
+
+    @@media(max-width:650px) {
+
+        .edit-profile-page {
+            padding: 30px 15px 60px;
+        }
+
+        .edit-page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .profile-cover {
+            height: 180px;
+        }
+
+        .profile-main-body {
+            padding: 85px 20px 25px;
+        }
+
+        .profile-photo-wrapper {
+            top: -80px;
+            left: 20px;
+        }
+
+        .profile-photo {
+            width: 140px;
+            height: 140px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+            grid-column: auto;
+        }
+    }
+
+</style>
+
+
+<section class="edit-profile-page">
+
+    <div class="edit-profile-container">
+
+        <div class="edit-page-header">
+
+            <div>
+
+                <h1>
+                    Edit Profile
+                </h1>
+
+                <p>
+                    Manage your personal WorkHub profile.
+                </p>
+
+            </div>
+
+            <a asp-controller="Account"
+               asp-action="Profile"
+               class="back-dashboard">
+
+                ← Back to Dashboard
+
+            </a>
+
+        </div>
+
+
+        @if (TempData["ProfileSuccess"] != null)
+        {
+            <div class="profile-message success-message">
+                @TempData["ProfileSuccess"]
+            </div>
+        }
+
+        @if (TempData["ProfileError"] != null)
+        {
+            <div class="profile-message error-message">
+                @TempData["ProfileError"]
+            </div>
+        }
+
+
+        <!-- PROFILE COVER + PHOTO -->
+
+        <div class="profile-main-card">
+
+            <div class="profile-cover"
+                 style="@(string.IsNullOrWhiteSpace(Model.CoverImageUrl)
+                                    ? ""
+                                    : $"background-image:url('{Model.CoverImageUrl}')")">
+
+                <form asp-controller="UserProfile"
+                      asp-action="UploadCoverImage"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="cover-upload"
+                      id="coverUploadForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <label class="image-upload-button"
+                           title="Change cover photo">
+
+                        📷
+
+                        <input type="file"
+                               name="coverImage"
+                               class="image-file-input"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                               onchange="document.getElementById('coverUploadForm').submit()" />
+
+                    </label>
+
+                </form>
+
+            </div>
+
+
+            <div class="profile-main-body">
+
+                <div class="profile-photo-wrapper">
+
+                    <div class="profile-photo">
+
+                        @if (!string.IsNullOrWhiteSpace(
+                                Model.ProfileImageUrl))
+                        {
+                            <img src="@Model.ProfileImageUrl"
+                                 alt="@Model.FullName" />
+                        }
+                        else
+                        {
+                            @(string.IsNullOrWhiteSpace(Model.FirstName)
+                                ? "U"
+                                : Model.FirstName.Substring(0, 1).ToUpperInvariant())
+                        }
+
+                    </div>
+
+
+                    <form asp-controller="UserProfile"
+                          asp-action="UploadProfileImage"
+                          method="post"
+                          enctype="multipart/form-data"
+                          class="profile-photo-edit"
+                          id="profileImageUploadForm">
+
+                        @Html.AntiForgeryToken()
+
+                        <label class="image-upload-button"
+                               title="Change profile picture">
+
+                            📷
+
+                            <input type="file"
+                                   name="profileImage"
+                                   class="image-file-input"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                   onchange="document.getElementById('profileImageUploadForm').submit()" />
+
+                        </label>
+
+                    </form>
+
+                </div>
+
+
+                <h2 class="profile-name">
+                    @Model.FullName
+                </h2>
+
+                <div class="profile-email">
+                    @Model.Email
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROFILE FORM -->
+
+        <form asp-controller="UserProfile"
+              asp-action="Update"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input asp-for="UserId"
+                   type="hidden" />
+
+
+            <div class="edit-profile-grid">
+
+
+                <!-- LEFT -->
+
+                <div class="profile-column">
+
+
+                    <!-- PROFILE INFORMATION -->
+
+                    <div class="profile-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                Profile Information
+                            </h2>
+
+                            <span>
+                                Personal details
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label asp-for="FirstName">
+                                    First Name
+                                </label>
+
+                                <input asp-for="FirstName"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label asp-for="LastName">
+                                    Last Name
+                                </label>
+
+                                <input asp-for="LastName"
+                                       class="form-control-custom"
+                                       required />
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>
+                                    Email Address
+                                </label>
+
+                                <input value="@Model.Email"
+                                       class="form-control-custom readonly-field"
+                                       readonly />
+
+                            </div>
+
+
+                            <!-- DOB -->
+
+                            <div class="form-group full">
+
+                                <label asp-for="DateOfBirth">
+                                    Date of Birth
+                                </label>
+
+                                <input asp-for="DateOfBirth"
+                                       type="date"
+                                       class="form-control-custom" />
+
+                            </div>
+
+
+                            <!-- NIC / NATIONAL ID -->
+
+                            <div class="form-group full">
+
+                                <label asp-for="NationalIdNumber">
+                                    National ID / NIC
+                                </label>
+
+                                <input asp-for="NationalIdNumber"
+                                       class="form-control-custom"
+                                       maxlength="50"
+                                       autocomplete="off"
+                                       placeholder="Enter your NIC or national ID" />
+
+                                <span asp-validation-for="NationalIdNumber"
+                                      class="text-danger"></span>
+
+                                <small class="field-note">
+                                    Private identity information. It is used for verification and is not displayed on your public profile.
+                                </small>
+
+                            </div>
+
+
+                            <!-- COUNTRY -->
+
+                            <div class="form-group">
+
+                                <label asp-for="Country">
+                                    Country
+                                </label>
+
+                                <input asp-for="Country"
+                                       class="form-control-custom"
+                                       placeholder="Sri Lanka" />
+
+                            </div>
+
+
+                            <!-- LOCATION -->
+
+                            <div class="form-group">
+
+                                <label asp-for="Location">
+                                    Location
+                                </label>
+
+                                <input asp-for="Location"
+                                       id="workHubLocation"
+                                       class="form-control-custom"
+                                       placeholder="Colombo, Western Province" />
+
+                                <span class="field-note">
+                                    Google location autocomplete can be connected later.
+                                </span>
+
+                            </div>
+
+
+                            <!-- PHONE -->
+
+                            <div class="form-group full">
+
+                                <label asp-for="Phone">
+                                    Phone
+                                </label>
+
+                                <input asp-for="Phone"
+                                       class="form-control-custom"
+                                       placeholder="+94..." />
+
+                            </div>
+
+
+                            <!-- ABOUT -->
+
+                            <div class="form-group full">
+
+                                <label asp-for="About">
+                                    About
+                                </label>
+
+                                <textarea asp-for="About"
+                                          class="form-control-custom"
+                                          placeholder="Tell people a little about yourself..."></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONNECTED APPS -->
+
+                    <div class="profile-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                Connected Apps
+                            </h2>
+
+                            <span>
+                                Professional and social links
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group full">
+
+                                <div class="connected-app">
+
+                                    <div class="connected-icon">
+                                        WEB
+                                    </div>
+
+                                    <div class="connected-field">
+
+                                        <label asp-for="Website">
+                                            Website
+                                        </label>
+
+                                        <input asp-for="Website"
+                                               class="form-control-custom"
+                                               placeholder="https://yourwebsite.com" />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="connected-app">
+
+                                    <div class="connected-icon">
+                                        in
+                                    </div>
+
+                                    <div class="connected-field">
+
+                                        <label asp-for="LinkedInUrl">
+                                            LinkedIn
+                                        </label>
+
+                                        <input asp-for="LinkedInUrl"
+                                               class="form-control-custom"
+                                               placeholder="https://linkedin.com/in/..." />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="connected-app">
+
+                                    <div class="connected-icon">
+                                        f
+                                    </div>
+
+                                    <div class="connected-field">
+
+                                        <label asp-for="FacebookUrl">
+                                            Facebook
+                                        </label>
+
+                                        <input asp-for="FacebookUrl"
+                                               class="form-control-custom"
+                                               placeholder="https://facebook.com/..." />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="connected-app">
+
+                                    <div class="connected-icon">
+                                        GH
+                                    </div>
+
+                                    <div class="connected-field">
+
+                                        <label asp-for="GitHubUrl">
+                                            GitHub
+                                        </label>
+
+                                        <input asp-for="GitHubUrl"
+                                               class="form-control-custom"
+                                               placeholder="https://github.com/..." />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <div class="connected-app">
+
+                                    <div class="connected-icon">
+                                        IG
+                                    </div>
+
+                                    <div class="connected-field">
+
+                                        <label asp-for="InstagramUrl">
+                                            Instagram
+                                        </label>
+
+                                        <input asp-for="InstagramUrl"
+                                               class="form-control-custom"
+                                               placeholder="https://instagram.com/..." />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="save-button">
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT SUMMARY -->
+
+                <aside class="profile-column">
+
+                    <div class="profile-section">
+
+                        <div class="section-header">
+
+                            <h2>
+                                Account
+                            </h2>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Name
+                            </span>
+
+                            <div class="summary-value">
+                                @Model.FullName
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Email
+                            </span>
+
+                            <div class="summary-value">
+                                @Model.Email
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Country
+                            </span>
+
+                            <div class="summary-value">
+
+                                @(string.IsNullOrWhiteSpace(Model.Country)
+                                    ? "Not added"
+                                    : Model.Country)
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                Location
+                            </span>
+
+                            <div class="summary-value">
+
+                                @(string.IsNullOrWhiteSpace(Model.Location)
+                                    ? "Not added"
+                                    : Model.Location)
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span class="summary-label">
+                                User ID
+                            </span>
+
+                            <div class="summary-value">
+                                #@Model.UserId
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>

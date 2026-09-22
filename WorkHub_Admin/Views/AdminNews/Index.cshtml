@@ -1,0 +1,1073 @@
+﻿@model WorkHub_Admin.Models.AdminNewsViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "News & Updates";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        WorkHub Admin - News & Updates
+    </title>
+
+    <style>
+
+            /* =========================================================
+                   WORKHUB ADMIN NEWS - PROFESSIONAL UI
+                ========================================================== */
+
+            :root {
+                --orange: #FD5000;
+                --orange-dark: #D94700;
+                --orange-hover: #E94A00;
+                --orange-light: #FF6A21;
+                --orange-soft: #FFF4EE;
+                --orange-soft-2: #FFFAF7;
+                --orange-border: #FFD5C2;
+                --dark: #101828;
+                --dark-2: #1D2939;
+                --text: #475467;
+                --muted: #667085;
+                --light-text: #98A2B3;
+                --border: #E4E7EC;
+                --border-soft: #F0F2F5;
+                --bg: #F7F8FA;
+                --white: #FFFFFF;
+                --green: #067647;
+                --green-soft: #ECFDF3;
+                --green-border: #ABEFC6;
+                --yellow: #B54708;
+                --yellow-soft: #FFFAEB;
+                --yellow-border: #FEDF89;
+                --red: #B42318;
+                --red-soft: #FEF3F2;
+                --red-border: #FECDCA;
+                --shadow-sm: 0 2px 8px rgba(16, 24, 40, 0.04);
+                --shadow-md: 0 8px 28px rgba(16, 24, 40, 0.07);
+                --shadow-hover: 0 14px 38px rgba(16, 24, 40, 0.10);
+            }
+
+
+            /* =========================================================
+                   RESET
+                ========================================================== */
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                font-size: 16px;
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                font-size: 16px;
+                line-height: 1.6;
+                background: linear-gradient( 180deg, #FFFFFF 0px, var(--bg) 280px );
+                color: var(--dark);
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            button,
+            input,
+            select,
+            textarea {
+                font: inherit;
+            }
+
+            a {
+                color: inherit;
+            }
+
+
+            /* =========================================================
+                   TOP BAR
+                ========================================================== */
+
+            .topbar {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                min-height: 82px;
+                padding: 0 36px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+                border-bottom: 1px solid var(--border-soft);
+                background: rgba(255, 255, 255, 0.97);
+                box-shadow: 0 2px 14px rgba(16, 24, 40, 0.05);
+                backdrop-filter: blur(14px);
+            }
+
+
+            /* =========================================================
+                   BRAND
+                ========================================================== */
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+            }
+
+            .logo {
+                width: 46px;
+                height: 46px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                border-radius: 13px;
+                background: linear-gradient( 135deg, #FF6A21, var(--orange) );
+                color: #FFFFFF;
+                font-size: 21px;
+                font-weight: 900;
+                box-shadow: 0 6px 18px rgba(253, 80, 0, 0.24);
+            }
+
+            .brand strong {
+                display: block;
+                color: var(--dark);
+                font-size: 20px;
+                line-height: 1.2;
+                font-weight: 900;
+                letter-spacing: -0.4px;
+            }
+
+            .brand span {
+                display: block;
+                margin-top: 3px;
+                color: var(--muted);
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+
+            /* =========================================================
+                   TOP ACTION BUTTONS
+                ========================================================== */
+
+            .top-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .top-button {
+                min-height: 44px;
+                padding: 0 17px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--border);
+                border-radius: 9px;
+                background: #FFFFFF;
+                color: var(--text);
+                font-size: 14px;
+                font-weight: 750;
+                text-decoration: none;
+                box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+                transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+                .top-button:hover {
+                    color: var(--orange);
+                    border-color: var(--orange-border);
+                    background: var(--orange-soft);
+                    transform: translateY(-1px);
+                }
+
+                .top-button.primary {
+                    border-color: var(--orange);
+                    background: linear-gradient( 135deg, var(--orange), var(--orange-light) );
+                    color: #FFFFFF;
+                    box-shadow: 0 5px 14px rgba(253, 80, 0, 0.20);
+                }
+
+                    .top-button.primary:hover {
+                        border-color: var(--orange-dark);
+                        background: var(--orange-dark);
+                        color: #FFFFFF;
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 20px rgba(253, 80, 0, 0.26);
+                    }
+
+
+            /* =========================================================
+                   CONTENT
+                ========================================================== */
+
+            .content {
+                width: calc(100% - 48px);
+                max-width: 1300px;
+                margin: 0 auto;
+                padding: 42px 0 90px;
+            }
+
+
+            /* =========================================================
+                   TITLE
+                ========================================================== */
+
+            .title-row {
+                margin-bottom: 30px;
+                display: flex;
+                align-items: flex-end;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .eyebrow {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--orange);
+                font-size: 12px;
+                font-weight: 850;
+                letter-spacing: 1.3px;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                margin: 0 0 9px;
+                color: var(--dark);
+                font-size: clamp(34px, 4vw, 42px);
+                line-height: 1.15;
+                font-weight: 900;
+                letter-spacing: -1px;
+            }
+
+            .title-row p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 15px;
+                line-height: 1.65;
+            }
+
+
+            /* =========================================================
+                   MESSAGES
+                ========================================================== */
+
+            .message {
+                margin-bottom: 20px;
+                padding: 14px 17px;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .success {
+                border: 1px solid var(--green-border);
+                background: var(--green-soft);
+                color: var(--green);
+            }
+
+            .error {
+                border: 1px solid var(--red-border);
+                background: var(--red-soft);
+                color: var(--red);
+            }
+
+
+            /* =========================================================
+                   STATS
+                ========================================================== */
+
+            .stats {
+                margin-bottom: 28px;
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 18px;
+            }
+
+            .stat {
+                position: relative;
+                overflow: hidden;
+                min-height: 120px;
+                padding: 24px;
+                border: 1px solid var(--border);
+                border-radius: 15px;
+                background: #FFFFFF;
+                box-shadow: var(--shadow-sm);
+                transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+            }
+
+                .stat::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 4px;
+                    height: 100%;
+                    background: var(--orange);
+                }
+
+                .stat:hover {
+                    transform: translateY(-3px);
+                    border-color: var(--orange-border);
+                    box-shadow: var(--shadow-hover);
+                }
+
+                .stat strong {
+                    display: block;
+                    margin-bottom: 7px;
+                    color: var(--orange);
+                    font-size: 32px;
+                    line-height: 1;
+                    font-weight: 900;
+                    letter-spacing: -0.6px;
+                }
+
+                .stat span {
+                    color: var(--muted);
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+
+
+            /* =========================================================
+                   MAIN PANEL
+                ========================================================== */
+
+            .panel {
+                overflow: hidden;
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                background: #FFFFFF;
+                box-shadow: var(--shadow-md);
+            }
+
+
+            /* =========================================================
+                   PANEL HEADER
+                ========================================================== */
+
+            .panel-header {
+                padding: 22px 24px;
+                border-bottom: 1px solid var(--border-soft);
+                background: linear-gradient( 180deg, #FFFFFF, #FCFCFD );
+            }
+
+                .panel-header h2 {
+                    margin: 0 0 6px;
+                    color: var(--dark);
+                    font-size: 21px;
+                    font-weight: 850;
+                    letter-spacing: -0.35px;
+                }
+
+                .panel-header p {
+                    margin: 0;
+                    color: var(--muted);
+                    font-size: 14px;
+                    line-height: 1.55;
+                }
+
+
+            /* =========================================================
+                   NEWS LIST
+                ========================================================== */
+
+            .news-list {
+                padding: 4px 24px;
+            }
+
+            .news-row {
+                min-height: 130px;
+                padding: 24px 0;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                align-items: center;
+                gap: 24px;
+                border-bottom: 1px solid var(--border-soft);
+                transition: background 0.2s ease;
+            }
+
+                .news-row:last-child {
+                    border-bottom: none;
+                }
+
+
+            /* =========================================================
+                   CATEGORY BADGE
+                ========================================================== */
+
+            .news-category {
+                display: inline-flex;
+                align-items: center;
+                min-height: 28px;
+                margin-bottom: 9px;
+                padding: 4px 10px;
+                border: 1px solid var(--orange-border);
+                border-radius: 999px;
+                background: var(--orange-soft);
+                color: var(--orange-dark);
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+
+
+            /* =========================================================
+                   NEWS TITLE
+                ========================================================== */
+
+            .news-title {
+                margin: 0 0 8px;
+                color: var(--dark);
+                font-size: 18px;
+                line-height: 1.35;
+                font-weight: 850;
+                letter-spacing: -0.25px;
+            }
+
+
+            /* =========================================================
+                   NEWS SUMMARY
+                ========================================================== */
+
+            .news-summary {
+                max-width: 800px;
+                margin: 0 0 10px;
+                color: var(--muted);
+                font-size: 14px;
+                line-height: 1.7;
+            }
+
+
+            /* =========================================================
+                   NEWS META
+                ========================================================== */
+
+            .news-meta {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                color: var(--light-text);
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+
+            /* =========================================================
+                   STATUS
+                ========================================================== */
+
+            .status {
+                min-height: 27px;
+                padding: 4px 10px;
+                display: inline-flex;
+                align-items: center;
+                border-radius: 999px;
+                font-size: 10px;
+                font-weight: 850;
+                letter-spacing: 0.25px;
+                text-transform: uppercase;
+            }
+
+            .published {
+                border: 1px solid var(--green-border);
+                background: var(--green-soft);
+                color: var(--green);
+            }
+
+            .draft {
+                border: 1px solid var(--yellow-border);
+                background: var(--yellow-soft);
+                color: var(--yellow);
+            }
+
+
+            /* =========================================================
+                   ACTION BUTTONS
+                ========================================================== */
+
+            .actions {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+            }
+
+                .actions form {
+                    margin: 0;
+                }
+
+            .edit-button,
+            .delete-button {
+                min-width: 72px;
+                min-height: 40px;
+                padding: 0 14px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 750;
+                text-decoration: none;
+                cursor: pointer;
+                transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .edit-button {
+                border: 1px solid var(--orange);
+                background: #FFFFFF;
+                color: var(--orange-dark);
+            }
+
+                .edit-button:hover {
+                    background: var(--orange);
+                    color: #FFFFFF;
+                    transform: translateY(-1px);
+                    box-shadow: 0 5px 14px rgba(253, 80, 0, 0.18);
+                }
+
+            .delete-button {
+                border: 1px solid var(--red-border);
+                background: #FFFFFF;
+                color: var(--red);
+            }
+
+                .delete-button:hover {
+                    border-color: var(--red);
+                    background: var(--red);
+                    color: #FFFFFF;
+                    transform: translateY(-1px);
+                    box-shadow: 0 5px 14px rgba(180, 35, 24, 0.15);
+                }
+
+
+            /* =========================================================
+                   EMPTY STATE
+                ========================================================== */
+
+            .empty {
+                padding: 70px 25px;
+                text-align: center;
+            }
+
+            .empty-icon {
+                width: 68px;
+                height: 68px;
+                margin: 0 auto 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--orange-border);
+                border-radius: 18px;
+                background: var(--orange-soft);
+                font-size: 28px;
+            }
+
+            .empty h3 {
+                margin: 0 0 7px;
+                color: var(--dark);
+                font-size: 19px;
+                font-weight: 850;
+            }
+
+            .empty p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+
+            /* =========================================================
+                   TEXT SELECTION
+                ========================================================== */
+
+            ::selection {
+                background: rgba(253, 80, 0, 0.18);
+                color: var(--dark);
+            }
+
+
+            /* =========================================================
+                   TABLET
+                ========================================================== */
+
+            @@media (max-width: 900px) {
+
+                .content {
+                    width: calc(100% - 32px);
+                }
+
+                .topbar {
+                    padding: 0 22px;
+                }
+
+                .stats {
+                    gap: 12px;
+                }
+
+                .stat {
+                    padding: 20px;
+                }
+
+                .news-row {
+                    gap: 18px;
+                }
+            }
+
+
+            /* =========================================================
+                   MOBILE
+                ========================================================== */
+
+            @@media (max-width: 700px) {
+
+                .topbar {
+                    position: relative;
+                    min-height: auto;
+                    padding: 15px 16px;
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .top-actions {
+                    width: 100%;
+                }
+
+                .top-button {
+                    flex: 1;
+                    min-height: 43px;
+                    font-size: 13px;
+                }
+
+                .brand strong {
+                    font-size: 18px;
+                }
+
+                .brand span {
+                    font-size: 11px;
+                }
+
+                .logo {
+                    width: 43px;
+                    height: 43px;
+                    font-size: 19px;
+                }
+
+                .content {
+                    width: calc(100% - 22px);
+                    padding: 27px 0 60px;
+                }
+
+                .title-row {
+                    margin-bottom: 22px;
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                h1 {
+                    font-size: 30px;
+                }
+
+                .title-row p {
+                    font-size: 14px;
+                }
+
+                .stats {
+                    grid-template-columns: 1fr;
+                    gap: 11px;
+                }
+
+                .stat {
+                    min-height: 100px;
+                }
+
+                    .stat strong {
+                        font-size: 29px;
+                    }
+
+                .panel {
+                    border-radius: 13px;
+                }
+
+                .panel-header {
+                    padding: 18px;
+                }
+
+                    .panel-header h2 {
+                        font-size: 19px;
+                    }
+
+                .news-list {
+                    padding: 0 18px;
+                }
+
+                .news-row {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
+                    padding: 20px 0;
+                }
+
+                .news-title {
+                    font-size: 17px;
+                }
+
+                .news-summary {
+                    font-size: 13px;
+                }
+
+                .actions {
+                    justify-content: flex-start;
+                }
+
+                .edit-button,
+                .delete-button {
+                    min-width: 90px;
+                    min-height: 41px;
+                    font-size: 13px;
+                }
+            }
+
+
+            /* =========================================================
+                   SMALL MOBILE
+                ========================================================== */
+
+            @@media (max-width: 430px) {
+
+                .top-actions {
+                    flex-direction: column;
+                }
+
+                .top-button {
+                    width: 100%;
+                }
+
+                h1 {
+                    font-size: 27px;
+                }
+
+                .news-list {
+                    padding: 0 15px;
+                }
+
+                .actions {
+                    width: 100%;
+                }
+
+                .edit-button,
+                .delete-button {
+                    flex: 1;
+                }
+
+                .actions form {
+                    flex: 1;
+                    display: flex;
+                }
+
+                .delete-button {
+                    width: 100%;
+                }
+            }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="logo">
+                W
+            </div>
+
+            <div>
+
+                <strong>
+                    WorkHub
+                </strong>
+
+                <span>
+                    Administration · News & Updates
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <a href="/AdminDashboard/Index"
+               class="top-button">
+
+                Dashboard
+
+            </a>
+
+            <a href="/AdminNews/Create"
+               class="top-button primary">
+
+                + Add News
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main class="content">
+
+
+        <div class="title-row">
+
+            <div>
+
+                <span class="eyebrow">
+                    Administration
+                </span>
+
+                <h1>
+                    News & Updates
+                </h1>
+
+                <p>
+                    Create and manage updates displayed
+                    to WorkHub users.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        @if (!string.IsNullOrWhiteSpace(
+            Model.SuccessMessage))
+        {
+            <div class="message success">
+                ✓ @Model.SuccessMessage
+            </div>
+        }
+
+
+        @if (!string.IsNullOrWhiteSpace(
+            Model.ErrorMessage))
+        {
+            <div class="message error">
+                @Model.ErrorMessage
+            </div>
+        }
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <strong>
+                    @Model.TotalCount
+                </strong>
+
+                <span>
+                    Total News
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong>
+                    @Model.PublishedCount
+                </strong>
+
+                <span>
+                    Published
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong>
+                    @Model.DraftCount
+                </strong>
+
+                <span>
+                    Drafts
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <section class="panel">
+
+
+            <div class="panel-header">
+
+                <h2>
+                    All News & Updates
+                </h2>
+
+                <p>
+                    Published items appear in user profiles.
+                </p>
+
+            </div>
+
+
+            @if (
+                Model.News == null
+                ||
+                !Model.News.Any()
+            )
+            {
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        📰
+                    </div>
+
+                    <h3>
+                        No News Yet
+                    </h3>
+
+                    <p>
+                        Create your first WorkHub update.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="news-list">
+
+
+                    @foreach (
+                        var item
+                        in Model.News)
+                    {
+                        <div class="news-row">
+
+
+                            <div>
+
+                                <span class="news-category">
+                                    @item.Category
+                                </span>
+
+                                <h3 class="news-title">
+                                    @item.Title
+                                </h3>
+
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    item.Summary))
+                                {
+                                    <p class="news-summary">
+                                        @item.Summary
+                                    </p>
+                                }
+
+
+                                <div class="news-meta">
+
+                                    @if (item.IsPublished)
+                                    {
+                                        <span class="status published">
+                                            Published
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status draft">
+                                            Draft
+                                        </span>
+                                    }
+
+                                    <span>
+                                        @item.DisplayDate
+                                    </span>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        item.CreatedBy))
+                                    {
+                                        <span>
+                                            By @item.CreatedBy
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="actions">
+
+                                <a href="/AdminNews/Edit/@item.NewsUpdateId"
+                                   class="edit-button">
+
+                                    Edit
+
+                                </a>
+
+
+                                <form asp-controller="AdminNews"
+                                      asp-action="Delete"
+                                      method="post"
+                                      onsubmit="return confirm('Delete this news item?');">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@item.NewsUpdateId" />
+
+                                    <button type="submit"
+                                            class="delete-button">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                        </div>
+                    }
+
+
+                </div>
+            }
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>
