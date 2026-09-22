@@ -6,3 +6,5 @@
 *.userosscache
 *.sln.docstates
 appsettings.Development.json
+WorkHub_API/Uploads/
+Workhub_Web/wwwroot/uploads/
